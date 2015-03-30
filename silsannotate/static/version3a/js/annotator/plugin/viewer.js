@@ -44,14 +44,14 @@ Annotator.Plugin.Viewer = (function(_super) {
                                 </a>\
                             </div>\
                             <div class="highlight-controls controls">\
-                                <a href="#show-all-highlights" title="Show all highlights" class="active">\
-                                    <img src="/static/' + interfaceName + '/img/highlights-everyone.png" alt="Show all highlights" />\
+                                <a href="#hide-highlights" title="Hide highlights">\
+                                    <img src="/static/' + interfaceName + '/img/highlights-off-icon.png" alt="Hide highlights" />\
                                 </a>\
                                 <a href="#show-my-highlights" title="Show only my highlights">\
                                     <img src="/static/' + interfaceName + '/img/highlights-mine-only.png" alt="Show only my highlights" />\
                                 </a>\
-                                <a href="#hide-highlights" title="Hide highlights">\
-                                    <img src="/static/' + interfaceName + '/img/highlights-off-icon.png" alt="Hide highlights" />\
+                                <a href="#show-all-highlights" title="Show all highlights" class="active">\
+                                    <img src="/static/' + interfaceName + '/img/highlights-everyone.png" alt="Show all highlights" />\
                                 </a>\
                             </div>\
                             <div class="info-control controls">\
@@ -259,7 +259,7 @@ Annotator.Plugin.Viewer = (function(_super) {
             height: (window.outerHeight / 4),
             width: 800,
             opacity: 0.5,
-            background: "lightblue",
+            border: "1px solid #999",
             zIndex: 50
         });
 
@@ -316,6 +316,18 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
         $(document).on("click", "#annotation-panel .annotation .text", this.editAnnotation);
         $(document).on("scroll", keepAnnotationsInView);
+
+        $("article .reference").each(function(){
+            var $this = $(this);
+            var referenceID = $this.attr("href");
+
+            var referenceLink = $(referenceID).find("a:eq(0)").attr("href");
+
+            $this.attr("href", referenceLink);
+
+            $this.attr("target", "_blank");
+console.log(referenceID, referenceLink);
+        });
 
     }
     
@@ -558,7 +570,7 @@ console.time("changeInteractiveMode");
         if (newInteractiveMode === "select") {
             //disable annotating
             $(document).unbind({
-                "mouseup": this.annotator.checkForEndSelection,
+                "mouseup": this.saveHighlight,
                 "mousedown": this.annotator.checkForStartSelection
             });
         } else {

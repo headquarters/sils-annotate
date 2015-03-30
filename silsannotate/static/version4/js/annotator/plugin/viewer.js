@@ -246,7 +246,12 @@ Annotator.Plugin.Viewer = (function(_super) {
         menuBarHeight = $(".annotation-menubar").height();
 
         //create the annotation panel DOM element that will house the annotations
-        annotationPanel = $('<div id="annotation-panel"></div>').css("height", $(window).height() - menuBarHeight);
+        annotationPanel = $('<div id="annotation-panel"></div>').css({
+            height: $(window).height() - menuBarHeight,
+            overflow: "scroll",
+            position: "fixed",
+            right: 400
+        });
 
         $("#container").append(annotationPanel);
         //binding events elsewhere screws up the context for `this`, which

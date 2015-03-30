@@ -326,7 +326,6 @@ Annotator.Plugin.Viewer = (function(_super) {
             $this.attr("href", referenceLink);
 
             $this.attr("target", "_blank");
-console.log(referenceID, referenceLink);
         });
 
     }
@@ -700,7 +699,7 @@ console.time("showScrollbar");
         scrollbar = $('<canvas id="scrollbar" width="24" height="' + availableScreenHeight + '"></canvas>');
         $(document.body).append(scrollbar);
         
-        var scrollbarScaleFactor = availableScreenHeight / $("html").height();
+        var scrollbarScaleFactor = availableScreenHeight / $("article").height();
             
         var canvas = scrollbar[0];
         var ctx = canvas.getContext('2d');

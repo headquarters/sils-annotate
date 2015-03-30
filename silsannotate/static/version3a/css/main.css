@@ -311,6 +311,10 @@ p,h1,h2,h3,h4,h5,h6,
   display:none;
 }
 
+#annotation-panel.icons .annotation-pane {
+  float:left;
+}
+
 #annotation-panel.icons .annotation-contents {
   float:left;
 }

@@ -277,11 +277,20 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("mouseenter", ".annotation", function(e){
             var id = getAnnotationIdFromClass(this.className);
             var annotation = $(".annotator-hl." + id);
+
+            if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
+                $(this).children(".text").text("edit").css({ "font-style": "italic" });
+            }            
             //pass DOM elements to focus
             annotationFocus(annotation[0]);
         }).on("mouseleave", ".annotation", function(e){
             var id = getAnnotationIdFromClass(this.className);
             var annotation = $(".annotator-hl." + id);
+
+            if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
+                $(this).children(".text").text("").css({ "font-style": "normal" });
+            }
+
             //pass DOM elements to blur           
             annotationBlur(annotation[0]);
         });
@@ -480,19 +489,29 @@ console.timeEnd("Writing annotations");
         //TODO: rather than grabbing text, this should probably be a data attribute or class
         var annotationText = $(e.target);
         var userId = annotationText.prev(".user-id").text();
-        var editor = $("<textarea />").val(annotationText.text());
+        var text = annotationText.text() == "edit" ? "" : annotationText.text();
+        var editor = $("<textarea />").val(text);
 
 
         if(userId == AnnotationView.userId){
             console.log(editor);
             annotationText.after(editor);
             annotationText.hide();
+            editor.focus();
         }
 
         $(document).on("click.saveEditedAnnotation", function(){
             editor.remove();
-            if(editor.val() !== "edit"){
+            if(editor.val().length > 0){
                 annotationText.text(editor.val());
+                
+                //TODO: save it!
+                var id = getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
+                var annotation = $(".annotator-hl." + id);
+                var data = { text: annotationText.text() };
+                //annotation is an array of annotations, rather than the single one needed
+                console.log(id, data);
+                //this.annotator.plugins.Store.prototype.updateaAnnotation(annotation, data)
             }
             annotationText.show();
             $(document).off("click.saveEditedAnnotation");

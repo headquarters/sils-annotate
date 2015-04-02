@@ -250,7 +250,7 @@ Annotator.Plugin.Viewer = (function(_super) {
             height: $(window).height() - menuBarHeight,
             overflow: "scroll",
             position: "fixed",
-            right: 400
+            right: "20%"
         });
 
         $("#container").append(annotationPanel);
@@ -452,8 +452,7 @@ console.timeEnd("Writing annotations");
     Viewer.prototype.saveHighlight = function(e) {
         var adder = this.annotator.checkForEndSelection(e);
 
-        //TODO: this probably should not rely on inspecting a style for determining success/failure
-        if(adder[0].style.display == "none"){
+        if(adder == "undefined" || adder[0].style.display == "none"){
             //checkForEndSelection failed to find a valid selection    
             return;
         } else {

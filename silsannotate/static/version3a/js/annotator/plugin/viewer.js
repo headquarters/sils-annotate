@@ -82,6 +82,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     var displayMode = "snippets";
     var interactiveMode = "annotate";
     var timer = null;
+    var menuBarHeight;
     
     Viewer.prototype.events = {
         "annotationsLoaded": "showAnnotations",
@@ -251,6 +252,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document.body).append(menuBar);
         $(document.body).append(infoPanel);
         
+        menuBarHeight = $(".annotation-menubar").height();
 //DEBUG 
         var readingSection = $('<div id="reading-section"></div>').css({
             position: "fixed",
@@ -473,9 +475,7 @@ console.timeEnd("Writing annotations");
     
     Viewer.prototype.saveHighlight = function(e) {
         var adder = this.annotator.checkForEndSelection(e);
-
-        //TODO: this probably should not rely on inspecting a style for determining success/failure
-        if(adder[0].style.display == "none"){
+        if(adder == "undefined" || adder[0].style.display == "none"){
             //checkForEndSelection failed to find a valid selection    
             return;
         } else {
@@ -538,6 +538,7 @@ console.timeEnd("Writing annotations");
                 return (elementTop >= readingSectionTop && elementTop <= readingSectionBottom);
             });
 //console.log(viewportThird, readingSectionTop, readingSectionBottom);
+//console.log("In view: ", highlightsInView[0]);
             if(highlightsInView.length < 1){
                 return;
             } else {
@@ -547,8 +548,12 @@ console.timeEnd("Writing annotations");
                 var highlightTop = $(highlightsInView[0]).offset().top;
                 //current position of annotation in annotation panel
                 var annotationTop = $("#annotation-panel ." + id).offset().top;
+                var annotationPositionTop = $("#annotation-panel ." + id).position().top;
                 //get top for panel
                 var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
+
+                var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
+                var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
 
 //console.log("Before scroll ----------");
 //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
@@ -556,9 +561,11 @@ console.timeEnd("Writing annotations");
 //console.log("Highlight top: ", highlightTop);       
                 //scrollTo(<object>) puts that object at the top of the scrollbar
                 //we want it to be inline with its corresponding highlight
-                if($(window).scrollTop() !== 0){ 
+                if(window.scrollY !== 0){ 
+
                     $("#annotation-panel").velocity({ 
-                            top: (highlightTop - annotationTop) + annotationPanelTop
+                            //top: topOfHighlight
+                            top: topOfViewableArea
                         }, 
                         { 
                             duration: 400, 

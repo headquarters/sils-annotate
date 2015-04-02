@@ -16,11 +16,12 @@ var AnnotationView = (function($, window){
             // Attach the uri of the current page to all annotations to allow search.
             annotationData: {
                 "textId": self.textId,
-                "userId": self.userId
+                "userId": self.userId,
+                "db": dbName
             },
     
             // This will perform a "search" action rather than "read" when the plugin
-            // loads. Will request the last 20 annotations for the current url.
+            // loads. 
             // eg. /store/endpoint/search?limit=20&uri=http://this/document/only
             loadFromSearch: {
                 "limit": 0,

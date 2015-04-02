@@ -93,14 +93,17 @@ def delete_empty_annotations():
 
 @app.route("/api/annotations", methods=["POST"])
 def post_new_annotation():
-    db_name = request.args.get("db")
-
     doc = request.json
     doc["_id"] = shortuuid.uuid()
+    # Which database to save to?
+    db_name = doc["db"]
 
-    if "annotationstudy1-2014" != db_name:
+    # Remove this so it isn't saved as part of the annotation
+    del doc["db"]
+
+    if "annotationstudy1-2014" != db_name and "annotationplaypen" != db_name:
         couch_resp = g.db.save(doc)
-        resp_object = { "id": couch_resp[0], "_rev": couch_resp[1] }
+        resp_object = { "db_name": db_name, "id": couch_resp[0], "_rev": couch_resp[1] }
     else:
         # Do not allow modifying the original annotation study database through the UI
         resp_object = { "id": doc["_id"], "_rev": 1 }
@@ -111,11 +114,15 @@ def post_new_annotation():
 
 @app.route("/api/annotations/<id>", methods=["POST", "PUT"])
 def edit_annotation(id):
-    db_name = request.args.get("db")
-
     doc = request.json
 
-    if "annotationstudy1-2014" != db_name:
+    # Which database to save to?
+    db_name = doc["db"]
+    
+    # Remove this so it isn't saved as part of the annotation
+    del doc["db"]
+
+    if "annotationstudy1-2014" != db_name and "annotationplaypen" != db_name:
         couch_resp = g.db.save(doc)
         resp_object = { "id": couch_resp[0], "_rev": couch_resp[1] }
     else:

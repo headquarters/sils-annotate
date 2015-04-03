@@ -437,7 +437,10 @@ console.timeEnd("Writing annotations");
                         $(e).css("background-color", "");
                     }
                 });
+
+
         if (annotationPane.length) {
+console.log("Adding annotation to existing annotation pane.");            
             //add to existing .annotation-pane
             var numberOfPreviousHighlights = 0;
         
@@ -468,11 +471,12 @@ console.timeEnd("Writing annotations");
                     backgroundColor: "#ffffff"
                 }, { delay: 1000, duration: 500, complete: function(e){ $(e).css("background-color", ""); } });            
         } else {
+console.log("Adding new annotation pane for new annotation.");            
             //add new .annotation-pane to contain this annotation
             //TODO: refactor!!!
             try {
                 //get the annotation-pane number
-                var paneNumber = parseInt(/\d/.exec(annotationPaneClass)[0]);
+                var paneNumber = parseInt(/\d+/.exec(annotationPaneClass)[0]);
                 var previousTextDivisionClass = "annotation-pane-" + (paneNumber - 1);
                 var textDivisionClass = "annotation-pane-" + paneNumber;
                
@@ -486,15 +490,63 @@ console.timeEnd("Writing annotations");
                 $("#annotation-panel ." + previousTextDivisionClass).after(annotationPane);    
                 $("#annotation-panel .id-" + id).css("background-color", "#9CFBFC").velocity({
                         backgroundColor: "#ffffff"
-                    }, { delay: 1000, duration: 500, complete: function(e){ $(e).css("background-color", ""); } });            
+                    }, { delay: 1000, duration: 500, complete: function(e){ $(e).css("background-color", ""); } });    
+console.log(annotationPaneClass, paneNumber, previousTextDivisionClass, textDivisionClass, id);                            
             } catch(e) {
                 alert("A problem occurred showing the new annotation. Refresh the page to view it.");
             } 
         }
-        
+
+        bringNewAnnotationIntoView(highlightStart);
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
     
+    function bringNewAnnotationIntoView(highlight){
+        //the highlight clicked
+        var annotationHighlight = highlight;
+        var className = annotationHighlight[0].className;
+        var annotationId = getAnnotationIdFromClass(className);
+        //the corresponding annotation for this highlight
+        var annotation = $('#annotation-panel .' + annotationId);
+        //what to bring into view
+        var highlightTop = $(annotationHighlight).offset().top;
+console.log("trying to get annotation offset", annotationId, className);
+        //current position of annotation in annotation panel
+        var annotationTop = annotation.offset().top;
+
+        var annotationPositionTop = annotation.position().top;
+        //get top for panel
+        var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
+
+        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
+        var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
+        
+        var windowScrollTop = $(window).scrollTop();
+        var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
+        console.log(windowScrollTop, windowScrollBottom, annotationTop)
+        if(annotationTop >= windowScrollTop && annotationTop <= windowScrollBottom){
+            console.log("Annotation already in view.");
+        } else {
+            $("#annotation-panel").velocity({ 
+                                top: topOfHighlight
+                            }, 
+                            { 
+                                duration: 400, 
+                                easing: [500, 50],
+                                complete: function(){
+                                    //console.log("After scroll ----------");
+                                    //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
+                                    //console.log("Annotation top after: ", $("#annotation-panel ." + id).offset().top);
+                                    //console.log("Highlight top after: ", $(highlightsInView[0]).offset().top);
+                                } 
+                            }
+                        );   
+        }
+
+        //prevent the nested <span>s from causing multiple instances to fire
+        return false;
+    }
+
     Viewer.prototype.bringAnnotationIntoView = function(e){
 //console.log("bringAnnotationIntoView");        
         //the highlight clicked

@@ -307,6 +307,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         this.disableDefaultEvents = __bind(this.disableDefaultEvents, this);
         this.saveHighlight = __bind(this.saveHighlight, this);
         this.editAnnotation = __bind(this.editAnnotation, this);        
+        this.bringAnnotationIntoView = __bind(this.bringAnnotationIntoView, this);
         
         this.disableDefaultEvents();
 
@@ -326,6 +327,8 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", ".expand-pane", expandAnnotationPane);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
         $(document).on("click", "#annotation-panel .annotation .text", this.editAnnotation);
+        $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
+        $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         $(document).on("scroll", keepAnnotationsInView);
 
         $("article .reference").each(function(){
@@ -469,6 +472,91 @@ console.timeEnd("Writing annotations");
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
     
+    Viewer.prototype.bringAnnotationIntoView = function(e){
+//console.log("bringAnnotationIntoView");        
+        //the highlight clicked
+        var annotationHighlight = e.target;
+        var annotationId = getAnnotationIdFromClass(annotationHighlight.className);
+        //the corresponding annotation for this highlight
+        var annotation = $('#annotation-panel .' + annotationId);
+        //what to bring into view
+        var highlightTop = $(annotationHighlight).offset().top;
+        //current position of annotation in annotation panel
+        var annotationTop = annotation.offset().top;
+        var annotationPositionTop = annotation.position().top;
+        //get top for panel
+        var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
+
+        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
+        var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
+        
+        var windowScrollTop = $(window).scrollTop();
+        var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
+        console.log(windowScrollTop, windowScrollBottom, annotationTop)
+        if(annotationTop >= windowScrollTop && annotationTop <= windowScrollBottom){
+            console.log("Annotation already in view.");
+        } else {
+            $("#annotation-panel").velocity({ 
+                                top: topOfHighlight
+                            }, 
+                            { 
+                                duration: 400, 
+                                easing: [500, 50],
+                                complete: function(){
+                                    //console.log("After scroll ----------");
+                                    //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
+                                    //console.log("Annotation top after: ", $("#annotation-panel ." + id).offset().top);
+                                    //console.log("Highlight top after: ", $(highlightsInView[0]).offset().top);
+                                } 
+                            }
+                        );   
+        }
+
+        //prevent the nested <span>s from causing multiple instances to fire
+        return false;
+    }
+    
+    //this isn't bound to Viewer.prototype because that method of binding
+    //makes `this` the Viewer object, rather than the clicked element
+    //and `this` is always the .annotation element with this method
+    /**
+        User clicks an annotation to bring the corresponding highlight into view in the
+        article pane. If this scrolls the window, though, then keepAnnotationsInView will fire.
+
+
+        So, move the article instead? Then that would require resetting on any window scroll event...
+        Also, can't scroll window because the annotation panel will scroll with it.
+        How easy to pass a flag to keepAnnotationsInView to NOT run?
+    */
+    function bringHighlightIntoView(e){
+//console.log("bringHighlightIntoView");        
+        var annotation = this;
+        var annotationId = getAnnotationIdFromClass(annotation.className);
+        var annotationHighlight = $('article .' + annotationId).eq(0);
+        
+        var annotationTop = $(annotation).offset().top;
+
+        //how far from the top of the document is this highlight?
+        var annotationHighlightTop = $(annotationHighlight).offset().top;
+
+        //how far has the window scrolled to bring it into view?
+        var windowScrollTop = $(window).scrollTop();
+
+        //how far from the top of the document is the annotation panel?
+        var annotationPanelTop = parseInt($("#annotation-panel").css("margin-top"));
+
+        //offset necessary to bring highlight in line with the annotation, 
+        //rather than just putting it at the top of the window
+        var offset = -(annotationTop - windowScrollTop);
+
+//console.log(annotationTop, annotationHighlightTop, windowScrollTop, offset);
+
+        annotationHighlight.velocity("scroll", { duration: 300, offset: offset });
+
+        //prevent the nested <span>s from causing multiple instances to fire
+        return false;
+    }      
+
     Viewer.prototype.disableDefaultEvents = function(e){
         this._removeEvent(".annotator-hl", "mouseover", "onHighlightMouseover");
     };

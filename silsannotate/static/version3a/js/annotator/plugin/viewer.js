@@ -396,6 +396,14 @@ console.time("Writing annotations");
 console.timeEnd("Writing annotations");
         showScrollbar();
     };
+
+    function rgb2hex(rgb) {
+        rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+        function hex(x) {
+            return ("0" + parseInt(x).toString(16)).slice(-2);
+        }
+        return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
     
     Viewer.prototype.showNewAnnotation = function(annotation){
         var id = annotation.id;
@@ -404,7 +412,9 @@ console.timeEnd("Writing annotations");
         annotation.userId = AnnotationView.userId; 
     
         var highlightStart = $(annotation.highlights[0]);
-        
+        //TODO: get rid of flicker of yellow before the lightblue is added
+        highlightStart.css("background-color", "#9CFBFC");
+
         //add annotation id to highlighted element
         setAnnotationHighlightClassNames(highlightStart);
         
@@ -413,7 +423,20 @@ console.timeEnd("Writing annotations");
         var annotationPaneClass = highlightTextDivision[0].className;
         
         var annotationPane = annotationPanel.children("." + annotationPaneClass);
-        
+
+        //Velocity only supports hex values for colors and .css("background-color") returns
+        //rgb() instead, so it needs to be converted
+        var bgColor = highlightStart.css("background-color");
+        var bgColorAsHex = rgb2hex(bgColor);
+        highlightStart.velocity({
+                    backgroundColor: bgColorAsHex
+                }, { 
+                    delay: 1000, 
+                    duration: 500,
+                    complete: function(e){
+                        $(e).css("background-color", "");
+                    }
+                });
         if (annotationPane.length) {
             //add to existing .annotation-pane
             var numberOfPreviousHighlights = 0;
@@ -441,9 +464,9 @@ console.timeEnd("Writing annotations");
                         .before(contents);    
             }
 
-            contents.css("background-color", "#cccccc").velocity({
+            contents.css("background-color", "#9CFBFC").velocity({
                     backgroundColor: "#ffffff"
-                }, { duration: 250 });            
+                }, { delay: 1000, duration: 500, complete: function(e){ $(e).css("background-color", ""); } });            
         } else {
             //add new .annotation-pane to contain this annotation
             //TODO: refactor!!!
@@ -461,9 +484,9 @@ console.timeEnd("Writing annotations");
                                  '</div>';
                                     
                 $("#annotation-panel ." + previousTextDivisionClass).after(annotationPane);    
-                $("#annotation-panel .id-" + id).css("background-color", "#cccccc").velocity({
+                $("#annotation-panel .id-" + id).css("background-color", "#9CFBFC").velocity({
                         backgroundColor: "#ffffff"
-                    }, { duration: 250 });            
+                    }, { delay: 1000, duration: 500, complete: function(e){ $(e).css("background-color", ""); } });            
             } catch(e) {
                 alert("A problem occurred showing the new annotation. Refresh the page to view it.");
             } 

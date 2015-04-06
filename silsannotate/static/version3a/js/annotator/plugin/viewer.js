@@ -208,6 +208,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         highlightElements.each(function(){
             //add an id- class
             var $this = $(this);
+console.log($this, $this.data());            
             var className = "id-" + $this.data().annotation.id;
             $this.addClass(className);
             
@@ -403,11 +404,12 @@ console.timeEnd("Writing annotations");
         //TODO: get rid of flicker of yellow before the lightblue is added
         highlightStart.css("background-color", "#9CFBFC");
 
-        //add annotation id to highlighted element
-        setAnnotationHighlightClassNames(highlightStart);
         
         var highlightTextDivision = highlightStart.parents("h1,h2,h3,h4,h5,h6,p");
-        
+
+        //add annotation id to highlighted element
+        setAnnotationHighlightClassNames(highlightTextDivision.find(".annotator-hl"));
+
         var annotationPaneClass = highlightTextDivision[0].className;
         
         var annotationPane = annotationPanel.children("." + annotationPaneClass);
@@ -428,7 +430,6 @@ console.timeEnd("Writing annotations");
 
 
         if (annotationPane.length) {
-console.log("Adding annotation to existing annotation pane.");            
             //add to existing .annotation-pane
             var numberOfPreviousHighlights = 0;
         
@@ -459,7 +460,6 @@ console.log("Adding annotation to existing annotation pane.");
                     backgroundColor: "#ffffff"
                 }, { delay: 1000, duration: 500, complete: function(e){ $(e).css("background-color", ""); } });            
         } else {
-console.log("Adding new annotation pane for new annotation.");            
             //add new .annotation-pane to contain this annotation
             //TODO: refactor!!!
             try {
@@ -478,8 +478,7 @@ console.log("Adding new annotation pane for new annotation.");
                 $("#annotation-panel ." + previousTextDivisionClass).after(annotationPane);    
                 $("#annotation-panel .id-" + id).css("background-color", "#9CFBFC").velocity({
                         backgroundColor: "#ffffff"
-                    }, { delay: 1000, duration: 500, complete: function(e){ $(e).css("background-color", ""); } });    
-console.log(annotationPaneClass, paneNumber, previousTextDivisionClass, textDivisionClass, id);                            
+                    }, { delay: 1000, duration: 500, complete: function(e){ $(e).css("background-color", ""); } });                              
             } catch(e) {
                 alert("A problem occurred showing the new annotation. Refresh the page to view it.");
             } 

@@ -11,17 +11,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
     };
 
 /*    
-    viewer.js/LinkParser may be useful for making links work in the annotations
-/*
- * TEST THIS OUT
- * $(".annotator-hl").filter(function(){
-    var viewTop = $(window).scrollTop();
-    var viewBottom = viewTop + $(window).height();
-    var elementTop = $(this).offset().top;
-
-    return (elementTop >= viewTop && elementTop <= viewBottom);
-});
- *    
+    viewer.js/LinkParser may be useful for making links work in the annotations  
 */
 
 Annotator.Plugin.Viewer = (function(_super) {
@@ -104,7 +94,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     }    
     
     function activateShortestId(){
-        // find which ids have the shortest length (array b/c ties are allowed)
+        //find which ids have the shortest length (array b/c ties are allowed)
         var shortestIds = [];
         var shortestLenSoFar = Infinity;
         
@@ -118,7 +108,6 @@ Annotator.Plugin.Viewer = (function(_super) {
             }
         });
 
-        //$(".text-container .active, #scrollbar .active").removeClass("active");
         $(".annotator-hl.active, .annotation.active").removeClass("active");
         if (!shortestIds.length){
             return false;
@@ -128,7 +117,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(activeIdsSelector).find(".annotator-hl").andSelf().addClass("active");
         
         var annotationInPane = $(activeIdsSelector, annotationPanel);
-        //annotationInPane.parents(".annotation-pane").stop().scrollTo(annotationInPane[0], 250);
         
         //TODO: draw the activated red line on the scrollbar
     }

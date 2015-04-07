@@ -394,7 +394,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     }
     
     Viewer.prototype.showNewAnnotation = function(annotation){
-console.log("Show new annotation", annotation);
+//console.log("Show new annotation", annotation);
         var id = annotation.id;
         var text = annotation.text;
         //Override annotation.userId since this setup does not currently use Annotator's permissions plugin
@@ -429,8 +429,9 @@ console.log("Show new annotation", annotation);
 
 
         if (annotationPane.length) {
-//console.log("Adding new annotation to existing pane ", annotationPane);
+console.log("Adding new annotation to existing pane ", annotationPane);
             //add to existing .annotation-pane
+
             var numberOfPreviousHighlights = 0;
         
             highlightTextDivision.find(".annotator-hl").each(function(){
@@ -443,13 +444,19 @@ console.log("Show new annotation", annotation);
                     return false;
                 }
             });
-            
+
             var contents = $(buildAnnotationContents(annotation)); 
-            annotationPane
-                    .children(".annotation-contents:eq(" + numberOfPreviousHighlights + ")" )
+
+            if(numberOfPreviousHighlights === 0){
+                annotationPane
+                    .children(".annotation-contents:first-child")
                     .before(contents);    
-
-
+            } else {
+                annotationPane
+                    .children(".annotation-contents:nth-child(" + numberOfPreviousHighlights + ")" )
+                    .after(contents);    
+            }
+            
             contents.css("background-color", "#9CFBFC").velocity({
                     backgroundColor: "#ffffff"
                 }, { 
@@ -460,7 +467,7 @@ console.log("Show new annotation", annotation);
                     } 
                 });            
         } else {
-//console.log("Adding new annotation pane for new annotation.");            
+console.log("Adding new annotation pane for new annotation.");            
             //add new .annotation-pane to contain this annotation
             //TODO: refactor!!!
             try {
@@ -505,7 +512,7 @@ console.log("Show new annotation", annotation);
         var annotation = $('#annotation-panel .' + annotationId);
         //what to bring into view
         var highlightTop = $(annotationHighlight).offset().top;
-console.log("Trying to get offset for annotation: ", annotation);
+console.log("Trying to get offset for annotation. ", highlight, annotationId);
         //current position of annotation in annotation panel
         var annotationTop = annotation.offset().top;
 
@@ -632,14 +639,13 @@ console.log("Trying to get offset for annotation: ", annotation);
     };
     
     Viewer.prototype.saveHighlight = function(e) {
-
         if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p"], e.target.nodeName.toLowerCase())){
             //do not allow annotations that go outside the bounds of the text divisions
             //i.e. this will fail if the target nodeName is "article"
             return;
         }
         var adder = this.annotator.checkForEndSelection(e);
-console.log("Save highlight", adder, e, e.target.nodeName.toLowerCase());
+//console.log("Save highlight", adder, e);
         if(typeof adder == "undefined"){
             //checkForEndSelection failed to find a valid selection    
             return;
@@ -707,46 +713,50 @@ console.log("Save highlight", adder, e, e.target.nodeName.toLowerCase());
             if(highlightsInView.length < 1){
                 return;
             } else {
-                //$(highlightsInView[0])
-                var id = getAnnotationIdFromClass(highlightsInView[0].className);
-                //what to bring into view
-                var highlightTop = $(highlightsInView[0]).offset().top;
-                //current position of annotation in annotation panel
-                var annotationTop = $("#annotation-panel ." + id).offset().top;
-                var annotationPositionTop = $("#annotation-panel ." + id).position().top;
-                //get top for panel
-                var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
+                try {
 
-                var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
-                var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
+                    //$(highlightsInView[0])
+                    var id = getAnnotationIdFromClass(highlightsInView[0].className);
+                    //what to bring into view
+                    var highlightTop = $(highlightsInView[0]).offset().top;
+                    //current position of annotation in annotation panel
+                    var annotationTop = $("#annotation-panel ." + id).offset().top;
+                    var annotationPositionTop = $("#annotation-panel ." + id).position().top;
+                    //get top for panel
+                    var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
 
-//console.log("Before scroll ----------");
-//console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
-//console.log("Annotation top: ", annotationTop); 
-//console.log("Highlight top: ", highlightTop);       
-                //scrollTo(<object>) puts that object at the top of the scrollbar
-                //we want it to be inline with its corresponding highlight
-                if(window.scrollY !== 0){ 
+                    var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
+                    var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
 
-                    $("#annotation-panel").velocity({ 
-                            //top: topOfHighlight
-                            top: topOfViewableArea
-                        }, 
-                        { 
-                            duration: 400, 
-                            easing: [500, 50],
-                            complete: function(){
-                                //console.log("After scroll ----------");
-                                //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
-                                //console.log("Annotation top after: ", $("#annotation-panel ." + id).offset().top);
-                                //console.log("Highlight top after: ", $(highlightsInView[0]).offset().top);
-                            } 
-                        }
-                    );    
-                } else {
-                    $("#annotation-panel").velocity({ top: 0 }, { duration: 400, easing: [500, 0] });    
+    //console.log("Before scroll ----------");
+    //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
+    //console.log("Annotation top: ", annotationTop); 
+    //console.log("Highlight top: ", highlightTop);       
+                    //scrollTo(<object>) puts that object at the top of the scrollbar
+                    //we want it to be inline with its corresponding highlight
+                    if(window.scrollY !== 0){ 
+
+                        $("#annotation-panel").velocity({ 
+                                //top: topOfHighlight
+                                top: topOfViewableArea
+                            }, 
+                            { 
+                                duration: 400, 
+                                easing: [500, 50],
+                                complete: function(){
+                                    //console.log("After scroll ----------");
+                                    //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
+                                    //console.log("Annotation top after: ", $("#annotation-panel ." + id).offset().top);
+                                    //console.log("Highlight top after: ", $(highlightsInView[0]).offset().top);
+                                } 
+                            }
+                        );    
+                    } else {
+                        $("#annotation-panel").velocity({ top: 0 }, { duration: 400, easing: [500, 0] });    
+                    }
+                } catch (e){
+                    console.log("Failed to bring annotation into view.", e, highlightsInView);
                 }
-                
             }
         }, 150);
     }    

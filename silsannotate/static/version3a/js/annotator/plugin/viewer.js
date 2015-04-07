@@ -429,24 +429,26 @@ Annotator.Plugin.Viewer = (function(_super) {
 
 
         if (annotationPane.length) {
-console.log("Adding new annotation to existing pane ", annotationPane);
+//console.log("Adding new annotation to existing pane ", annotationPane);
             //add to existing .annotation-pane
 
             var numberOfPreviousHighlights = 0;
         
-            highlightTextDivision.find(".annotator-hl").each(function(){
-                if ($(this).data().annotation.id != id) {
+            var highlightsInTextDivision = getAnnotationsFromHighlights(highlightTextDivision);
+
+            for(var i = 0; i < highlightsInTextDivision.length; i++){
+                if (highlightsInTextDivision[i].id != id) {
                     numberOfPreviousHighlights++;
                     //keep going
-                    return true;
+                    continue;
                 } else {
                     //found the highlight that was just created, so stop
-                    return false;
+                    break;
                 }
-            });
+            }          
 
             var contents = $(buildAnnotationContents(annotation)); 
-
+console.log("# of highlights", numberOfPreviousHighlights);
             if(numberOfPreviousHighlights === 0){
                 annotationPane
                     .children(".annotation-contents:first-child")
@@ -467,7 +469,7 @@ console.log("Adding new annotation to existing pane ", annotationPane);
                     } 
                 });            
         } else {
-console.log("Adding new annotation pane for new annotation.");            
+//console.log("Adding new annotation pane for new annotation.");            
             //add new .annotation-pane to contain this annotation
             //TODO: refactor!!!
             try {
@@ -639,7 +641,8 @@ console.log("Trying to get offset for annotation. ", highlight, annotationId);
     };
     
     Viewer.prototype.saveHighlight = function(e) {
-        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p"], e.target.nodeName.toLowerCase())){
+//console.log("Save highlight", e.target.nodeName.toLowerCase());        
+        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"], e.target.nodeName.toLowerCase())){
             //do not allow annotations that go outside the bounds of the text divisions
             //i.e. this will fail if the target nodeName is "article"
             return;

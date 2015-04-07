@@ -100,6 +100,8 @@ Annotator.Plugin.Store = (function(_super) {
   };
 
   Store.prototype.updateAnnotation = function(annotation, data) {
+    console.log(this.annotations);
+    console.log(annotation);    
     if (__indexOf.call(this.annotations, annotation) < 0) {
       console.error(Annotator._t("Trying to update unregistered annotation!"));
     } else {

@@ -220,6 +220,7 @@ p,h1,h2,h3,h4,h5,h6,
 
 #annotation-panel .annotation-contents {
   margin-bottom:5px;
+  cursor: pointer;
 }
 
 #annotation-panel .annotation-contents * {
@@ -304,6 +305,7 @@ p,h1,h2,h3,h4,h5,h6,
   margin-left: 3px;
   position:relative;
   z-index:800;
+  cursor: text;
 }
 
 #annotation-panel.icons .annotation-contents .user-id,

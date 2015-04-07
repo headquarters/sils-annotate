@@ -283,7 +283,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         this.disableDefaultEvents = __bind(this.disableDefaultEvents, this);
         this.bringAnnotationIntoView = __bind(this.bringAnnotationIntoView, this);
         this.saveHighlight = __bind(this.saveHighlight, this);
-        //this.bringHighlightIntoView = __bind(this.bringHighlightIntoView, this);
+        this.editAnnotation = __bind(this.editAnnotation, this);    
         
         this.disableDefaultEvents();
         
@@ -293,7 +293,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", ".annotation-menubar .highlight-controls a", this.toggleHighlights);
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#scrollbar", this.goToScrollbarClickPosition);
-        //$(document).on("click", ".expand-pane", expandAnnotationPane);
+        $(document).on("click", "#annotation-panel .annotation .text", this.editAnnotation);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
         $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
@@ -466,6 +466,44 @@ console.timeEnd("Writing annotations");
             this.annotator.editor.element.children("form").submit();
         }
     };
+
+    Viewer.prototype.editAnnotation = function(e){
+        var _this = this;
+        //TODO: rather than grabbing text, this should probably be a data attribute or class
+        var annotationText = $(e.target);
+        var userId = annotationText.prev(".user-id").text();
+        var text = annotationText.text() == "edit" ? "" : annotationText.text();
+        var editor = $("<textarea />").val(text);
+
+        if(userId !== AnnotationView.userId){
+            return;
+        }
+
+        console.log(editor);
+        annotationText.after(editor);
+        annotationText.hide();
+        editor.focus();
+
+
+        $(document).on("click.saveEditedAnnotation", function(){
+            editor.remove();
+            if(editor.val().length > 0){
+                annotationText.text(editor.val());
+                
+                //TODO: save it!
+                var id = getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
+                var annotation = $(".annotator-hl." + id).data().annotation;
+                var data = { text: annotationText.text() };
+                //console.log(id, data);
+                _this.annotator.plugins.Store._apiRequest('update', annotation, (function(data) {
+                    return _this.annotator.plugins.Store.updateAnnotation(annotation, data);
+                }));
+            }
+            annotationText.show();
+            $(document).off("click.saveEditedAnnotation");
+        });
+        //this.annotator.editor.load();
+    }        
     
     Viewer.prototype.changeInteractiveMode = function(e){
         e.preventDefault();

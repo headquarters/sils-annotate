@@ -101,7 +101,7 @@ def post_new_annotation():
     # Remove this so it isn't saved as part of the annotation
     del doc["db"]
 
-    if "annotationstudy1-2014" != db_name and "annotationplaypen" != db_name:
+    if "annotationstudy1-2014" != db_name: # and "annotationplaypen" != db_name:
         couch_resp = g.db.save(doc)
         resp_object = { "db_name": db_name, "id": couch_resp[0], "_rev": couch_resp[1] }
     else:
@@ -122,7 +122,7 @@ def edit_annotation(id):
     # Remove this so it isn't saved as part of the annotation
     del doc["db"]
 
-    if "annotationstudy1-2014" != db_name and "annotationplaypen" != db_name:
+    if "annotationstudy1-2014" != db_name: # and "annotationplaypen" != db_name:
         couch_resp = g.db.save(doc)
         resp_object = { "id": couch_resp[0], "_rev": couch_resp[1] }
     else:

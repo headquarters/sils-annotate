@@ -73,6 +73,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     var interactiveMode = "annotate";
     var timer = null;
     var menuBarHeight;
+    var allowKeepAnnotationsInView = true;
     
     Viewer.prototype.events = {
         "annotationsLoaded": "showAnnotations",
@@ -448,7 +449,7 @@ Annotator.Plugin.Viewer = (function(_super) {
             }          
 
             var contents = $(buildAnnotationContents(annotation)); 
-console.log("# of highlights", numberOfPreviousHighlights);
+//console.log("# of highlights", numberOfPreviousHighlights);
             if(numberOfPreviousHighlights === 0){
                 annotationPane
                     .children(".annotation-contents:first-child")
@@ -514,7 +515,7 @@ console.log("# of highlights", numberOfPreviousHighlights);
         var annotation = $('#annotation-panel .' + annotationId);
         //what to bring into view
         var highlightTop = $(annotationHighlight).offset().top;
-console.log("Trying to get offset for annotation. ", highlight, annotationId);
+//console.log("Trying to get offset for annotation. ", highlight, annotationId);
         //current position of annotation in annotation panel
         var annotationTop = annotation.offset().top;
 
@@ -556,6 +557,8 @@ console.log("Trying to get offset for annotation. ", highlight, annotationId);
         //the highlight clicked
         var annotationHighlight = e.target;
         var annotationId = getAnnotationIdFromClass(annotationHighlight.className);
+
+console.log("Bring annotation into view for ID: ", annotationId);
         //the corresponding annotation for this highlight
         var annotation = $('#annotation-panel .' + annotationId);
         //what to bring into view
@@ -608,12 +611,25 @@ console.log("Trying to get offset for annotation. ", highlight, annotationId);
         How easy to pass a flag to keepAnnotationsInView to NOT run?
     */
     function bringHighlightIntoView(e){
-//console.log("bringHighlightIntoView");        
+//console.log("bringHighlightIntoView");    
+        allowKeepAnnotationsInView = false;         
+        
+        if(e.target.className === "text"){
+            //don't run when clicking text, otherwise the view jumps when user is trying to edit an annotation
+            allowKeepAnnotationsInView = true;
+            return;
+        }
         var annotation = this;
         var annotationId = getAnnotationIdFromClass(annotation.className);
         var annotationHighlight = $('article .' + annotationId).eq(0);
         
         var annotationTop = $(annotation).offset().top;
+
+        /**
+            1. Figure out where the corresponding highlight is
+            2. Scroll the current view to it
+
+        */
 
         //how far from the top of the document is this highlight?
         var annotationHighlightTop = $(annotationHighlight).offset().top;
@@ -628,10 +644,23 @@ console.log("Trying to get offset for annotation. ", highlight, annotationId);
         //rather than just putting it at the top of the window
         var offset = -(annotationTop - windowScrollTop);
 
+console.log("Highlight top: ", annotationHighlightTop);
+console.log("Annotation top: ", annotationTop);
+console.log("Window scroll top: ", windowScrollTop);
+console.log("Offset: ", offset);
+
 //console.log(annotationTop, annotationHighlightTop, windowScrollTop, offset);
 
-        annotationHighlight.velocity("scroll", { duration: 300, offset: offset });
+        /*annotationHighlight.velocity("scroll", 
+            { 
+                duration: 300, 
+                offset: offset,
+                complete: function(){
+                    allowKeepAnnotationsInView = true;                
+                }
+            });*/
 
+        
         //prevent the nested <span>s from causing multiple instances to fire
         return false;
     }      
@@ -660,19 +689,22 @@ console.log("Trying to get offset for annotation. ", highlight, annotationId);
     };
 
     Viewer.prototype.editAnnotation = function(e){
+        var _this = this;
         //TODO: rather than grabbing text, this should probably be a data attribute or class
         var annotationText = $(e.target);
         var userId = annotationText.prev(".user-id").text();
         var text = annotationText.text() == "edit" ? "" : annotationText.text();
         var editor = $("<textarea />").val(text);
 
-
-        if(userId == AnnotationView.userId){
-            console.log(editor);
-            annotationText.after(editor);
-            annotationText.hide();
-            editor.focus();
+        if(userId !== AnnotationView.userId){
+            return;
         }
+
+        console.log(editor);
+        annotationText.after(editor);
+        annotationText.hide();
+        editor.focus();
+
 
         $(document).on("click.saveEditedAnnotation", function(){
             editor.remove();
@@ -681,11 +713,12 @@ console.log("Trying to get offset for annotation. ", highlight, annotationId);
                 
                 //TODO: save it!
                 var id = getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
-                var annotation = $(".annotator-hl." + id);
+                var annotation = $(".annotator-hl." + id).data().annotation;
                 var data = { text: annotationText.text() };
-                //annotation is an array of annotations, rather than the single one needed
-                console.log(id, data);
-                //this.annotator.plugins.Store.prototype.updateaAnnotation(annotation, data)
+                //console.log(id, data);
+                _this.annotator.plugins.Store._apiRequest('update', annotation, (function(data) {
+                    return _this.annotator.plugins.Store.updateAnnotation(annotation, data);
+                }));
             }
             annotationText.show();
             $(document).off("click.saveEditedAnnotation");
@@ -694,6 +727,9 @@ console.log("Trying to get offset for annotation. ", highlight, annotationId);
     }    
     
     function keepAnnotationsInView(e){
+        if(!allowKeepAnnotationsInView){
+            return;
+        }
         //return;
         var viewportThird = window.outerHeight / 4;
 

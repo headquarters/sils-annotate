@@ -208,7 +208,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         highlightElements.each(function(){
             //add an id- class
             var $this = $(this);
-console.log($this, $this.data());            
             var className = "id-" + $this.data().annotation.id;
             $this.addClass(className);
             
@@ -395,6 +394,7 @@ console.timeEnd("Writing annotations");
     }
     
     Viewer.prototype.showNewAnnotation = function(annotation){
+console.log("Show new annotation", annotation);
         var id = annotation.id;
         var text = annotation.text;
         //Override annotation.userId since this setup does not currently use Annotator's permissions plugin
@@ -404,7 +404,6 @@ console.timeEnd("Writing annotations");
         //TODO: get rid of flicker of yellow before the lightblue is added
         highlightStart.css("background-color", "#9CFBFC");
 
-        
         var highlightTextDivision = highlightStart.parents("h1,h2,h3,h4,h5,h6,p");
 
         //add annotation id to highlighted element
@@ -430,6 +429,7 @@ console.timeEnd("Writing annotations");
 
 
         if (annotationPane.length) {
+console.log("Adding new annotation to existing pane ", annotationPane);
             //add to existing .annotation-pane
             var numberOfPreviousHighlights = 0;
         
@@ -445,21 +445,22 @@ console.timeEnd("Writing annotations");
             });
             
             var contents = $(buildAnnotationContents(annotation)); 
+            annotationPane
+                    .children(".annotation-contents:eq(" + numberOfPreviousHighlights + ")" )
+                    .before(contents);    
 
-            if(numberOfPreviousHighlights > 0){
-                annotationPane
-                        .children(".annotation-contents:nth-child(" + numberOfPreviousHighlights + ")" )
-                        .after(contents);    
-            } else {
-                annotationPane
-                        .children(".annotation-contents")
-                        .before(contents);    
-            }
 
             contents.css("background-color", "#9CFBFC").velocity({
                     backgroundColor: "#ffffff"
-                }, { delay: 1000, duration: 500, complete: function(e){ $(e).css("background-color", ""); } });            
+                }, { 
+                    delay: 1000, 
+                    duration: 500, 
+                    complete: function(e){ 
+                        $(e).css("background-color", ""); 
+                    } 
+                });            
         } else {
+console.log("Adding new annotation pane for new annotation.");            
             //add new .annotation-pane to contain this annotation
             //TODO: refactor!!!
             try {
@@ -477,13 +478,20 @@ console.timeEnd("Writing annotations");
                                     
                 $("#annotation-panel ." + previousTextDivisionClass).after(annotationPane);    
                 $("#annotation-panel .id-" + id).css("background-color", "#9CFBFC").velocity({
-                        backgroundColor: "#ffffff"
-                    }, { delay: 1000, duration: 500, complete: function(e){ $(e).css("background-color", ""); } });                              
+                    backgroundColor: "#ffffff"
+                }, { 
+                    delay: 1000, 
+                    duration: 500, 
+                    complete: function(e){ 
+                        $(e).css("background-color", ""); 
+                    } 
+                });  
             } catch(e) {
                 alert("A problem occurred showing the new annotation. Refresh the page to view it.");
             } 
         }
 
+console.log("Highlight start", highlightStart);
         bringNewAnnotationIntoView(highlightStart);
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
@@ -497,7 +505,8 @@ console.timeEnd("Writing annotations");
         var annotation = $('#annotation-panel .' + annotationId);
         //what to bring into view
         var highlightTop = $(annotationHighlight).offset().top;
-console.log("trying to get annotation offset", annotationId, className);
+console.log("Trying to get annotation offset.");
+console.log("Annotation: ", annotation);
         //current position of annotation in annotation panel
         var annotationTop = annotation.offset().top;
 
@@ -512,7 +521,7 @@ console.log("trying to get annotation offset", annotationId, className);
         var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
         console.log(windowScrollTop, windowScrollBottom, annotationTop)
         if(annotationTop >= windowScrollTop && annotationTop <= windowScrollBottom){
-            console.log("Annotation already in view.");
+            //console.log("Annotation already in view.");
         } else {
             $("#annotation-panel").velocity({ 
                                 top: topOfHighlight
@@ -625,12 +634,13 @@ console.log("trying to get annotation offset", annotationId, className);
     
     Viewer.prototype.saveHighlight = function(e) {
         var adder = this.annotator.checkForEndSelection(e);
-        if(adder == "undefined" || adder[0].style.display == "none"){
+console.log("Save highlight", adder, e);
+        if(typeof adder == "undefined"){
             //checkForEndSelection failed to find a valid selection    
             return;
         } else {
             //valid end selection
-            //submit the annotator editor without any annotation
+            //submit the annotator editor without any annotation text
             this.annotator.editor.element.children("form").submit();
         }
     };

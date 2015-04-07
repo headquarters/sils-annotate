@@ -450,9 +450,14 @@ console.timeEnd("Writing annotations");
     };
     
     Viewer.prototype.saveHighlight = function(e) {
+        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p"], e.target.nodeName.toLowerCase())){
+            //do not allow annotations that go outside the bounds of the text divisions
+            //i.e. this will fail if the target nodeName is "article"
+            return;
+        }        
         var adder = this.annotator.checkForEndSelection(e);
 
-        if(adder == "undefined" || adder[0].style.display == "none"){
+        if(typeof adder == "undefined"){
             //checkForEndSelection failed to find a valid selection    
             return;
         } else {

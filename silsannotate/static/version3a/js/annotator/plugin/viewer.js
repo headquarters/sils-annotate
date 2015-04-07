@@ -342,7 +342,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         setAnnotationHighlightClassNames();
         
         var annotationPanes = "";
-console.time("Writing annotations");
+//console.time("Writing annotations");
         textDivisions.each(function(index){
             //create an annotation-pane for each text division that is at its same top position
             var $this = $(this);
@@ -381,7 +381,7 @@ console.time("Writing annotations");
         });
         
         annotationPanel.append(annotationPanes);       
-console.timeEnd("Writing annotations");
+//console.timeEnd("Writing annotations");
         showScrollbar();
     };
 
@@ -429,7 +429,7 @@ console.log("Show new annotation", annotation);
 
 
         if (annotationPane.length) {
-console.log("Adding new annotation to existing pane ", annotationPane);
+//console.log("Adding new annotation to existing pane ", annotationPane);
             //add to existing .annotation-pane
             var numberOfPreviousHighlights = 0;
         
@@ -460,7 +460,7 @@ console.log("Adding new annotation to existing pane ", annotationPane);
                     } 
                 });            
         } else {
-console.log("Adding new annotation pane for new annotation.");            
+//console.log("Adding new annotation pane for new annotation.");            
             //add new .annotation-pane to contain this annotation
             //TODO: refactor!!!
             try {
@@ -491,7 +491,7 @@ console.log("Adding new annotation pane for new annotation.");
             } 
         }
 
-console.log("Highlight start", highlightStart);
+//console.log("Highlight start", highlightStart);
         bringNewAnnotationIntoView(highlightStart);
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
@@ -505,8 +505,7 @@ console.log("Highlight start", highlightStart);
         var annotation = $('#annotation-panel .' + annotationId);
         //what to bring into view
         var highlightTop = $(annotationHighlight).offset().top;
-console.log("Trying to get annotation offset.");
-console.log("Annotation: ", annotation);
+console.log("Trying to get offset for annotation: ", annotation);
         //current position of annotation in annotation panel
         var annotationTop = annotation.offset().top;
 
@@ -519,7 +518,7 @@ console.log("Annotation: ", annotation);
         
         var windowScrollTop = $(window).scrollTop();
         var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
-        console.log(windowScrollTop, windowScrollBottom, annotationTop)
+//console.log(windowScrollTop, windowScrollBottom, annotationTop);
         if(annotationTop >= windowScrollTop && annotationTop <= windowScrollBottom){
             //console.log("Annotation already in view.");
         } else {
@@ -563,9 +562,9 @@ console.log("Annotation: ", annotation);
         
         var windowScrollTop = $(window).scrollTop();
         var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
-        console.log(windowScrollTop, windowScrollBottom, annotationTop)
+//console.log(windowScrollTop, windowScrollBottom, annotationTop);
         if(annotationTop >= windowScrollTop && annotationTop <= windowScrollBottom){
-            console.log("Annotation already in view.");
+            //console.log("Annotation already in view.");
         } else {
             $("#annotation-panel").velocity({ 
                                 top: topOfHighlight
@@ -633,8 +632,14 @@ console.log("Annotation: ", annotation);
     };
     
     Viewer.prototype.saveHighlight = function(e) {
+
+        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p"], e.target.nodeName.toLowerCase())){
+            //do not allow annotations that go outside the bounds of the text divisions
+            //i.e. this will fail if the target nodeName is "article"
+            return;
+        }
         var adder = this.annotator.checkForEndSelection(e);
-console.log("Save highlight", adder, e);
+console.log("Save highlight", adder, e, e.target.nodeName.toLowerCase());
         if(typeof adder == "undefined"){
             //checkForEndSelection failed to find a valid selection    
             return;
@@ -878,9 +883,8 @@ console.log("% from top: ", percFromTop)
     }
     
     function showScrollbar() {
-console.time("showScrollbar");
-        //TODO: remove hard-coded 53 here
-        var availableScreenHeight = screen.height - 53; /* 53px falls below the .annotation-menubar */
+//console.time("showScrollbar");
+        var availableScreenHeight = screen.height - menuBarHeight; 
 
         scrollbar = $('<canvas id="scrollbar" width="24" height="' + availableScreenHeight + '"></canvas>');
         $(document.body).append(scrollbar);
@@ -902,7 +906,7 @@ console.time("showScrollbar");
             
             ctx.fillRect(0, top, 24, height);
         }
-console.timeEnd("showScrollbar");
+//console.timeEnd("showScrollbar");
     }
     
     return Viewer;

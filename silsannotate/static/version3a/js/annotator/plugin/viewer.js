@@ -123,6 +123,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     }
     
     function annotationFocus(annotations) {
+console.log("annotationFocus");        
         // add to the focusedIds array
         $(annotations).each(function(){
             var thisId = getAnnotationIdFromClass(this.className);
@@ -133,7 +134,8 @@ Annotator.Plugin.Viewer = (function(_super) {
         return false;
     }
     
-    function annotationBlur(annotation){      
+    function annotationBlur(annotation){     
+console.log("annotationBlur");
         var annotationId = getAnnotationIdFromClass(annotation.className);
         delete focusedIds[annotationId];
         activateShortestId();
@@ -424,6 +426,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                     delay: 1000, 
                     duration: 500,
                     complete: function(e){
+                        //TODO: this can be moved to the other callbacks below to make the changes sync up
                         $(e).css("background-color", "");
                     }
                 });
@@ -523,7 +526,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         //get top for panel
         var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
 
-        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
+        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
         var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
         
         var windowScrollTop = $(window).scrollTop();
@@ -569,7 +572,7 @@ console.log("Bring annotation into view for ID: ", annotationId);
         //get top for panel
         var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
 
-        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
+        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
         var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
         
         var windowScrollTop = $(window).scrollTop();

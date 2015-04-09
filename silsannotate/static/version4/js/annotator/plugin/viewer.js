@@ -462,8 +462,11 @@ console.log("annotationUpdated?", annotationUpdated);
 
         var contents = buildAnnotationContents(annotation);
         
-        $("#annotation-panel .annotation-contents:nth-child(" + numberOfPreviousAnnotations + ")").after(contents);
-
+        if($("#annotation-panel .annotation-contents").length < 1){
+            $("#annotation-panel").append(contents);    
+        } else {
+            $("#annotation-panel .annotation-contents:nth-child(" + numberOfPreviousAnnotations + ")").after(contents);
+        }
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
     
@@ -472,11 +475,12 @@ console.log("annotationUpdated?", annotationUpdated);
     };
     
     Viewer.prototype.saveHighlight = function(e) {
-        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p"], e.target.nodeName.toLowerCase())){
+console.log("Save highlight", e);
+        /*if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p"], e.target.nodeName.toLowerCase())){
             //do not allow annotations that go outside the bounds of the text divisions
             //i.e. this will fail if the target nodeName is "article"
             return;
-        }        
+        }*/       
         var adder = this.annotator.checkForEndSelection(e);
 
         if(typeof adder == "undefined"){

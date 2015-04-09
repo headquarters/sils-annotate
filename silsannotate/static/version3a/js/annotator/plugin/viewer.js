@@ -364,11 +364,6 @@ Annotator.Plugin.Viewer = (function(_super) {
             
             $this.addClass(textDivisionClass);
             
-            //get the top of this text block to match annotation pane top; minus 10 to compensate for padding on each .annotation-pane
-            var textTop = $this.position().top +
-                            parseInt($this.css("margin-top")) +
-                            parseInt($this.css("padding-top")) - 10;
-            
             //get the total height of this text block to give this annotation pane a max height
             //using height() rather than outerHeight() because the extra height provided by including
             //padding or margin would not be useful (i.e. no annotation should be next to whitespace)
@@ -380,14 +375,13 @@ Annotator.Plugin.Viewer = (function(_super) {
             if (annotations.length > 0) {
                 //build the HTML for annotation pane contents
                 var contents = buildAnnotationPane(annotations);
-                
-                //TODO?
-                //if previous pane bottom is below the top of this text division, then just add normal margin
-                //else, add enough margin to put this pane inline with its text division (the current one)
 
                 annotationPanes += '<div class="annotation-pane ' + textDivisionClass + '">'
                                         + contents +
                                     '</div>';
+            } else {
+                //always ensure there is at least an empty pane for each text division
+                annotationPanes += '<div class="annotation-pane ' + textDivisionClass + '"></div>';
             }
         });
         
@@ -405,7 +399,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     }
     
     Viewer.prototype.showNewAnnotation = function(annotation){
-console.log("annotationUpdated?", annotationUpdated);        
+console.log("showNewAnnotation", annotation);        
         if(annotationUpdated){
             annotationUpdated = false;
             return;
@@ -444,9 +438,8 @@ console.log("annotationUpdated?", annotationUpdated);
                     }
                 });
 
-
-        if (annotationPane.length) {
-//console.log("Adding new annotation to existing pane ", annotationPane);
+        //if (annotationPane.length) {
+console.log("Adding new annotation to existing pane ", annotationPane);
             //add to existing .annotation-pane
 
             var numberOfPreviousHighlights = 0;
@@ -465,11 +458,9 @@ console.log("annotationUpdated?", annotationUpdated);
             }          
 
             var contents = $(buildAnnotationContents(annotation)); 
-//console.log("# of highlights", numberOfPreviousHighlights);
+console.log("# of previous highlights", numberOfPreviousHighlights);
             if(numberOfPreviousHighlights === 0){
-                annotationPane
-                    .children(".annotation-contents:first-child")
-                    .before(contents);    
+                annotationPane.prepend(contents);    
             } else {
                 annotationPane
                     .children(".annotation-contents:nth-child(" + numberOfPreviousHighlights + ")" )
@@ -485,8 +476,8 @@ console.log("annotationUpdated?", annotationUpdated);
                         $(e).css("background-color", ""); 
                     } 
                 });            
-        } else {
-//console.log("Adding new annotation pane for new annotation.");            
+        /*} else {
+console.log("Adding new annotation pane for new annotation.");            
             //add new .annotation-pane to contain this annotation
             //TODO: refactor!!!
             try {
@@ -501,7 +492,8 @@ console.log("annotationUpdated?", annotationUpdated);
                 annotationPane = '<div class="annotation-pane ' + textDivisionClass + '">'
                                         + contentsHTML +
                                  '</div>';
-                                    
+
+
                 $("#annotation-panel ." + previousTextDivisionClass).after(annotationPane);    
                 $("#annotation-panel .id-" + id).css("background-color", "#9CFBFC").velocity({
                     backgroundColor: "#ffffff"
@@ -515,14 +507,14 @@ console.log("annotationUpdated?", annotationUpdated);
             } catch(e) {
                 alert("A problem occurred showing the new annotation. Refresh the page to view it.");
             } 
-        }
+        }*/
 
 //console.log("Highlight start", highlightStart);
         bringNewAnnotationIntoView(highlightStart);
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
     
-    function bringNewAnnotationIntoView(highlight){
+    function bringNewAnnotationIntoView(highlight){        
         //the highlight clicked
         var annotationHighlight = highlight;
         var className = annotationHighlight[0].className;
@@ -532,6 +524,7 @@ console.log("annotationUpdated?", annotationUpdated);
         //what to bring into view
         var highlightTop = $(annotationHighlight).offset().top;
 console.log("Trying to get offset for annotation. ", highlight, annotationId, annotation);
+//STILL THROWING ERRORS
         //current position of annotation in annotation panel
         var annotationTop = annotation.offset().top;
 
@@ -686,15 +679,17 @@ console.log("Offset: ", offset);
     };
     
     Viewer.prototype.saveHighlight = function(e) {
-//console.log("Save highlight", e.target.nodeName.toLowerCase());        
-        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"], e.target.nodeName.toLowerCase())){
+console.log("Save highlight", e);
+//console.log("Save highlight", e.target.nodeName);
+/*        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"], e.target.nodeName.toLowerCase())){
             //do not allow annotations that go outside the bounds of the text divisions
             //i.e. this will fail if the target nodeName is "article"
             return;
-        }
+        }*/
         var adder = this.annotator.checkForEndSelection(e);
 //console.log("Save highlight", adder, e);
         if(typeof adder == "undefined"){
+console.log("adder undefined");            
             //checkForEndSelection failed to find a valid selection    
             return;
         } else {

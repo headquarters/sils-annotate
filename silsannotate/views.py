@@ -106,7 +106,7 @@ def post_new_annotation():
     g.db = couch[db_name]
 
     if "annotationstudy1-2014" != db_name: # and "annotationplaypen" != db_name:
-        print "Saving to " + g.db.name
+        # print "Saving to " + g.db.name
         couch_resp = g.db.save(doc)
         resp_object = { "db_name": db_name, "id": couch_resp[0], "_rev": couch_resp[1] }
     else:

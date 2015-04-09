@@ -423,6 +423,14 @@ console.timeEnd("Writing annotations");
             $("article, #annotation-panel").velocity("stop").velocity({"top": 0 }, 500);
         }
     }
+
+    function rgb2hex(rgb) {
+        rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+        function hex(x) {
+            return ("0" + parseInt(x).toString(16)).slice(-2);
+        }
+        return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }    
     
     Viewer.prototype.showNewAnnotation = function(annotation){
 console.log("annotationUpdated?", annotationUpdated);        
@@ -436,6 +444,8 @@ console.log("annotationUpdated?", annotationUpdated);
         annotation.userId = AnnotationView.userId; 
     
         var highlightStart = $(annotation.highlights[0]);
+        //TODO: get rid of flicker of yellow before the lightblue is added
+        highlightStart.css("background-color", "#9CFBFC");
         
         //add annotation id to highlighted element
         setAnnotationHighlightClassNames(highlightStart);
@@ -460,13 +470,43 @@ console.log("annotationUpdated?", annotationUpdated);
 
         numberOfPreviousAnnotations = _.size(flattenedAnnotations);
 
-        var contents = buildAnnotationContents(annotation);
+        var contents = $(buildAnnotationContents(annotation));
+        
+        //Velocity only supports hex values for colors and .css("background-color") returns
+        //rgb() instead, so it needs to be converted
+        var bgColor = highlightStart.css("background-color");
+        var bgColorAsHex = rgb2hex(bgColor);
+        highlightStart.velocity({
+                    backgroundColor: bgColorAsHex
+                }, { 
+                    delay: 1000, 
+                    duration: 500,
+                    complete: function(e){
+                        //TODO: this can be moved to the other callbacks below to make the changes sync up
+                        $(e).css("background-color", "");
+                    }
+                });        
         
         if($("#annotation-panel .annotation-contents").length < 1){
             $("#annotation-panel").append(contents);    
         } else {
-            $("#annotation-panel .annotation-contents:nth-child(" + numberOfPreviousAnnotations + ")").after(contents);
+            if(numberOfPreviousAnnotations == 0){
+console.log("prepend to panel");                
+                $("#annotation-panel").prepend(contents);
+            } else {
+console.log("nth-child", numberOfPreviousAnnotations);
+                $("#annotation-panel .annotation-contents:nth-child(" + numberOfPreviousAnnotations + ")").after(contents);    
+            }
         }
+        contents.css("background-color", "#9CFBFC").velocity({
+                backgroundColor: "#ffffff"
+            }, { 
+                delay: 1000, 
+                duration: 500, 
+                complete: function(e){ 
+                    $(e).css("background-color", ""); 
+                } 
+            }); 
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
     
@@ -483,7 +523,7 @@ console.log("Save highlight", e);
         }*/       
         var adder = this.annotator.checkForEndSelection(e);
 
-        if(typeof adder == "undefined"){
+        if(typeof adder == "undefined" || adder.css("display") === "none"){
             //checkForEndSelection failed to find a valid selection    
             return;
         } else {

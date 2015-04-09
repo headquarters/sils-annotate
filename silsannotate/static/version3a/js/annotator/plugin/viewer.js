@@ -438,76 +438,43 @@ console.log("showNewAnnotation", annotation);
                     }
                 });
 
-        //if (annotationPane.length) {
 console.log("Adding new annotation to existing pane ", annotationPane);
             //add to existing .annotation-pane
 
-            var numberOfPreviousHighlights = 0;
-        
-            var highlightsInTextDivision = getAnnotationsFromHighlights(highlightTextDivision);
+        var numberOfPreviousHighlights = 0;
+    
+        var highlightsInTextDivision = getAnnotationsFromHighlights(highlightTextDivision);
 
-            for(var i = 0; i < highlightsInTextDivision.length; i++){
-                if (highlightsInTextDivision[i].id != id) {
-                    numberOfPreviousHighlights++;
-                    //keep going
-                    continue;
-                } else {
-                    //found the highlight that was just created, so stop
-                    break;
-                }
-            }          
-
-            var contents = $(buildAnnotationContents(annotation)); 
-console.log("# of previous highlights", numberOfPreviousHighlights);
-            if(numberOfPreviousHighlights === 0){
-                annotationPane.prepend(contents);    
+        for(var i = 0; i < highlightsInTextDivision.length; i++){
+            if (highlightsInTextDivision[i].id != id) {
+                numberOfPreviousHighlights++;
+                //keep going
+                continue;
             } else {
-                annotationPane
-                    .children(".annotation-contents:nth-child(" + numberOfPreviousHighlights + ")" )
-                    .after(contents);    
+                //found the highlight that was just created, so stop
+                break;
             }
-            
-            contents.css("background-color", "#9CFBFC").velocity({
-                    backgroundColor: "#ffffff"
-                }, { 
-                    delay: 1000, 
-                    duration: 500, 
-                    complete: function(e){ 
-                        $(e).css("background-color", ""); 
-                    } 
-                });            
-        /*} else {
-console.log("Adding new annotation pane for new annotation.");            
-            //add new .annotation-pane to contain this annotation
-            //TODO: refactor!!!
-            try {
-                //get the annotation-pane number
-                var paneNumber = parseInt(/\d+/.exec(annotationPaneClass)[0]);
-                var previousTextDivisionClass = "annotation-pane-" + (paneNumber - 1);
-                var textDivisionClass = "annotation-pane-" + paneNumber;
-               
-                var contentsHTML = buildAnnotationPane(annotation);
-                var contents = $(contentsHTML);                
+        }          
 
-                annotationPane = '<div class="annotation-pane ' + textDivisionClass + '">'
-                                        + contentsHTML +
-                                 '</div>';
+        var contents = $(buildAnnotationContents(annotation)); 
+        if(numberOfPreviousHighlights === 0){
+            annotationPane.prepend(contents);    
+        } else {
+            annotationPane
+                .children(".annotation-contents:nth-child(" + numberOfPreviousHighlights + ")" )
+                .after(contents);    
+        }
+        
+        contents.css("background-color", "#9CFBFC").velocity({
+                backgroundColor: "#ffffff"
+            }, { 
+                delay: 1000, 
+                duration: 500, 
+                complete: function(e){ 
+                    $(e).css("background-color", ""); 
+                } 
+            });            
 
-
-                $("#annotation-panel ." + previousTextDivisionClass).after(annotationPane);    
-                $("#annotation-panel .id-" + id).css("background-color", "#9CFBFC").velocity({
-                    backgroundColor: "#ffffff"
-                }, { 
-                    delay: 1000, 
-                    duration: 500, 
-                    complete: function(e){ 
-                        $(e).css("background-color", ""); 
-                    } 
-                });  
-            } catch(e) {
-                alert("A problem occurred showing the new annotation. Refresh the page to view it.");
-            } 
-        }*/
 
 //console.log("Highlight start", highlightStart);
         bringNewAnnotationIntoView(highlightStart);
@@ -523,7 +490,7 @@ console.log("Adding new annotation pane for new annotation.");
         var annotation = $('#annotation-panel .' + annotationId);
         //what to bring into view
         var highlightTop = $(annotationHighlight).offset().top;
-console.log("Trying to get offset for annotation. ", highlight, annotationId, annotation);
+console.log("Trying to get offset for annotation. ", annotation);
 //STILL THROWING ERRORS
         //current position of annotation in annotation panel
         var annotationTop = annotation.offset().top;
@@ -679,8 +646,7 @@ console.log("Offset: ", offset);
     };
     
     Viewer.prototype.saveHighlight = function(e) {
-console.log("Save highlight", e);
-//console.log("Save highlight", e.target.nodeName);
+console.log("Save highlight");
 /*        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"], e.target.nodeName.toLowerCase())){
             //do not allow annotations that go outside the bounds of the text divisions
             //i.e. this will fail if the target nodeName is "article"
@@ -688,8 +654,8 @@ console.log("Save highlight", e);
         }*/
         var adder = this.annotator.checkForEndSelection(e);
 //console.log("Save highlight", adder, e);
-        if(typeof adder == "undefined"){
-console.log("adder undefined");            
+        if(typeof adder == "undefined" || adder.css("display") === "none"){
+console.log("adder:", typeof adder, adder.css("display"));            
             //checkForEndSelection failed to find a valid selection    
             return;
         } else {

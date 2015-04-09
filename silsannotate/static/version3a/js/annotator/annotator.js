@@ -402,11 +402,13 @@ Annotator = (function(_super) {
   Annotator.prototype.checkForEndSelection = function(event) {
     var container, range, _i, _len, _ref;
     this.mouseIsDown = false;
+console.log("Ignoring mouseup: ", this.ignoreMouseup);    
     if (this.ignoreMouseup) {
       return;
     }
     this.selectedRanges = this.getSelectedRanges();
     _ref = this.selectedRanges;
+console.log("Looping over ranges...");    
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       range = _ref[_i];
       container = range.commonAncestor;
@@ -417,6 +419,7 @@ Annotator = (function(_super) {
         return;
       }
     }
+console.log("...done. Checking event and selectedRanges: ", event, this.selectedRanges.length)    
     if (event && this.selectedRanges.length) {
       //ORIGINAL
       //return this.adder.css(Util.mousePosition(event, this.wrapper[0])).show();

@@ -77,6 +77,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     var displayMode = "snippets";
     var interactiveMode = "annotate";
     var menuBarHeight;
+    var annotationUpdated = false;
     
     Viewer.prototype.events = {
         "annotationsLoaded": "showAnnotations",
@@ -265,11 +266,27 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("mouseenter", ".annotation", function(e){
             var id = getAnnotationIdFromClass(this.className);
             var annotation = $(".annotator-hl." + id);
+
+            if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
+                var text = "edit";
+                if ($(this).children(".text").text().length > 0){
+                    text = $(this).children(".text").text();
+                }
+
+                $(this).children(".text").text(text).css({ "font-style": "italic" });
+            }            
             //pass DOM elements to focus
             annotationFocus(annotation[0]);
         }).on("mouseleave", ".annotation", function(e){
             var id = getAnnotationIdFromClass(this.className);
             var annotation = $(".annotator-hl." + id);
+
+            if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
+                if ($(this).children(".text").text() == "edit"){
+                    $(this).children(".text").text("").css({ "font-style": "normal" });
+                }                               
+            }
+
             //pass DOM elements to blur           
             annotationBlur(annotation[0]);
         });
@@ -408,6 +425,11 @@ console.timeEnd("Writing annotations");
     }
     
     Viewer.prototype.showNewAnnotation = function(annotation){
+console.log("annotationUpdated?", annotationUpdated);        
+        if(annotationUpdated){
+            annotationUpdated = false;
+            return;
+        }           
         var id = annotation.id;
         var text = annotation.text;
         //Override annotation.userId since this setup does not currently use Annotator's permissions plugin
@@ -468,6 +490,7 @@ console.timeEnd("Writing annotations");
     };
 
     Viewer.prototype.editAnnotation = function(e){
+
         var _this = this;
         //TODO: rather than grabbing text, this should probably be a data attribute or class
         var annotationText = $(e.target);
@@ -493,17 +516,23 @@ console.timeEnd("Writing annotations");
                 //TODO: save it!
                 var id = getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
                 var annotation = $(".annotator-hl." + id).data().annotation;
-                var data = { text: annotationText.text() };
+                annotation.text = editor.val();
+console.log(annotation);
+                //var data = { text: annotationText.text() };
                 //console.log(id, data);
-                _this.annotator.plugins.Store._apiRequest('update', annotation, (function(data) {
+                /*_this.annotator.plugins.Store._apiRequest('update', annotation, (function(data) {
                     return _this.annotator.plugins.Store.updateAnnotation(annotation, data);
-                }));
+                }));*/
+                //may be a way to do this through the annotator API, but counldn't figure it out
+                //$("#article").annotator().annotator("updateAnnotation", annotation);
+                annotationUpdated = true;
+                _this.publish('annotationUpdated', [annotation]);
             }
             annotationText.show();
             $(document).off("click.saveEditedAnnotation");
         });
         //this.annotator.editor.load();
-    }        
+    }         
     
     Viewer.prototype.changeInteractiveMode = function(e){
         e.preventDefault();

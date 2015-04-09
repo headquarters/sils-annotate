@@ -531,7 +531,7 @@ console.log("annotationUpdated?", annotationUpdated);
         var annotation = $('#annotation-panel .' + annotationId);
         //what to bring into view
         var highlightTop = $(annotationHighlight).offset().top;
-//console.log("Trying to get offset for annotation. ", highlight, annotationId);
+console.log("Trying to get offset for annotation. ", highlight, annotationId, annotation);
         //current position of annotation in annotation panel
         var annotationTop = annotation.offset().top;
 

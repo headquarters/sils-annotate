@@ -17,6 +17,8 @@ def set_db():
         g.db = couch["annotationstudy1-2014"]  
     elif "annotationtest" == db_name:
         g.db = couch["annotationtest"]  
+    elif "annotationblank" == db_name:
+        g.db = couch["annotationblank"]  
     else:
         # Default to playpen; is also set as environment variable, e.g. os.getenv["SILS_CLOUDANT_DB"]
         g.db = couch["annotationplaypen"]  
@@ -84,12 +86,12 @@ def search():
     resp.mimetype = "application/json"
     return resp
 
-@app.route("/delete-user-andy-pilot-annotations", methods=["GET"])
-def delete_empty_annotations():
-    view = g.db.view("main/user-andy-pilot")
-    for anno in view.rows:
-        del g.db[anno["id"]]
-    return "Done"
+#@app.route("/delete-user-andy-pilot-annotations", methods=["GET"])
+#def delete_empty_annotations():
+#    view = g.db.view("main/user-andy-pilot")
+#    for anno in view.rows:
+#        del g.db[anno["id"]]
+#    return "Done"
 
 @app.route("/api/annotations", methods=["POST"])
 def post_new_annotation():
@@ -101,7 +103,10 @@ def post_new_annotation():
     # Remove this so it isn't saved as part of the annotation
     del doc["db"]
 
+    g.db = couch[db_name]
+
     if "annotationstudy1-2014" != db_name: # and "annotationplaypen" != db_name:
+        print "Saving to " + g.db.name
         couch_resp = g.db.save(doc)
         resp_object = { "db_name": db_name, "id": couch_resp[0], "_rev": couch_resp[1] }
     else:
@@ -119,6 +124,8 @@ def edit_annotation(id):
     # Which database to save to?
     db_name = doc["db"]
     
+    g.db = couch[db_name]
+
     # Remove this so it isn't saved as part of the annotation
     del doc["db"]
 

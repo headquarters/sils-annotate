@@ -74,6 +74,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     var timer = null;
     var menuBarHeight;
     var allowKeepAnnotationsInView = true;
+    var annotationUpdated = false;
     
     Viewer.prototype.events = {
         "annotationsLoaded": "showAnnotations",
@@ -123,7 +124,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     }
     
     function annotationFocus(annotations) {
-console.log("annotationFocus");        
+//console.log("annotationFocus");        
         // add to the focusedIds array
         $(annotations).each(function(){
             var thisId = getAnnotationIdFromClass(this.className);
@@ -135,7 +136,7 @@ console.log("annotationFocus");
     }
     
     function annotationBlur(annotation){     
-console.log("annotationBlur");
+//console.log("annotationBlur");
         var annotationId = getAnnotationIdFromClass(annotation.className);
         delete focusedIds[annotationId];
         activateShortestId();
@@ -272,7 +273,12 @@ console.log("annotationBlur");
             var annotation = $(".annotator-hl." + id);
 
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
-                $(this).children(".text").text("edit").css({ "font-style": "italic" });
+                var text = "edit";
+                if ($(this).children(".text").text().length > 0){
+                    text = $(this).children(".text").text();
+                }
+
+                $(this).children(".text").text(text).css({ "font-style": "italic" });
             }            
             //pass DOM elements to focus
             annotationFocus(annotation[0]);
@@ -281,7 +287,9 @@ console.log("annotationBlur");
             var annotation = $(".annotator-hl." + id);
 
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
-                $(this).children(".text").text("").css({ "font-style": "normal" });
+                if ($(this).children(".text").text() == "edit"){
+                    $(this).children(".text").text("").css({ "font-style": "normal" });
+                }                               
             }
 
             //pass DOM elements to blur           
@@ -397,6 +405,11 @@ console.log("annotationBlur");
     }
     
     Viewer.prototype.showNewAnnotation = function(annotation){
+console.log("annotationUpdated?", annotationUpdated);        
+        if(annotationUpdated){
+            annotationUpdated = false;
+            return;
+        }        
 //console.log("Show new annotation", annotation);
         var id = annotation.id;
         var text = annotation.text;
@@ -692,6 +705,7 @@ console.log("Offset: ", offset);
     };
 
     Viewer.prototype.editAnnotation = function(e){
+
         var _this = this;
         //TODO: rather than grabbing text, this should probably be a data attribute or class
         var annotationText = $(e.target);
@@ -717,11 +731,17 @@ console.log("Offset: ", offset);
                 //TODO: save it!
                 var id = getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
                 var annotation = $(".annotator-hl." + id).data().annotation;
-                var data = { text: annotationText.text() };
+                annotation.text = editor.val();
+console.log(annotation);
+                //var data = { text: annotationText.text() };
                 //console.log(id, data);
-                _this.annotator.plugins.Store._apiRequest('update', annotation, (function(data) {
+                /*_this.annotator.plugins.Store._apiRequest('update', annotation, (function(data) {
                     return _this.annotator.plugins.Store.updateAnnotation(annotation, data);
-                }));
+                }));*/
+                //may be a way to do this through the annotator API, but counldn't figure it out
+                //$("#article").annotator().annotator("updateAnnotation", annotation);
+                annotationUpdated = true;
+                _this.publish('annotationUpdated', [annotation]);
             }
             annotationText.show();
             $(document).off("click.saveEditedAnnotation");

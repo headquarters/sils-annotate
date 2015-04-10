@@ -28,7 +28,6 @@ def set_db():
 @app.teardown_request
 def teardown(exception=None):
     time_diff = time.time() - g.start_time
-    #print "Load time from before request to teardown: {0}".format(time_diff)
 
 @app.errorhandler(500)
 def internal_error(exception):

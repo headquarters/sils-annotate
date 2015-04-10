@@ -655,7 +655,7 @@ console.log("Save highlight");
         var adder = this.annotator.checkForEndSelection(e);
 //console.log("Save highlight", adder, e);
         if(typeof adder == "undefined" || adder.css("display") === "none"){
-console.log("adder:", typeof adder, adder.css("display"));            
+console.log("adder:", typeof adder);            
             //checkForEndSelection failed to find a valid selection    
             return;
         } else {

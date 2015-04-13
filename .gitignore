@@ -4,3 +4,4 @@ venv
 *.vagrant
 machines
 *.komodoproject
+.DS_Store

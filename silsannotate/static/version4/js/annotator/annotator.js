@@ -101,7 +101,10 @@ Annotator = (function(_super) {
     this.editor = new Annotator.Editor();
     this.editor.hide().on('hide', this.onEditorHide).on('save', this.onEditorSubmit).addField({
       type: 'textarea',
-      label: _t('Comments') + '\u2026',
+      //ORIGINAL
+      //label: _t('Comments') + '\u2026',
+      //MODIFIED
+      label: _t('Type comments here. Press Enter to save.'),
       load: function(field, annotation) {
         return $(field).find('textarea').val(annotation.text || '');
       },
@@ -414,11 +417,19 @@ Annotator = (function(_super) {
       range = _ref[_i];
       container = range.commonAncestor;
       if (this.isAnnotator(container)) {
-        return;
+        //ORIGINAL
+        //return;
+        //MODIFIED
+        //Version 0 had this line of code, which appears to fix an issue
+        //when highlighting inside an existing highlight.
+        console.log("isAnnotator() returned true, but pressing on.");
       }
-    }
+    }    
     if (event && this.selectedRanges.length) {
-      return this.adder.css(Util.mousePosition(event, this.wrapper[0])).show();
+      //ORIGINAL
+      //return this.adder.css(Util.mousePosition(event, this.wrapper[0])).show();
+      //MODIFIED
+      return this.adder.css(Util.mousePosition(event, this.wrapper[0])).show().find("button").click();
     } else {
       return this.adder.hide();
     }

@@ -646,7 +646,7 @@ console.log("Offset: ", offset);
     }      
 
     Viewer.prototype.disableDefaultEvents = function(e){
-        //this._removeEvent(".annotator-hl", "mouseover", "onHighlightMouseover");
+        this._removeEvent(".annotator-hl", "mouseover", "onHighlightMouseover");
     };
     
     Viewer.prototype.saveHighlight = function(e) {

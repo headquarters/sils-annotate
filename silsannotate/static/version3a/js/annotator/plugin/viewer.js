@@ -14,6 +14,8 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
     viewer.js/LinkParser may be useful for making links work in the annotations  
 */
 
+enableAnnotation = true;
+
 Annotator.Plugin.Viewer = (function(_super) {
     __extends(Viewer, _super);
     
@@ -354,13 +356,15 @@ Annotator.Plugin.Viewer = (function(_super) {
         
         var annotationPanes = "";
 //console.time("Writing annotations");
+        var i = 0;
         textDivisions.each(function(index){
             //create an annotation-pane for each text division that is at its same top position
             var $this = $(this);
             
             //this class couples a text division (paragraph/heading/etc) with a corresponding
             //annotation pane where its annotations will exist
-            var textDivisionClass = "annotation-pane-" + Util.uuid();
+            var textDivisionClass = "annotation-pane-" + i;
+            i++;
             
             $this.addClass(textDivisionClass);
             
@@ -642,7 +646,7 @@ console.log("Offset: ", offset);
     }      
 
     Viewer.prototype.disableDefaultEvents = function(e){
-        this._removeEvent(".annotator-hl", "mouseover", "onHighlightMouseover");
+        //this._removeEvent(".annotator-hl", "mouseover", "onHighlightMouseover");
     };
     
     Viewer.prototype.saveHighlight = function(e) {
@@ -778,7 +782,7 @@ console.log(annotation);
                         $("#annotation-panel").velocity({ top: 0 }, { duration: 400, easing: [500, 0] });    
                     }
                 } catch (e){
-                    console.log("Failed to bring annotation into view.", e, highlightsInView);
+                    console.log("Failed to bring annotation into view.", e.message);
                 }
             }
         }, 150);
@@ -861,10 +865,9 @@ console.timeEnd("changeDisplayMode");
     }
     
     Viewer.prototype.goToScrollbarClickPosition = function(e){
-        //TODO: remove hard-coded 53 here; it corresponds to the #scrollbar offset from top of screen
-        var percFromTop = ((e.clientY - 53) / $("#scrollbar").height()) * 100;
+        var percFromTop = ((e.clientY - menuBarHeight) / $("#scrollbar").height()) * 100;
 console.log("% from top: ", percFromTop)
-        $(document).scrollTo(percFromTop + "%", 500);
+        $(document).velocity("scroll", { offset: percFromTop + "%", duration: 500 });
     }
     
     function expandAnnotationPane(e){

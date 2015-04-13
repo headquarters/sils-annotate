@@ -257,11 +257,11 @@ Annotator.Plugin.Viewer = (function(_super) {
         $("#container").append(annotationPanel);
         //binding events elsewhere screws up the context for `this`, which
         //was used by the original code, so stick with the manual document event binding
-        $(document).on("mouseenter", ".annotator-hl", function(e){
+        /*$(document).on("mouseenter", ".annotator-hl", function(e){
             annotationFocus(this);
         }).on("mouseleave", ".annotator-hl", function(e){
             annotationBlur(this);
-        });
+        });*/
         
         $(document).on("mouseenter", ".annotation", function(e){
             var id = getAnnotationIdFromClass(this.className);
@@ -312,7 +312,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", "#scrollbar", this.goToScrollbarClickPosition);
         $(document).on("click", "#annotation-panel .annotation .text", this.editAnnotation);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
-        $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
+        //$(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         $(document).on("scroll", resetScroll);
     }
@@ -524,6 +524,7 @@ console.log("Save highlight", e);
         var adder = this.annotator.checkForEndSelection(e);
 
         if(typeof adder == "undefined" || adder.css("display") === "none"){
+console.log("adder:", typeof adder);
             //checkForEndSelection failed to find a valid selection    
             return;
         } else {
@@ -647,10 +648,9 @@ console.timeEnd("changeDisplayMode");
     }
     
     Viewer.prototype.goToScrollbarClickPosition = function(e){
-        //TODO: remove hard-coded 53 here; it corresponds to the #scrollbar offset from top of screen
-        var percFromTop = ((e.clientY - 53) / $("#scrollbar").height()) * 100;
+        var percFromTop = ((e.clientY - menuBarHeight) / $("#scrollbar").height()) * 100;
 console.log("% from top: ", percFromTop)
-        $(document).scrollTo(percFromTop + "%", 500);
+        $(document).velocity("scroll", { offset: percFromTop + "%", duration: 500 });
     }
     
     function expandAnnotationPane(e){

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js no-jr">
+    <head>
+       <title>{% block title %}{% endblock %}</title>
+       <meta charset="utf-8">
+        <!-- custom stuff for sils-annotator -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='version0/css/annotator.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='version3a/css/main.css') }}" />
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" media="screen">
+           
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version3a/js/velocity.min.js') }}"></script>
+        <!--<script type="text/javascript" src="{{ url_for('static', filename='version0/js/jquery-1.9.1.js') }}"></script>-->
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/underscore.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/jquery.scrollTo-1.4.3.1-min.js') }}"></script>
+     
+
+       <script type="text/javascript"> 
+          var apiRoot = "{{ g.api_root }}";
+          var dbName = "{{ g.db.name }}";
+          var interfaceName = "{{ dir_prefix }}";
+       </script>
+     
+     
+        <!-- stuff for the off-the-shelf annotator.js -->
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/preamble.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/class.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/console.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/extensions.js') }}"></script>
+        <!--<script type="text/javascript" src="{{ url_for('static', filename='version3a/js/annotator/util.js') }}"></script>-->
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/range.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/annotator.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/plugin/store.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/widget.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/editor.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/viewer.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version0/js/annotator/notification.js') }}"></script>    
+
+        <script type="text/javascript" src="{{ url_for('static', filename='version3a/js/annotator/plugin/viewer.js'.format(dir_prefix)) }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='version3a/js/annotator/plugin/scrollbar.js'.format(dir_prefix)) }}"></script>      
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+        <script type="text/javascript" src="{{ url_for('static', filename='version3a/js/silsannotate.js') }}"></script>
+    </body>
+</html>

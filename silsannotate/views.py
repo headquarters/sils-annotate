@@ -9,21 +9,20 @@ couch = couchdb.Server(url=os.getenv("SILS_CLOUDANT_URL"))
 @app.before_request
 def set_db():
     g.start_time = time.time()
+    print request
     db_name = request.args.get("db")
 
-    if "annotationstudy1-2014" == db_name:
-        # For the study in 2014, this database should not change; if it does,
-        # there is a file called AnnotationStudy1-2014-backup that is a copy of it
-        g.db = couch["annotationstudy1-2014"]  
-    elif "annotationtest" == db_name:
-        g.db = couch["annotationtest"]  
-    elif "annotationblank" == db_name:
-        g.db = couch["annotationblank"]  
-    else:
-        # Default to playpen; is also set as environment variable, e.g. os.getenv["SILS_CLOUDANT_DB"]
-        g.db = couch["annotationplaypen"]  
+    # Only access DB by name when this parameter is set
+    # This parameter will NOT be set on requests to static assets in the local environment (maybe even on Heroku)
+    if db_name:
+        # Try to connect to whichever DB name was passed in through the URL
+        # This flexibility is needed since up to 40 different users have their own database
+        # Needs a try/except block, but can't figure out what kind of exception a missing DB throws
+        g.db = couch[db_name]
+        g.api_root = "/api"
+
     
-    g.api_root = "/api"
+    
 
 @app.teardown_request
 def teardown(exception=None):

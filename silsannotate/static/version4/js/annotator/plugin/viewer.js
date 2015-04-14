@@ -42,11 +42,11 @@ Annotator.Plugin.Viewer = (function(_super) {
                                 </a>\
                             </div>\
                             <div class="highlight-controls controls">\
-                                <a href="#show-highlights" title="Show highlights" class="active">\
-                                    <img src="/static/' + interfaceName + '/img/highlights-icon.png" alt="Show highlights" />\
+                                <a href="#show-my-highlights" title="Show only my highlights">\
+                                    <img src="/static/' + interfaceName + '/img/highlights-mine-only.png" alt="Show only my highlights" />\
                                 </a>\
-                                <a href="#hide-highlights" title="Hide highlights">\
-                                    <img src="/static/' + interfaceName + '/img/highlights-off-icon.png" alt="Hide highlights" />\
+                                <a href="#show-all-highlights" title="Show all highlights" class="active">\
+                                    <img src="/static/' + interfaceName + '/img/highlights-everyone.png" alt="Show all highlights" />\
                                 </a>\
                             </div>\
                             <div class="info-control controls">\
@@ -637,9 +637,19 @@ console.timeEnd("changeDisplayMode");
         var link = $(e.target).parent();
         var action = link.attr("href");
 
-        if(action == "#show-highlights"){
+        if(action == "#show-my-highlights"){
             $(document.body).removeClass("hide-annotations");  
+
+            $(".annotator-hl").each(function(){
+                if ($(this).data().annotation.userId != AnnotationView.userId) {
+                  $(this).addClass("hidden")
+                }
+            });
+        } else if (action == "#show-all-highlights"){
+            $(document.body).removeClass("hide-annotations");  
+            $(".annotator-hl").removeClass("hidden");
         } else {
+            //Should never run in version 4
             $(document.body).addClass("hide-annotations");        
         }
         

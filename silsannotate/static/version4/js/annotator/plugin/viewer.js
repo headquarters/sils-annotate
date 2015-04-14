@@ -257,11 +257,11 @@ Annotator.Plugin.Viewer = (function(_super) {
         $("#container").append(annotationPanel);
         //binding events elsewhere screws up the context for `this`, which
         //was used by the original code, so stick with the manual document event binding
-        /*$(document).on("mouseenter", ".annotator-hl", function(e){
+        $(document).on("mouseenter", ".annotator-hl", function(e){
             annotationFocus(this);
         }).on("mouseleave", ".annotator-hl", function(e){
             annotationBlur(this);
-        });*/
+        });
         
         $(document).on("mouseenter", ".annotation", function(e){
             var id = getAnnotationIdFromClass(this.className);
@@ -312,7 +312,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", "#scrollbar", this.goToScrollbarClickPosition);
         $(document).on("click", "#annotation-panel .annotation .text", this.editAnnotation);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
-        //$(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
+        $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         $(document).on("scroll", resetScroll);
     }

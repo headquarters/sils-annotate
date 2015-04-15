@@ -104,6 +104,12 @@ Annotator.Plugin.Viewer = (function(_super) {
         "annotationDataReady": "showNewAnnotation"
     };
     
+    /**
+     * Extracts the annotation ID from a class string.
+     * @param {string} classStr - Class name of an element, such as "id-29f87alkjsdf".
+     * @param {boolean} removePrefix - Whether to remove the "id-" prefix when returning the value.
+     * @returns {string | boolean} 
+     */
     function getAnnotationIdFromClass(classStr, removePrefix) {
         var re = /id-(\w+)/;
         
@@ -118,8 +124,10 @@ Annotator.Plugin.Viewer = (function(_super) {
         return false;
     }    
     
+    /**
+     * Adds the "active" class to the shortest span of text in nested highlights.
+     */
     function activateShortestId(){
-        //find which ids have the shortest length (array b/c ties are allowed)
         var shortestIds = [];
         var shortestLenSoFar = Infinity;
         
@@ -146,9 +154,10 @@ Annotator.Plugin.Viewer = (function(_super) {
         //TODO: draw the activated red line on the scrollbar
     }
     
-    function annotationFocus(annotations) {
-//console.log("annotationFocus");        
-        // add to the focusedIds array
+    /**
+     * Add annotation IDs and text lengths to the focusedIds object literal. 
+     */    
+    function annotationFocus(annotations) { 
         $(annotations).each(function(){
             var thisId = getAnnotationIdFromClass(this.className);
             focusedIds[thisId] = $('.annotator-hl.' + thisId).text().length;
@@ -158,15 +167,17 @@ Annotator.Plugin.Viewer = (function(_super) {
         return false;
     }
     
+    /**
+     * Deletes the annotation ID from focusedIds on blur.
+     */
     function annotationBlur(annotation){     
-//console.log("annotationBlur");
         var annotationId = getAnnotationIdFromClass(annotation.className);
         delete focusedIds[annotationId];
         activateShortestId();
     }
     
     /**
-     *
+     * Get annotations from highlighted element, keys are annotation IDs, values are annotation data.
      */
     function getAnnotationsFromHighlights(highlightedElement) {
         var annotations = {};
@@ -182,7 +193,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     }    
     
     /**
-     *
+     * Concatenate all the annotations for one text division into a single pane.
      */
     function buildAnnotationPane(annotations){
         var contents = "";
@@ -200,7 +211,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     };
     
     /**
-     *
+     * Create the HTML contents of an annotation.
      */
     function buildAnnotationContents(annotation){        
         if (annotation.highlights.length < 1 || annotation.ranges.length < 1) {
@@ -346,7 +357,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", ".annotation-menubar .highlight-controls a", this.toggleHighlights);
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#scrollbar", this.goToScrollbarClickPosition);
-        $(document).on("click", ".expand-pane", expandAnnotationPane);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
         $(document).on("click", "#annotation-panel .annotation .text", this.editAnnotation);
         $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
@@ -679,20 +689,7 @@ $(window).scrollTop(highlightTop - 2 * menuBarHeight);
                             }
                         ); 
                     }
-        //$("#annotation-panel").css("top", difference);
-        //$(window).scrollTop(highlightTop);
-//console.log(annotationTop, annotationHighlightTop, windowScrollTop, offset);
 
-        /*annotationHighlight.velocity("scroll", 
-            { 
-                duration: 300, 
-                offset: offset,
-                complete: function(){
-                    allowKeepAnnotationsInView = true;                
-                }
-            });*/
-
-        
         //prevent the nested <span>s from causing multiple instances to fire
         return false;
     }      
@@ -750,13 +747,6 @@ $(window).scrollTop(highlightTop - 2 * menuBarHeight);
                 var annotation = $(".annotator-hl." + id).data().annotation;
                 annotation.text = editor.val();
 console.log(annotation);
-                //var data = { text: annotationText.text() };
-                //console.log(id, data);
-                /*_this.annotator.plugins.Store._apiRequest('update', annotation, (function(data) {
-                    return _this.annotator.plugins.Store.updateAnnotation(annotation, data);
-                }));*/
-                //may be a way to do this through the annotator API, but counldn't figure it out
-                //$("#article").annotator().annotator("updateAnnotation", annotation);
                 annotationUpdated = true;
                 _this.publish('annotationUpdated', [annotation]);
             }
@@ -923,25 +913,6 @@ console.log("% from top: ", percFromTop)
         $(document).velocity("scroll", { offset: percFromTop + "%", duration: 500 });
     }
     
-    function expandAnnotationPane(e){
-        var $this = $(this);
-        var pane = $this.parent('.annotation-pane');
-        var paneMaxHeight = pane.css("max-height");
-
-        if (paneMaxHeight === "none") {
-            $this.text("More");
-            pane.removeClass("active");
-        } else {
-            $this.text("Less");
-            pane.data("maxheight", paneMaxHeight).addClass("active")
-        }
-    }
-    
-    /**
-     * Show the number of annotations by the current user,
-     * show the number of annotations by all users,
-     * and show the total number of users.
-     */
     function showAnnotationsInfoPanel(e) {
         e.preventDefault();
         
@@ -960,8 +931,7 @@ console.log("% from top: ", percFromTop)
         
         numberOfAnnotationsByAllUsers = annotationsWithHighlights.length;
 
-
-        var annotationsByUser = _.groupBy(annotations, function(annotation){return annotation.userId})
+        var annotationsByUser = _.groupBy(annotations, function(annotation){return annotation.userId});
         numberOfUsers = _.size(annotationsByUser);
 
         var annotationsByThisUser = _.filter(annotations, function(annotation){

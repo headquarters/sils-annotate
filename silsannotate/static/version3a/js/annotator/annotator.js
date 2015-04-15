@@ -413,7 +413,7 @@ Annotator = (function(_super) {
     }
     this.selectedRanges = this.getSelectedRanges();
     _ref = this.selectedRanges;
-console.log("Looping over ranges...");    
+//console.log("Looping over ranges...");    
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       range = _ref[_i];
       container = range.commonAncestor;   
@@ -426,7 +426,7 @@ console.log("Looping over ranges...");
         console.log("isAnnotator() returned true, but pressing on.");
       }
     }
-console.log("...done. Checking event and selectedRanges: ", event, this.selectedRanges.length);    
+console.log("Checking for end selection event and selectedRanges length: ", event, this.selectedRanges.length);    
     if (event && this.selectedRanges.length) {
       //ORIGINAL
       //return this.adder.css(Util.mousePosition(event, this.wrapper[0])).show();

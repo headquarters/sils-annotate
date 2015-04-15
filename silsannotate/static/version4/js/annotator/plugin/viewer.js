@@ -1,33 +1,27 @@
+/**
+ * These functions are at the top of every Annotator file, so they're included here, too.
+ */
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-/*
-    
-    saveHighlight should submit the normal data, but with "text" as null
-    
-    viewer.js/LinkParser may be useful for making links work in the annotations
-/*
- * TEST THIS OUT
- * $(".annotator-hl").filter(function(){
-    var viewTop = $(window).scrollTop();
-    var viewBottom = viewTop + $(window).height();
-    var elementTop = $(this).offset().top;
-
-    return (elementTop >= viewTop && elementTop <= viewBottom);
-});
- *    
-*/
-
+/**
+ * Instantiate the Viewer Plugin. There is also a viewer.js "module" used by Annotator, which
+ * shows the annotations in a tooltip on mouseover. This plugin replaces that functionality altogether and shows
+ * annotations in the right margin. 
+ */
 Annotator.Plugin.Viewer = (function(_super) {
     __extends(Viewer, _super);
     
+    //the annotation panel where annotations will be rendered
     var annotationPanel;
+    //the information panel that is hidden off screen until a user clicks the upper "info" button
     var infoPanel = '<div class="annotation-info">\
                         <div class="info-item">Your annotations: <span id="current-user-annotations-count"></span></div>\
                         <div class="info-item">All annotations: <span id="all-annotations-count"></span></div>\
                         <div class="info-item">Number of users: <span id="number-of-annotators"></span></div>\
                     </div>';
+    //the menu bar at the top of the screen that holds all the interface icons                                        
     var menuBar =   '<div class="annotation-menubar">\
                         <div class="menu-container">\
                             <div class="mode-controls controls">\
@@ -67,21 +61,31 @@ Annotator.Plugin.Viewer = (function(_super) {
                             </div>\
                         </div>\
                     </div>';
-    var annotationMaxHeight = 42; /* ~42px (3.8em at 11px) */
+    //this refers to elements in the page where we want to divide annotation panes, usually by paragraph or header
     var textDivisions;
+    //the scrollbar that will appear to the right with a "heatmap" of annotations
     var scrollbar;
+    //this will contain all the annotation IDs currently being focused on; see activateShortedId()
     var focusedIds = {};
+
+    //data about the current set of annotations
     var numberOfUsers = 0;
     var numberOfAnnotationsByCurrentUser = 0;
     var numberOfAnnotationsByAllUsers = 0;
+    
+    //default display mode
     var displayMode = "snippets";
+    //default interactive mode 
     var interactiveMode = "annotate";
+
+    //height of the menu bar when it's appended to the DOM
     var menuBarHeight;
+
+    //if an annotation was just updated or not
     var annotationUpdated = false;
     
     Viewer.prototype.events = {
         "annotationsLoaded": "showAnnotations",
-        //"annotationCreated": "showNewAnnotation"
         "annotationDataReady": "showNewAnnotation"
     };
     

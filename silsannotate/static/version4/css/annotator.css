@@ -61,10 +61,13 @@
 /* NB: If you change the list of classes for which z-index is set,
        you should update Annotator._setupDynamicStyle() */
 .annotator-adder,
-.annotator-outer,
-.annotator-notice {
+.annotator-outer {
 	z-index: 1020;
 }
+
+.annotator-notice {
+	z-index: 4000;
+} 
 
 .annotator-filter {
 	z-index: 1010;

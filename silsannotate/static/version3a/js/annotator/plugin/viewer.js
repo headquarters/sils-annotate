@@ -1,3 +1,6 @@
+/**
+ * These functions are at the top of every Annotator file, so they're included here, too.
+ */
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { 
@@ -10,21 +13,23 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
         child.__super__ = parent.prototype; return child; 
     };
 
-/*    
-    viewer.js/LinkParser may be useful for making links work in the annotations  
-*/
-
-enableAnnotation = true;
-
+/**
+ * Instantiate the Viewer Plugin. There is also a viewer.js "module" used by Annotator, which
+ * shows the annotations in a tooltip on mouseover. This plugin replaces that functionality altogether and shows
+ * annotations in the right margin. 
+ */
 Annotator.Plugin.Viewer = (function(_super) {
     __extends(Viewer, _super);
     
+    //the annotation panel where annotations will be rendered
     var annotationPanel;
+    //the information panel that is hidden off screen until a user clicks the upper "info" button
     var infoPanel = '<div class="annotation-info">\
                         <div class="info-item">Your annotations: <span id="current-user-annotations-count"></span></div>\
                         <div class="info-item">All annotations: <span id="all-annotations-count"></span></div>\
                         <div class="info-item">Number of users: <span id="number-of-annotators"></span></div>\
                     </div>';
+    //the menu bar at the top of the screen that holds all the interface icons                    
     var menuBar =   '<div class="annotation-menubar">\
                         <div class="menu-container">\
                             <div class="mode-controls controls">\
@@ -64,18 +69,34 @@ Annotator.Plugin.Viewer = (function(_super) {
                             </div>\
                         </div>\
                     </div>';
-    var annotationMaxHeight = 42; /* ~42px (3.8em at 11px) */
+
+    //this refers to elements in the page where we want to divide annotation panes, usually by paragraph or header
     var textDivisions;
+    //the scrollbar that will appear to the right with a "heatmap" of annotations
     var scrollbar;
+    //this will contain all the annotation IDs currently being focused on; see activateShortedId()
     var focusedIds = {};
+
+    //data about the current set of annotations
     var numberOfUsers = 0;
     var numberOfAnnotationsByCurrentUser = 0;
     var numberOfAnnotationsByAllUsers = 0;
+
+    //default display mode
     var displayMode = "snippets";
+    //default interactive mode 
     var interactiveMode = "annotate";
+
+    //timer for keeping annotations in view on window scroll
     var timer = null;
+
+    //height of the menu bar when it's appended to the DOM
     var menuBarHeight;
-    var allowKeepAnnotationsInView = true;
+
+    //used as a lock to prevent the annotations panel from moving when the window scrolls in some instances
+    var allowKeepAnnotationsInView = false;
+
+    //if an annotation was just updated or not
     var annotationUpdated = false;
     
     Viewer.prototype.events = {
@@ -342,7 +363,9 @@ Annotator.Plugin.Viewer = (function(_super) {
 
             $this.attr("target", "_blank");
         });
-
+        $(window).on("scroll", function(e){
+            //console.log("scrolled", e);
+        });
     }
     
     Viewer.prototype.showAnnotations = function(annotations) {
@@ -556,7 +579,7 @@ console.log("Bring annotation into view for ID: ", annotationId);
         var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
 //console.log(windowScrollTop, windowScrollBottom, annotationTop);
         if(annotationTop >= windowScrollTop && annotationTop <= windowScrollBottom){
-            //console.log("Annotation already in view.");
+            console.log("Annotation already in view.");
         } else {
             $("#annotation-panel").velocity({ 
                                 top: topOfHighlight
@@ -592,18 +615,19 @@ console.log("Bring annotation into view for ID: ", annotationId);
     */
     function bringHighlightIntoView(e){
 //console.log("bringHighlightIntoView");    
-        allowKeepAnnotationsInView = false;         
+        //allowKeepAnnotationsInView = false;         
         
         if(e.target.className === "text"){
             //don't run when clicking text, otherwise the view jumps when user is trying to edit an annotation
-            allowKeepAnnotationsInView = true;
+            //allowKeepAnnotationsInView = true;
             return;
         }
         var annotation = this;
         var annotationId = getAnnotationIdFromClass(annotation.className);
         var annotationHighlight = $('article .' + annotationId).eq(0);
-        
+console.log("Bring highlight into view for ID: ", annotationId);        
         var annotationTop = $(annotation).offset().top;
+        var annotationPositionTop = $(annotation).position().top;
 
         /**
             1. Figure out where the corresponding highlight is
@@ -612,9 +636,9 @@ console.log("Bring annotation into view for ID: ", annotationId);
         */
 
         //how far from the top of the document is this highlight?
-        var annotationHighlightTop = $(annotationHighlight).offset().top;
+        var highlightTop = $(annotationHighlight).offset().top;
 
-        //how far has the window scrolled to bring it into view?
+        //how far has the window scrolled?
         var windowScrollTop = $(window).scrollTop();
 
         //how far from the top of the document is the annotation panel?
@@ -624,11 +648,39 @@ console.log("Bring annotation into view for ID: ", annotationId);
         //rather than just putting it at the top of the window
         var offset = -(annotationTop - windowScrollTop);
 
-console.log("Highlight top: ", annotationHighlightTop);
+var difference = offset + annotationPanelTop + menuBarHeight;
+var diff2 = windowScrollTop - highlightTop;
+
 console.log("Annotation top: ", annotationTop);
 console.log("Window scroll top: ", windowScrollTop);
-console.log("Offset: ", offset);
+console.log("Annotation panel top: ", annotationPanelTop);
+console.log("Window will scroll to highlight at (highlight top)", highlightTop);
+console.log("Annotation panel will ");
+//console.log("Highlight top: ", highlightTop);
 
+$(window).scrollTop(highlightTop - 2 * menuBarHeight);
+
+                    var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
+                    var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
+   
+                    //scrollTo(<object>) puts that object at the top of the scrollbar
+                    //we want it to be inline with its corresponding highlight
+                    if(window.scrollY !== 0){ 
+
+                        $("#annotation-panel").velocity({ 
+                                top: topOfHighlight
+                                //top: topOfViewableArea
+                            }, 
+                            { 
+                                duration: 400, 
+                                easing: [500, 50],
+                                complete: function(){
+                                } 
+                            }
+                        ); 
+                    }
+        //$("#annotation-panel").css("top", difference);
+        //$(window).scrollTop(highlightTop);
 //console.log(annotationTop, annotationHighlightTop, windowScrollTop, offset);
 
         /*annotationHighlight.velocity("scroll", 
@@ -650,7 +702,7 @@ console.log("Offset: ", offset);
     };
     
     Viewer.prototype.saveHighlight = function(e) {
-console.log("Save highlight");
+//console.log("Save highlight");
 /*        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"], e.target.nodeName.toLowerCase())){
             //do not allow annotations that go outside the bounds of the text divisions
             //i.e. this will fail if the target nodeName is "article"
@@ -659,7 +711,7 @@ console.log("Save highlight");
         var adder = this.annotator.checkForEndSelection(e);
 //console.log("Save highlight", adder, e);
         if(typeof adder == "undefined" || adder.css("display") === "none"){
-console.log("adder:", typeof adder);            
+//console.log("adder:", typeof adder);            
             //checkForEndSelection failed to find a valid selection    
             return;
         } else {
@@ -715,6 +767,7 @@ console.log(annotation);
     }    
     
     function keepAnnotationsInView(e){
+console.log(allowKeepAnnotationsInView);        
         if(!allowKeepAnnotationsInView){
             return;
         }

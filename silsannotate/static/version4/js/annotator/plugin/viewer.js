@@ -524,6 +524,8 @@ console.log("nth-child", numberOfPreviousAnnotations);
                     $(e).css("background-color", ""); 
                 } 
             }); 
+
+        this.bringAnnotationIntoView({ target: highlightStart[0] });
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
     

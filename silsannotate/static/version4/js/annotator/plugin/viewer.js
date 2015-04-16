@@ -369,12 +369,14 @@ console.timeEnd("Writing annotations");
     };
     
     Viewer.prototype.bringAnnotationIntoView = function(e){
+console.log("Clicked", e.target);        
         //the highlight clicked
         var annotationHighlight = e.target;
         var annotationId = getAnnotationIdFromClass(annotationHighlight.className);
         //the corresponding annotation for this highlight
         var annotation = $('#annotation-panel .' + annotationId);
 
+console.log("Bring annotation into view for ID: ", annotationId);
         //how far from the top of the document is this highlight?
         var annotationHighlightTop = $(annotationHighlight).offset().top;
 
@@ -384,18 +386,35 @@ console.timeEnd("Writing annotations");
         //how far from the top of the document is the annotation panel?
         var annotationPanelTop = parseInt($("#annotation-panel").css("margin-top"));
 
+        var annotationTop = annotation.offset().top;
         //offset that the annotation panel will need to be scrolled to in order to 
         //bring the annotation into view, rather than just putting it at the top of the window
-        var offset = -(annotationHighlightTop - windowScrollTop - annotationPanelTop);
-        
-        annotation.velocity("scroll", { duration: 300, container: $("#annotation-panel"), offset: offset });
+        var offset = -e.target.getBoundingClientRect().top;//-(annotationHighlightTop - windowScrollTop - annotationPanelTop);
+        //var offset = -(annotationHighlightTop - annotationTop - annotationPanelTop);
+//console.log("Wonky element ID: id-2FJTUhYGWjiUSe6WymCEGF");
+//console.log("Wonky element's offset top: ", $(".annotation.id-2FJTUhYGWjiUSe6WymCEGF").offset().top);
+//console.log("Before scroll ------- ")
+//console.log("Annotation top", annotationTop);
+//console.log("Highlight top", annotationHighlightTop);
+//console.log("Offset", offset);        
+        annotation.velocity("scroll", { 
+            duration: 300, 
+            container: $("#annotation-panel"), 
+            offset: offset, 
+            complete: function(elements){
+                //console.log("After scroll -------- ");
+                //console.log("Annotation top", $(annotation).offset().top);
+                //console.log("Highlight top", $(annotationHighlight).offset().top);
+                console.log("Elements", elements[0]);  
+            }
+        });
 
-        var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
-        var annotationTop = annotation.offset().top;
+        /*var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
+
 
         if(annotationTop >= windowScrollBottom && annotationTop <= windowScrollTop){
             console.log("annotation already in view");
-        }
+        }*/
 
         //prevent the nested <span>s from causing multiple instances to fire
         return false;
@@ -420,13 +439,26 @@ console.timeEnd("Writing annotations");
         //how far from the top of the document is the annotation panel?
         var annotationPanelTop = parseInt($("#annotation-panel").css("margin-top"));
 
-        //offset necessary to bring highlight in line with the annotation, 
-        //rather than just putting it at the top of the window
-        var offset = -(annotationTop - windowScrollTop);
+        //offset is the amount of vertical space between the annotation
+        //and the top of the viewport
+        //http://stackoverflow.com/a/15154609/360509
+        var offset = -this.getBoundingClientRect().top;
 
-//console.log(annotationTop, annotationHighlightTop, windowScrollTop, offset);
+//console.log("Before scroll ------- ")
+//console.log("Annotation top", annotationTop);
+//console.log("Highlight top", annotationHighlightTop);
+//console.log("Offset", offset);
 
-        annotationHighlight.velocity("scroll", { duration: 300, offset: offset });
+        annotationHighlight.velocity("scroll", { 
+            duration: 300, 
+            offset: offset,
+            complete: function(elements){
+                //console.log("After scroll -------- ");
+                //console.log("Annotation top", $(annotation).offset().top);
+                //console.log("Highlight top", $(annotationHighlight).offset().top);
+                //console.log("Element top", $(elements[0]).offset().top);              
+            }
+        });
 
         //prevent the nested <span>s from causing multiple instances to fire
         return false;

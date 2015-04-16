@@ -668,9 +668,10 @@ console.timeEnd("changeDisplayMode");
     }
     
     Viewer.prototype.goToScrollbarClickPosition = function(e){
-        var percFromTop = ((e.clientY - menuBarHeight) / $("#scrollbar").height()) * 100;
-console.log("% from top: ", percFromTop)
-        $(document).velocity("scroll", { offset: percFromTop + "%", duration: 500 });
+        var percentFromTop = ((e.clientY - menuBarHeight) / $("#scrollbar").height());
+        var offset = $("html").height() * percentFromTop;
+console.log("% from top: ", percentFromTop, offset);        
+        $("html").velocity("scroll", { offset: offset, duration: 500 });
     }
     
     /**

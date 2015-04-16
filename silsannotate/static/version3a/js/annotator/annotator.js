@@ -426,7 +426,7 @@ Annotator = (function(_super) {
         console.log("isAnnotator() returned true, but pressing on.");
       }
     }
-console.log("Checking for end selection event and selectedRanges length: ", event, this.selectedRanges.length);    
+//console.log("Checking for end selection event and selectedRanges length: ", event, this.selectedRanges.length);    
     if (event && this.selectedRanges.length) {
       //ORIGINAL
       //return this.adder.css(Util.mousePosition(event, this.wrapper[0])).show();

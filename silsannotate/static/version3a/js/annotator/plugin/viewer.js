@@ -582,13 +582,15 @@ console.log("Bring annotation into view for ID: ", annotationId);
         //get top for panel
         var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
 
-        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop - menuBarHeight;
+        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
         var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
         
         var windowScrollTop = $(window).scrollTop();
         var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
 //console.log(windowScrollTop, windowScrollBottom, annotationPositionTop);
-console.log(highlightTop, annotationTop, annotationPanelTop, menuBarHeight, topOfHighlight);
+console.log("Highlight offset top: ", highlightTop); 
+console.log("Annotation offset top: ", annotationTop);
+console.log("Top of highlight: ", topOfHighlight); 
         if(annotationPositionTop >= windowScrollTop && annotationPositionTop <= windowScrollBottom){
             console.log("Annotation already in view.");
         } else {
@@ -909,9 +911,10 @@ console.timeEnd("changeDisplayMode");
     }
     
     Viewer.prototype.goToScrollbarClickPosition = function(e){
-        var percFromTop = ((e.clientY - menuBarHeight) / $("#scrollbar").height()) * 100;
-console.log("% from top: ", percFromTop)
-        $(document).velocity("scroll", { offset: percFromTop + "%", duration: 500 });
+        var percentFromTop = ((e.clientY - menuBarHeight) / $("#scrollbar").height());
+        var offset = $("html").height() * percentFromTop;
+console.log("% from top: ", percentFromTop, offset);        
+        $("html").velocity("scroll", { offset: offset, duration: 500 });
     }
     
     function showAnnotationsInfoPanel(e) {

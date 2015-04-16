@@ -192,6 +192,9 @@ p,h1,h2,h3,h4,h5,h6,
   font-size: 11px;
   position:relative;
   top:0;
+  overflow: scroll;
+  position: fixed;
+  right: 32px;
 }
 
 #annotation-panel .annotation-pane {
@@ -372,4 +375,10 @@ p,h1,h2,h3,h4,h5,h6,
 #measuring-block {
   display:none;
   width:385px;
+}
+
+@media (min-width: 1400px){
+  #annotation-panel {
+    right: 20%;
+  }
 }

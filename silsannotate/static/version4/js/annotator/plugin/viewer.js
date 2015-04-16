@@ -265,10 +265,7 @@ Annotator.Plugin.Viewer = (function(_super) {
 
         //create the annotation panel DOM element that will house the annotations
         annotationPanel = $('<div id="annotation-panel"></div>').css({
-            height: $(window).height() - menuBarHeight,
-            overflow: "scroll",
-            position: "fixed",
-            right: "20%"
+            height: $(window).height() - menuBarHeight
         });
 
         $("#container").append(annotationPanel);

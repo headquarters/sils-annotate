@@ -514,7 +514,8 @@ console.log("Adding new annotation to existing pane ", annotationPane);
 
 
 //console.log("Highlight start", highlightStart);
-        bringNewAnnotationIntoView(highlightStart);
+        //bringNewAnnotationIntoView(highlightStart);
+        this.bringAnnotationIntoView({ target: highlightStart[0] });
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
     
@@ -583,11 +584,11 @@ console.log("Bring annotation into view for ID: ", annotationId);
         var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
 
         var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
-        var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
+        //var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
         
         var windowScrollTop = $(window).scrollTop();
         var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
-//console.log(windowScrollTop, windowScrollBottom, annotationPositionTop);
+console.log("Before scroll ---------");
 console.log("Highlight offset top: ", highlightTop); 
 console.log("Annotation offset top: ", annotationTop);
 console.log("Top of highlight: ", topOfHighlight); 
@@ -601,10 +602,10 @@ console.log("Top of highlight: ", topOfHighlight);
                                 duration: 400, 
                                 easing: [500, 50],
                                 complete: function(){
-                                    //console.log("After scroll ----------");
-                                    //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
-                                    //console.log("Annotation top after: ", $("#annotation-panel ." + id).offset().top);
-                                    //console.log("Highlight top after: ", $(highlightsInView[0]).offset().top);
+                                    console.log("After scroll ----------");
+                                    console.log("Highlight offset top: ", $(annotationHighlight).offset().top);
+                                    console.log("Annotation offset top: ", $("#annotation-panel ." + annotationId).offset().top);
+                                    console.log("Annotation panel offset top: ", $("#annotation-panel").offset().top);                                
                                 } 
                             }
                         );   
@@ -641,13 +642,6 @@ console.log("Top of highlight: ", topOfHighlight);
 console.log("Bring highlight into view for ID: ", annotationId);        
         var annotationTop = $(annotation).offset().top;
         var annotationPositionTop = $(annotation).position().top;
-
-        /**
-            1. Figure out where the corresponding highlight is
-            2. Scroll the current view to it
-
-        */
-
         //how far from the top of the document is this highlight?
         var highlightTop = $(annotationHighlight).offset().top;
 
@@ -657,35 +651,50 @@ console.log("Bring highlight into view for ID: ", annotationId);
         //how far from the top of the document is the annotation panel?
         var annotationPanelTop = parseInt($("#annotation-panel").css("margin-top"));
 
+        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
         //offset necessary to bring highlight in line with the annotation, 
         //rather than just putting it at the top of the window
         var offset = -(annotationTop - windowScrollTop);
 
-var difference = offset + annotationPanelTop + menuBarHeight;
-var diff2 = windowScrollTop - highlightTop;
-
+//var difference = offset + annotationPanelTop + menuBarHeight;
+//var diff2 = windowScrollTop - highlightTop;
+//get mouse Y position and bring highlight to that point
 console.log("Annotation top: ", annotationTop);
 console.log("Window scroll top: ", windowScrollTop);
 console.log("Annotation panel top: ", annotationPanelTop);
 console.log("Window will scroll to highlight at (highlight top)", highlightTop);
-console.log("Annotation panel will ");
+console.log("Annotation panel scrolling to new top of", topOfHighlight)
+console.log("Client and page Y: ", e.clientY, e.pageY);
+
 //console.log("Highlight top: ", highlightTop);
 
-$(window).scrollTop(highlightTop - 2 * menuBarHeight);
+//$(window).scrollTop(highlightTop - 2 * menuBarHeight);
 
-                    var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
-                    var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
+                    
+                    //var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
    
                     //scrollTo(<object>) puts that object at the top of the scrollbar
                     //we want it to be inline with its corresponding highlight
                     if(window.scrollY !== 0){ 
+                        /*$("html").velocity("scroll", {
+                            offset: (highlightTop - 2 * menuBarHeight),
+                            duration: 400,
+                            easing: [500, 50]
+                        });*/
+                        
+                        //scroll the highlight into view
+                        annotationHighlight.velocity("scroll", { 
+                            duration: 300, 
+                            offset: offset 
+                        });
 
+                        //move the annotation-panel to keep the corresponding annotation in view
                         $("#annotation-panel").velocity({ 
                                 top: topOfHighlight
                                 //top: topOfViewableArea
                             }, 
                             { 
-                                duration: 400, 
+                                duration: 500, 
                                 easing: [500, 50],
                                 complete: function(){
                                 } 

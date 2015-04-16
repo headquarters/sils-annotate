@@ -582,13 +582,14 @@ console.log("Bring annotation into view for ID: ", annotationId);
         //get top for panel
         var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
 
-        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
+        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop - menuBarHeight;
         var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
         
         var windowScrollTop = $(window).scrollTop();
         var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
-//console.log(windowScrollTop, windowScrollBottom, annotationTop);
-        if(annotationTop >= windowScrollTop && annotationTop <= windowScrollBottom){
+//console.log(windowScrollTop, windowScrollBottom, annotationPositionTop);
+console.log(highlightTop, annotationTop, annotationPanelTop, menuBarHeight, topOfHighlight);
+        if(annotationPositionTop >= windowScrollTop && annotationPositionTop <= windowScrollBottom){
             console.log("Annotation already in view.");
         } else {
             $("#annotation-panel").velocity({ 

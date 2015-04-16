@@ -9,7 +9,7 @@ couch = couchdb.Server(url=os.getenv("SILS_CLOUDANT_URL"))
 @app.before_request
 def set_db():
     g.start_time = time.time()
-    print request
+    # print request
     db_name = request.args.get("db")
 
     # Only access DB by name when this parameter is set

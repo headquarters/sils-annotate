@@ -94,7 +94,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     var menuBarHeight;
 
     //used as a lock to prevent the annotations panel from moving when the window scrolls in some instances
-    var allowKeepAnnotationsInView = false;
+    var allowKeepAnnotationsInView = true;
 
     //if an annotation was just updated or not
     var annotationUpdated = false;
@@ -629,12 +629,14 @@ console.log("Top of highlight: ", topOfHighlight);
         How easy to pass a flag to keepAnnotationsInView to NOT run?
     */
     function bringHighlightIntoView(e){  
-        //allowKeepAnnotationsInView = false;         
-        
+        allowKeepAnnotationsInView = false;
         if(e.target.className === "text"){
             //don't run when clicking text, otherwise the view jumps when user is trying to edit an annotation
-            //allowKeepAnnotationsInView = true;
+            allowKeepAnnotationsInView = true;
             return;
+        } else {
+console.log("Turning off scroll event.");            
+            $(document).off("scroll", keepAnnotationsInView);
         }
         var annotation = this;
         var annotationId = getAnnotationIdFromClass(annotation.className);
@@ -675,14 +677,40 @@ console.log("Bring highlight into view for ID: ", annotationId);
                         annotationHighlight.velocity("scroll", { 
                             duration: 300, 
                             offset: -clickedOffset,
+                            progress: function(){
+                                //clearTimeout(timer);
+                            },
+                            begin: function(elements){
+                                    $("#annotation-panel").velocity({ 
+                                        top: topOfHighlight // + clickedOffset
+                                        //top: topOfViewableArea
+                                    }, 
+                                    { 
+                                        duration: 300, 
+                                        easing: [500, 50],
+                                        complete: function(){
+                                            //console.log("After scroll ----------");
+                                            //console.log("Highlight top: ", $(annotationHighlight).offset().top);
+                                            //console.log("Annotation top: ", $(annotation).offset().top);
+                                            //console.log("Annotation panel top: ", $("#annotation-panel").offset().top); 
+                                        } 
+                                    }
+                                );
+                            },
                             complete: function(elements){
+                                console.log("Rebinding scroll event.");
+                                //cheap attempt to avoid race condition with scroll event firing immediately after
+                                //this scroll finishes
+                                setTimeout(function(){
+                                    $(document).on("scroll", keepAnnotationsInView);
+                                }, 150);
                                 
                             }
                         });
 
 
                         //DONE, SEEMS TO WORK
-                        $("#annotation-panel").velocity({ 
+                        /*$("#annotation-panel").velocity({ 
                                 top: topOfHighlight // + clickedOffset
                                 //top: topOfViewableArea
                             }, 
@@ -693,24 +721,14 @@ console.log("Bring highlight into view for ID: ", annotationId);
                                     //console.log("After scroll ----------");
                                     //console.log("Highlight top: ", $(annotationHighlight).offset().top);
                                     //console.log("Annotation top: ", $(annotation).offset().top);
-                                    //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);                                        
+                                    //console.log("Annotation panel top: ", $("#annotation-panel").offset().top); 
+                                    clearTimeout(timer);
+                                    allowKeepAnnotationsInView = true;        
+                                    console.log("Set allowKeepAnnotationsInView", allowKeepAnnotationsInView);                               
                                 } 
                             }
-                        );
-                        //move the annotation-panel to keep the corresponding annotation in view
-                        /*$("#annotation-panel").velocity({ 
-                                top: topOfHighlight
-                                //top: topOfViewableArea
-                            }, 
-                            { 
-                                duration: 500, 
-                                easing: [500, 50],
-                                complete: function(){
-                                } 
-                            }
-                        );*/ 
+                        );*/
                     } 
-
         //prevent the nested <span>s from causing multiple instances to fire
         return false;
     }      
@@ -777,19 +795,15 @@ console.log(annotation);
         //this.annotator.editor.load();
     }    
     
-    function keepAnnotationsInView(e){
-console.log(allowKeepAnnotationsInView);        
-        if(!allowKeepAnnotationsInView){
-            return;
-        }
-        //return;
+    function keepAnnotationsInView(e){   
+console.log("Scroll event fired.");
         var viewportThird = window.outerHeight / 4;
 
         if(timer !== null){
             clearTimeout(timer);
         }
 
-        timer = setTimeout(function(){
+        timer = setTimeout(function(){     
             var readingSectionTop = $(window).scrollTop() + viewportThird;            
             var readingSectionBottom = readingSectionTop + viewportThird;    
 

@@ -65,7 +65,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     var textDivisions;
     //the scrollbar that will appear to the right with a "heatmap" of annotations
     var scrollbar;
-    //this will contain all the annotation IDs currently being focused on; see activateShortedId()
+    //this will contain all the annotation IDs currently being focused on; see activateShortestId()
     var focusedIds = {};
 
     //data about the current set of annotations
@@ -274,9 +274,9 @@ Annotator.Plugin.Viewer = (function(_super) {
         $("#container").append(annotationPanel);
         //binding events elsewhere screws up the context for `this`, which
         //was used by the original code, so stick with the manual document event binding
-        $(document).on("mouseenter", ".annotator-hl", function(e){
+        $(document).on("mouseenter", ".annotator-hl:not(.hidden)", function(e){
             annotationFocus(this);
-        }).on("mouseleave", ".annotator-hl", function(e){
+        }).on("mouseleave", ".annotator-hl:not(.hidden)", function(e){
             annotationBlur(this);
         });
         

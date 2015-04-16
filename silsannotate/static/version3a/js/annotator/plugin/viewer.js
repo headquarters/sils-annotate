@@ -296,9 +296,9 @@ Annotator.Plugin.Viewer = (function(_super) {
 
         //binding events elsewhere screws up the context for `this`, which
         //was used by the original code, so stick with the manual document event binding
-        $(document).on("mouseenter", ".annotator-hl", function(e){
+        $(document).on("mouseenter", ".annotator-hl:not(.hidden)", function(e){
             annotationFocus(this);
-        }).on("mouseleave", ".annotator-hl", function(e){
+        }).on("mouseleave", ".annotator-hl:not(.hidden)", function(e){
             annotationBlur(this);
         });
         

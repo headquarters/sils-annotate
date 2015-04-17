@@ -417,7 +417,7 @@ console.log("Bring annotation into view for ID: ", annotationId);
         }*/
 
         //prevent the nested <span>s from causing multiple instances to fire
-        return false;
+        //return false;
     }
     
     //this isn't bound to Viewer.prototype because that method of binding
@@ -461,7 +461,7 @@ console.log("Bring annotation into view for ID: ", annotationId);
         });
 
         //prevent the nested <span>s from causing multiple instances to fire
-        return false;
+        //return false;
     }    
     
     function resetScroll() {

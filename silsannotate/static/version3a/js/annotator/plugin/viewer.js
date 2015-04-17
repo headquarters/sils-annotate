@@ -363,6 +363,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         $(document).on("scroll", keepAnnotationsInView);
+        //$(document).on("click", "article a", function(e){ console.log("clicked on link", e); });
 
         $("article .reference").each(function(){
             var $this = $(this);
@@ -569,6 +570,7 @@ console.log("Trying to get offset for annotation. ", annotation);
 
     Viewer.prototype.bringAnnotationIntoView = function(e){
 //console.log("bringAnnotationIntoView");        
+console.log(e);
         //the highlight clicked
         var annotationHighlight = e.target;
         var annotationId = getAnnotationIdFromClass(annotationHighlight.className);
@@ -589,31 +591,31 @@ console.log("Bring annotation into view for ID: ", annotationId);
         
         var windowScrollTop = $(window).scrollTop();
         var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
-console.log("Before scroll ---------");
-console.log("Highlight offset top: ", highlightTop); 
-console.log("Annotation offset top: ", annotationTop);
-console.log("Top of highlight: ", topOfHighlight); 
+//console.log("Before scroll ---------");
+//console.log("Highlight offset top: ", highlightTop); 
+//console.log("Annotation offset top: ", annotationTop);
+//console.log("Top of highlight: ", topOfHighlight); 
         if(annotationPositionTop >= windowScrollTop && annotationPositionTop <= windowScrollBottom){
             console.log("Annotation already in view.");
         } else {
             $("#annotation-panel").velocity({ 
-                                top: topOfHighlight
-                            }, 
-                            { 
-                                duration: 400, 
-                                easing: [500, 50],
-                                complete: function(){
-                                    console.log("After scroll ----------");
-                                    console.log("Highlight offset top: ", $(annotationHighlight).offset().top);
-                                    console.log("Annotation offset top: ", $("#annotation-panel ." + annotationId).offset().top);
-                                    console.log("Annotation panel offset top: ", $("#annotation-panel").offset().top);                                
-                                } 
-                            }
-                        );   
+                    top: topOfHighlight
+                }, 
+                { 
+                    duration: 400, 
+                    easing: [500, 50],
+                    complete: function(){
+                        //console.log("After scroll ----------");
+                        //console.log("Highlight offset top: ", $(annotationHighlight).offset().top);
+                        //console.log("Annotation offset top: ", $("#annotation-panel ." + annotationId).offset().top);
+                        //console.log("Annotation panel offset top: ", $("#annotation-panel").offset().top);                                
+                    } 
+                }
+            );   
         }
 
         //prevent the nested <span>s from causing multiple instances to fire
-        return false;
+        //return false;
     }
     
     //this isn't bound to Viewer.prototype because that method of binding
@@ -730,7 +732,7 @@ console.log("Bring highlight into view for ID: ", annotationId);
                         );*/
                     } 
         //prevent the nested <span>s from causing multiple instances to fire
-        return false;
+        //return false;
     }      
 
     Viewer.prototype.disableDefaultEvents = function(e){

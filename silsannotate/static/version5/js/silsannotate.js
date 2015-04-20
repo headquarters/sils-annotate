@@ -2,6 +2,9 @@ var AnnotationView = (function($, window){
     var self = this;
     
     self.textId = window.location.pathname.substr(window.location.pathname.lastIndexOf("/") + 1);
+    if(self.textId == "a2-v0"){
+        self.textId = "a2";
+    }
     self.userId = window.location.href.match(/user=(\w+)/)[1];
     
     self.allowAnnotating = true;

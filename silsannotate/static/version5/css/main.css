@@ -142,7 +142,7 @@ p,h1,h2,h3,h4,h5,h6,
 
 .annotation-info,
 .annotation-info.visible {
-  transition:right 0.25s;
+  transition:right 0.75s;
 }
 
 /*
@@ -192,9 +192,7 @@ p,h1,h2,h3,h4,h5,h6,
   font-size: 11px;
   position:relative;
   top:0;
-  overflow: scroll;
-  position: fixed;
-  right: 32px;
+  left:0;
 }
 
 #annotation-panel .annotation-pane {
@@ -225,6 +223,10 @@ p,h1,h2,h3,h4,h5,h6,
 #annotation-panel .annotation-contents {
   margin-bottom:5px;
   cursor: pointer;
+}
+
+#annotation-panel .annotation-contents textarea {
+  width:320px;
 }
 
 #annotation-panel .annotation-contents * {
@@ -317,6 +319,10 @@ p,h1,h2,h3,h4,h5,h6,
   display:none;
 }
 
+#annotation-panel.icons .annotation-pane {
+  float:left;
+}
+
 #annotation-panel.icons .annotation-contents {
   float:left;
 }
@@ -375,10 +381,4 @@ p,h1,h2,h3,h4,h5,h6,
 #measuring-block {
   display:none;
   width:385px;
-}
-
-@media (min-width: 1400px){
-  #annotation-panel {
-    right: 20%;
-  }
 }

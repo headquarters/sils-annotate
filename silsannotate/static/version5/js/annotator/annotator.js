@@ -104,7 +104,7 @@ Annotator = (function(_super) {
       //ORIGINAL
       //label: _t('Comments') + '\u2026',
       //MODIFIED
-      label: _t('Type comments here. Press Enter to save.'),
+      label: _t('Type comments here. Press Enter to save.'),      
       load: function(field, annotation) {
         return $(field).find('textarea').val(annotation.text || '');
       },
@@ -413,9 +413,10 @@ Annotator = (function(_super) {
     }
     this.selectedRanges = this.getSelectedRanges();
     _ref = this.selectedRanges;
+//console.log("Looping over ranges...");    
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       range = _ref[_i];
-      container = range.commonAncestor;
+      container = range.commonAncestor;   
       if (this.isAnnotator(container)) {
         //ORIGINAL
         //return;
@@ -424,7 +425,8 @@ Annotator = (function(_super) {
         //when highlighting inside an existing highlight.
         console.log("isAnnotator() returned true, but pressing on.");
       }
-    }    
+    }
+//console.log("Checking for end selection event and selectedRanges length: ", event, this.selectedRanges.length);    
     if (event && this.selectedRanges.length) {
       //ORIGINAL
       //return this.adder.css(Util.mousePosition(event, this.wrapper[0])).show();

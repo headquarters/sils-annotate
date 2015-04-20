@@ -20,19 +20,18 @@ Annotator.Plugin.Viewer = (function(_super) {
                         <div class="info-item">Your annotations: <span id="current-user-annotations-count"></span></div>\
                         <div class="info-item">All annotations: <span id="all-annotations-count"></span></div>\
                         <div class="info-item">Number of users: <span id="number-of-annotators"></span></div>\
+                        Icons | Snippets | World <br />\
+                        Hide empty annotations \
                     </div>';
     //the menu bar at the top of the screen that holds all the interface icons                                        
     var menuBar =   '<div class="annotation-menubar">\
                         <div class="menu-container">\
                             <div class="mode-controls controls">\
-                                <a href="#highlight" data-mode="highlight" title="Highlight">\
-                                    <img src="/static/' + interfaceName + '/img/highlight-icon.png" alt="Highlight" />\
-                                </a>\
-                                <a href="#annotate" data-mode="annotate" class="active" title="Annotate">\
-                                    <img src="/static/' + interfaceName + '/img/annotate-icon.png" alt="Annotate" />\
-                                </a>\
                                 <a href="#select" data-mode="select" title="Select">\
                                     <img src="/static/' + interfaceName + '/img/select-icon.png" alt="Select" />\
+                                </a>\
+                                <a href="#annotate" data-mode="annotate" class="active" title="Annotate">\
+                                    <img src="/static/' + interfaceName + '/img/highlight-icon.png" alt="Annotate" />\
                                 </a>\
                             </div>\
                             <div class="highlight-controls controls">\
@@ -46,17 +45,6 @@ Annotator.Plugin.Viewer = (function(_super) {
                             <div class="info-control controls">\
                                 <a href="#annotation-info" class="info-panel-trigger" title="Info">\
                                     <img src="/static/' + interfaceName + '/img/info-icon.png" alt="Info" />\
-                                </a>\
-                            </div>\
-                            <div class="display-controls controls">\
-                                <a href="#icons" data-mode="icons" title="Icons">\
-                                    <img src="/static/' + interfaceName + '/img/icons-icon.png" alt="Icons" />\
-                                </a>\
-                                <a href="#snippets" data-mode="snippets" class="active" title="Snippets">\
-                                    <img src="/static/' + interfaceName + '/img/snippets-icon.png" alt="Snippets" />\
-                                </a>\
-                                <a href="#full" data-mode="full" title="Full text">\
-                                    <img src="/static/' + interfaceName + '/img/full-icon.png" alt="Full text" />\
                                 </a>\
                             </div>\
                         </div>\
@@ -308,7 +296,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         this.showAnnotations = __bind(this.showAnnotations, this);
         this.showNewAnnotation = __bind(this.showNewAnnotation, this);
         this.changeInteractiveMode = __bind(this.changeInteractiveMode, this);
-        this.changeDisplayMode = __bind(this.changeDisplayMode, this);
         this.toggleHighlights = __bind(this.toggleHighlights, this);
         this.goToScrollbarClickPosition = __bind(this.goToScrollbarClickPosition, this);
         this.disableDefaultEvents = __bind(this.disableDefaultEvents, this);
@@ -320,7 +307,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         
         //attach menubar controls here...not working as part of prototype.events for some reason
         $(document).on("click", ".annotation-menubar .mode-controls a", this.changeInteractiveMode);
-        $(document).on("click", ".annotation-menubar .display-controls a", this.changeDisplayMode);;
         $(document).on("click", ".annotation-menubar .highlight-controls a", this.toggleHighlights);
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#scrollbar", this.goToScrollbarClickPosition);
@@ -656,20 +642,6 @@ console.time("changeInteractiveMode");
         
         interactiveMode = newInteractiveMode;
 console.timeEnd("changeInteractiveMode");         
-    };
-    
-    Viewer.prototype.changeDisplayMode = function(e){
-        e.preventDefault();
-console.time("changeDisplayMode");
-        var link = $(e.target).parent();
-        var newDisplayMode = link.data("mode");
-        
-        annotationPanel.removeClass(displayMode).addClass(newDisplayMode);
-        
-        $(".display-controls .active").removeClass("active");
-        link.addClass("active");
-        displayMode = newDisplayMode;
-console.timeEnd("changeDisplayMode");        
     };
     
     Viewer.prototype.toggleHighlights = function(e){

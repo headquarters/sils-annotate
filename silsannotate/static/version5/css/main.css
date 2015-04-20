@@ -142,7 +142,7 @@ p,h1,h2,h3,h4,h5,h6,
 
 .annotation-info,
 .annotation-info.visible {
-  transition:right 0.75s;
+  transition:right 0.25s;
 }
 
 /*

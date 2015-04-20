@@ -1,0 +1,130 @@
+﻿{% extends "{0}/layout.html".format(dir_prefix) %}
+{% block title %}Article 1{% endblock %}
+{% block body %}
+<div id="container" class="clearfix">
+    <article>
+        <h1>Thirty years of information technology</h1>
+        <p>Michael Seadle, Berlin School of Library and Information Science, Humboldt-Universität zu Berlin, Berlin, Germany</p>
+        
+        
+        <h2>Abstract</h2>
+        <p><b>Purpose</b> – This issue of Library Hi Tech aims to offer a retrospective over the last 30 years of information technology as used in libraries and other memory institutions, particularly archives and museums. This Editorial will add the Editor's reflections.</p>
+        
+        <p><b>Design/methodology/approach</b> – The method uses historical documentation and relies heavily on personal recollection.</p>
+        
+        <p><b>Findings</b> – Thirty years ago information technology in libraries largely had to do with ways in which libraries could make their ordinary operations more efficient. Today the information science frontier has broken out of the comfortable institutional paradigm of the past and made libraries aware that they need to redefine themselves in a world where their buildings no longer represent a storehouse of knowledge unavailable elsewhere.</p>
+        
+        <p><b>Originality/value</b> – This paper reveals that information technology advances have not made libraries obsolete, but they have made it imperative that libraries redefine their role to be digital information managers and service providers for their readers.</p>
+        
+        <h2>Introduction</h2>
+        
+        <p>This issue of Library Hi Tech offers a retrospective over the last 30 years of information technology as used in libraries and other memory institutions, particularly archives and museums. The articles in this theme section are by some of the people who played a key role in shaping information technology. The editors asked them to give their perspective, and the articles represent personal opinions and reflections. They are not history, but could be considered documents for the basis of a professional history of the field.</p>
+        
+        <p>I have been involved with information technology since my first position at the University of Chicago Libraries in 1976, and have had hands-on experience with automation systems, digital library development, standards setting, and long term digital preservation, mainly though not exclusively from a computing perspective. My academic training is, however, as an historian, and as information science matures as a field, I believe we need to understand the choices that we made and the reasons that we made them. The aim of this issue, if I may paraphrase Clifford Geertz, is not to generalize about the subject, but to diagnose our current condition. My own recollections inevitably put more emphasis on US and German developments, since my working experience has been largely in those two counties.</p>
+        
+        <p>In this article I will use a metaphor that comes from US history: the opening of the frontier. The word “frontier” needs to be understood not in a physical but in an abstract sense. The computing tools Zuse, Aiken, von Neumann, the builders of Colossus, and others developed in the middle years of the twentieth century were like the unexplored territories of the North American continent. Explorers and settlers brought ideas and assumptions from their home cultures. It is important to remember too that North America had multiple settlement paradigms, in particular the relatively orderly Canadian approach versus the untrammeled US development in the “wild west”. Elements of both are evident in information science.</p>
+        
+        <h2>The frontier opens: 1982-1991</h2>
+        
+        <p>In 1982, 30 years ago, the information science frontier was certainly open. Machine Readable Cataloging (MARC) existed, and major research libraries like Chicago, Stanford, and Northwestern had automation systems. OCLC and the Research Libraries Group (RLG) offered services, and German universities had started developing or installing automation systems. From a library perspective, the focus remained strongly, almost exclusively, on the management needs of the paper-based information collections, but elements of paper-based tools were already starting to vanish. In this period people began to see the end of the card catalog. In 1982 most libraries still produced cards. By 1991 most research libraries had OPACs and had ceased adding cards to their catalogs, or had actually removed the furniture that housed them. This was all relatively systematic development at an institutional level – that is, the libraries thought about what resources they needed to carry out their routine operations in a more efficient way, and supported developments that led in that direction.</p>
+        
+        <p>The institutional nature of these developments did not make them less transformative and often relatively small numbers of people brought about major changes. James Aagaard, for example, took the lead on the development of the NOTIS (Northwestern Online Totally Automated System), which grew quickly from a local system, to one that a large number of major research libraries used in the US and many used internationally <a href="#7">(Paolelli, 2011)</a>. Anyone looking in the source code (as I did) could see the hallmarks of the early developments in the 1970s. By the late 1980s and early 1990s, it was clear that NOTIS needed a major rewrite, which began first at the wholly-owned subsidiary that Northwestern University had spun off, and died when Ameritech bought the subsidiary and decided to create a new product<a href="#n1">[1]</a>.</p>
+        
+        <p>During this period Brewster Kahle developed WAIS (Wide Area Information Servers), which was one of the first networked resources for indexing and sharing information <a href="#3">(Kahle, 1992)</a>. At roughly the same time Steven Worona developed CU-Info (Cornell University Information) as a campus-wide information system<a href="n2">[2]</a>. CU-Info is an interesting example because it was more than most the creation of a single person, who built a system out of assembly language, and eventually Pascal, that interfaced directly with internet packets to manage interactions. CUInfo offered many of the services familiar in modern university web pages. It included campus announcements, access to the NOTIS library OPAC, and even “Uncle Ezra”, an advice column written in what might today be called blog-form by professional psychiatric advisors. CU-Info was already in the 1980s what the Worldwide Web would become in the 1990s, but it was too difficult to maintain without serious computer science training. While the technological base has shifted, CU-Info still exists.</p>
+        
+        <p>While all of these developments had institutional homes, they grew out of a very open culture of experimentation. The National Science Foundation had done much in the US to expand high-speed academic access to the internet with NSFNET in 1986 <a href="#5">(NSF, 2002)</a>, and this opened opportunities for sharing content that were at least as important as the supercomputer sites that NSFNET originally was meant to link. TCP/IP was not the only network protocol in use. In 1981 Ira Fuchs had persuaded a number of universities to establish Bitnet, which grew rapidly during this period. A Cornell student, Robert Morris, produced the first major computer worm:</p>
+        
+        <p>The [Cornell Commission] report labeled Morris' behavior “a juvenile act that ignored the clear potential consequences.” Of the graduate student's intentions in releasing the virus, the commission claims: It may simply have been the unfocused intellectual meandering of a hacker completely absorbed with his creation and unharnessed by considerations of explicit purpose or potential effect” <a href="#1">(Eisenberg, 1989)</a>.</p>
+        
+        <p>The worm made people aware for perhaps the first time that network-based information was not risk-free, and this growth of risk is very much a part of the frontier phenomenon.</p>
+        
+        <p>In 1991 the University of Minnesota developed Gopher <a href="#4">(McCahill, 1995)</a>, and Tim Berners-Lee conceived of and tested the Worldwide Web. These were not systems intended to facilitate or improve existing library or other information systems. They were experiments that reached out beyond traditional organizational structures to experiment with ways in which people could share and discover information. They also marked an end of an era in which most scholars and most companies assumed that information would remain on isolated machines. It was not the beginning of the internet era, but these developments marked the point at which networked information began to reach much larger numbers of people inside of, and soon outside of, the academy.</p>
+        
+        <h2>The frontier expands: 1992-2001</h2>
+        
+        <p>As Cliff Lynch points out in his article in this issue, libraries had taken significant steps toward sharing catalog information. In 1991 the TULIP project began with Elsevier with the goal of sharing digital content<a href="n3">[3]</a>. JSTOR also began at the University of Michigan in 1990 with the goal of creating digital copies of back issues of scholarly journals with a moving window of five (later three) years from the present. The original goals emphasized creating space on library shelves, which would relieve institutional pressures for new buildings or at least new storage facilities. The implications later went far beyond that to reduce or end the need for paper copies.</p>
+        
+        <p>Digitizing paper content was also a goal of the Cornell CLASS project that created TIFF images of mathematics books in which noted scholars had written notes that were more valuable than the books themselves. The Cornell project had an institutional goal of establishing digital standards that would enable libraries to substitute digitization for microfilm, which users widely hated. In that sense it was an extension of standard library services, though one whose longer-term implications have done much to acclimate users to the idea of largely digital library contents.</p>
+        
+        <p>Digitization played a large role in the ways libraries responded to the growth of networking and computing capabilities. The Library of Congress American Memory Project, the Michigan / Cornell Making of America Project, and many of the early Institute of Museum and Library Services (IMLS) National Leadership Grants had a strong focus on taking paper-based contents and creating digital images. Simultaneously in Germany the Deutsche Forschungsgemeinschaft established two digitization centers, one at Göttingen and the other at the Bavarian State Library, with the resources and equipment to undertake significant digitization projects. People still thought of paper content as the “original”, even at a time when most authors wrote their books and articles on computers and when most publishers had converted to digital editing. That would begin to change at the end of this period.</p>
+        
+        <p>The electronic theses and dissertations project (ultimately the Networked Digital Library of Theses and Dissertations or NDLTD) began at Virginia Tech in 1991 under the leadership of Gary Hooper and Ed Fox <a href="#6">(NDLTD, 2010)</a>. This project aimed at taking a traditional form of publication (theses and dissertations) that had a very clumsy if practical distribution in the US on microfilm and transforming both their availability and their interactive capabilities. Even though most dissertations have remained largely text-based with minimal computing content, the degree to which they have become genuinely accessible raised concerns about whether traditional publishers would decline to accept them in peer-reviewed venues.</p>
+        
+        <p>Hypertext Markup Language (HTML) and Hypertext Transfer Protocol (HTTP) offered creative opportunities that went well beyond the range of usual library information, but the changes started slowly. Libraries began with home pages that featured information about the branches and links to the online catalog. By the end of this period people were beginning to ask why libraries did not offer a link to Google, since so many students began their searches there, but librarians generally resisted. The library web pages slowly replaced paper-based guides, but were not conceptually significantly different.</p>
+        
+        <p>A great deal of experimentation in the commercial world went on in this period that came back to universities and to libraries in ways that changed their relationship to information and information processing. Personal computers had become common in the 1980s, and by the later 1990s most students at research universities had access to word processing, spreadsheets, and browsers, either on their own machines or at campus computer labs. Full screen window-based applications and pull-down menus had largely replaced the command line, except in Unix/Linux-based systems. Networked information went from a plaything for a relatively small number of people at relatively elite institutions to a standard feature of academic and increasingly non-academic life. The question of how reliable this information was plagued librarians and professors alike.</p>
+        
+        <p>In Europe France had experimented with an alternative to IP called Minitel since the early 1980s and it continued to have a large user base in the 1990s. People could use it to find information and buy a limited set of things (train tickets, for example). It was shut down this year <a href="#9">(Schofield, 2012)</a>. Minitel was far more controlled and limited than the internet, and ultimately, could not compete. The German Wissenschaftsnetz used IP and began its formal existence shortly after the Wall came down, but German libraries were slow to expand the number of public terminals, often because of physical constraints imposed by the buildings<a href="#4">[4]</a>.</p>
+        
+        <p>The NSF began a call-for-proposals in the 1990s whose goal was to encourage radical ideas to move the capabilities of internet-based information forward. Michael Lesk and Steve Griffin played leading roles in conceiving and leading this series of NSF projects, and Michael Lesk has an aricle in this issue. The Digital Library Initiatives (phase 1 &amp; 2 and the related international projects) were transformative because of their risk taking<a href="n5">[5]</a>. Some enduring projects grew out of them, such as LOCKSS (Lots of Copies Keep Stuff Safe from Stanford). Even those projects that were not obvious successes stimulated work that has since become routine.</p>
+        
+        <p>In the late 1990s the newly created Institute of Museum and Library Services (IMLS) set up a program of National Leadership Grants that especially encouraged libraries and museums to work together<a href="n6">[6]</a>. Joyce Ray played a leading role in establishing and fostering this program, and she also has an article in this issue. One of the key effects of the National Leadership Grants was to make it possible for small libraries and museums to digitize contents and to build an online presence. The IMLS Digital Collections and Content project, which began in 2002, gives a good sense of the breadth<a href="n7">[7]</a>. In Germany digital projects remained the preserve of large institutions.</p>
+        
+        <h2>The frontier transforms: 2002-2012</h2>
+        
+        <p>It could be tempting to label this last decade as the closing of the frontier, but for libraries it was in many ways the most radical era of change, because many of the developments during this period effectively undermined the longstanding assumption that libraries had exclusive access to more information than individuals could get elsewhere.</p>
+        
+        <p>Nonetheless, some signs of stability are clear. Many librarians expected that file formats would keep changing, much as Microsoft Word formats that changed in the earlier periods, and this concern made many insist that format migration had to be an essential element of long-term digital preservation. In fact, as David Rosenthal has often pointed out, file formats used in online publication have been remarkably stable <a href="#8">(Rosenthal, 2010)</a>. It is relatively easy to incorporate backwards compatibility into contemporary software. Migration could play a role at some time in the future, but the more content there is in existing formats, the greater the pressure to continue to support those formats.</p>
+        
+        <p>Libraries often did not welcome social media such as Twitter, blogs, and Facebook, but they felt that they needed a presence on them. One of the large-scale engagements can be seen in the UThink project at the University of Minnesota, which offered every student and staff member blog space<a href="n8">[8]</a>. Many of those who took them up on the offer never made more than a few entries, but the experiment introduced many to blogging. Online gaming is a classic form of interactivity and by no means new, but it has become a pastime that rivals television and in recent years has become an object for academic study. Libraries have been extremely slow to see gaming as an information-based activity, though an attitude-shift can be seen in Scott Nicholson's new online course on “Gaming in Libraries”<a href="n9">[9]</a>.</p>
+        
+        <p>The advent of Wikipedia caused significant outrage among scholars, who feared that the information would not be reliable and would distract students and other library users from more dependable encyclopedic sources. The article in Nature by <a href="#2">Jim Giles (2005)</a> compared Wikipedia with the widely respected Encyclopedia Britannica and found no significant difference in their reliability in subjects about the natural sciences. Librarians and teachers often discourage people from citing Wikipedia in papers because the contents change constantly, but, as computer scientist Wolfgang Coy pointed out at the Berlin Bibliothekswissenschaftliches Kolloquium on 27 January 2009, it is easily possible to go back to an earlier version in Wikipedia because of its version control, as long as the date and time are included in the citation.</p>
+        
+        <p>Just as Wikipedia has affected the market for commercial encyclopedias, the growth of online dictionaries has reduced the market for paper versions. The online dictionaries have the same advantage in currency that Wikipedia has, since the most recent usage appears quickly. Technical terms may be missing for some subjects (though they tend to be available for computing), but that is true for all but the most comprehensive or specialized paper dictionaries. Google Translate has also transformed the ability to understand contents in foreign languages. A standard criticism of Google Translate is that it makes laughable mistakes – and it does, but the fact is that it also makes it possible to get the basic idea of a broad range of content in other languages. It helps if the reader has some familiarity with the language group and its word order, since mostly Google just fulfils the dictionary function of looking up words and supplying an equivalent. For someone with a slight familiarity with a language, this is an enormous time saving. Nonetheless, libraries have been slow to offer these tools.</p>
+        
+        <p>Google books and the Google scanning project offered the possibility that even the content of major research libraries would be freely available to everyone online. While lawsuits have slowed much of the access, Google's scanning efforts have made an unprecedented number of public domain words readily available outside libraries for the first time. The HathiTrust, which holds the scanned contents of many Google project participants, is working actively to identify public domain content in order to make it more widely available.</p>
+        
+        <p>One of the most disruptive technologies in recent years has been the arrival of genuinely effective electronic reading devices. Amazon has made access to Project Gutenberg's 40,000 books easy on the Kindle and has changed buying habits for many<a href="n10">[10]</a>. Tablet devices like the iPad also serve as eReaders, and some magazines like the New Yorker have been particularly successful in adapting to the tablet format. JSTOR began a digitization trend in the 1990s that has converted most research libraries into purchasers of digital journal content, increasingly to the exclusion of paper. The growth of effective eReading devices promises to include monographs in that change.</p>
+        
+        <p>The National Science Foundation funding for digital library development ceased under the Bush administration. The IMLS funding continues, however. At the same time funding by European governments has provided a focus for digital library development in the European Union that positions European libraries and universities to rival or overtake lagging US efforts. The developments in the next ten years, especially in Europe, may well be more interesting than what has happened in the last 30.</p>
+        
+        <h2>Conclusion</h2>
+        
+        <p>Information technology in libraries 30 years ago largely had to do with ways in which libraries could make their ordinary operations more efficient. Today information science has broken out of the comfortable institutional paradigm of the past and made libraries aware that they need to redefine themselves in a world where their buildings no longer represent a storehouse of knowledge unavailable elsewhere. That is not to say that information technology advances have made libraries obsolete, but they have made it imperative that libraries redefine their role to be digital information managers and service providers for their readers.</p>
+        
+        <p>Libraries have a long history of adapting to change. The changes in the last 30 years, and especially in the last decade, continue to give them a chance to show their adaptive powers. The frontier has not closed and change is not likely to abate for libraries until they have adapted fully to the new reality of digital information.</p>
+        
+        
+        <h2>Notes</h2>
+        
+        <p id="n1">1. I was a member of the advisory committee for the revised version.</p>
+        
+        <p id="n2">2. I worked on CUInfo during the academic year 1989-1990.</p>
+        
+        <p id="n3">3. Available at: www.elsevier.com/wps/find/authored_newsitem.cws_home/companynews05_00021</p>
+        
+        <p id="n4">4. Available at: www.dfn.de/xwin/</p>
+        
+        <p id="n5">5. Available at: www.nsf.gov/pubs/1998/nsf9863/nsf9863.htm</p>
+        
+        <p id="n6">6. Available at: www.imls.gov/applicants/national_leadership_grant_guidelines.aspx</p>
+        
+        <p id="n7">7. Available at: http://imlsdcc.grainger.uiuc.edu.libproxy.lib.unc.edu/</p>
+        
+        <p id="n8">8. Available at: http://blog.lib.umn.edu.libproxy.lib.unc.edu/uthink/</p>
+        
+        <p id="n9">9. Available at: www.gamesinlibraries.org/course/</p>
+        
+        <p id="n10">10. Available at: www.gutenberg.org/</p>
+        
+        <h2>References</h2>
+        <p id="1">Eisenberg, T., Gries, D., Hartmanis, J., Holcomb, D., Lynn, M.S., Santoro, T. (1989), "The Cornell commission: on Morris and the worm", Communications of the ACM, Vol. 32 No.6, pp.706-9.</p>
+        
+        <p id="2">Giles, J. (2005), "Special report: internet encyclopedias go head to head", Nature, No.438, pp.900-1.</p>
+        
+        <p id="3">Kahle, B., Morris, H., Davis, F., Erickson, T., Hart, C., Palmer, R. (1992), "Wide area information servers: an executive information system for unstructured files", Internet Research, Vol. 2 No.1, pp.59-68.</p>
+        
+        <p id="4">McCahill, M., Anklesaria, F.X. (1995), "Evolution of internet gopher", Journal of Universal Computer Science, Vol. 1 No.4, pp.235-46.</p>
+        
+        <p id="5">National Science Foundation (NSF) (2002), “The internet – the launch of NSFNET”, available at: www.nsf.gov/about/history/nsf0050/internet/launch.htm (accessed September 5, 2012), .</p>
+        
+        <p id="6">Networked Digital Library of Theses and Dissertations (NDLTD) (2010), “History of the NDLTD – NDLTD”, available at: www.ndltd.org/about/history (accessed September 6, 2012), .</p>
+        
+        <p id="7">Paolelli, M. (2011), “Professor Emeritus of EECS since 1996, James Aagaard retires from NU”, Electrical Engineering and Computer Science, available at: www.eecs.northwestern.edu/the-news/708-professor-emeritus-of-eecs-james-aagaard-retires-from-nu.html (accessed September 5, 2012), .</p>
+        
+        <p id="8">Rosenthal, D.S.H. (2010), “DSHR's blog: the half-life of digital formats”, available at: http://blog.dshr.org/2010/11/half-life-of-digital-formats.html (accessed September 7, 2012), .</p>
+        
+        <p id="9">Schofield, H. (2012), “Minitel: the rise and fall of the France-wide web”, BBC News, available at: www.bbc.co.uk/news/magazine-18610692 (accessed September 7, 2012), .</p>
+    </article>
+</div>
+{% endblock %}

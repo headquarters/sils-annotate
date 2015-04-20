@@ -1,0 +1,384 @@
+body {
+  line-height: 1.2;
+  margin:0;
+  padding:0;
+}
+
+.clearfix:before, .clearfix:after {
+  content: " ";
+  display: table;
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+article {
+  float:left;
+  max-width:600px;
+  padding:50px 50px 50px 100px;
+  cursor: url(../img/highlight-cursor.png), auto;
+  position:relative;
+  z-index:99;
+}
+
+/*article.highlight {
+  cursor: url(../img/highlight-cursor.png), auto; 
+}*/
+
+article.select {
+  cursor: auto;
+}
+
+article img {
+  max-width:100%;
+}
+
+#annotation-panel {
+  float:left;
+  width:420px;
+  margin-top:50px;
+  margin-left:50px;  
+}
+
+/* DEBUG: 
+p,h1,h2,h3,h4,h5,h6,
+.annotation-pane {
+  border-top:1px solid green;
+  border-bottom:1px solid green;
+}*/
+
+#container {
+  min-width:1240px;
+}
+
+.annotator-wrapper {
+  /* Prevents collapsed margins on first element inside it,
+   * which fixes calculating distance from top for
+   * annotation panes.
+   */
+  float:left;
+  width:100%;
+}
+
+.annotation-menubar {
+  clear: both;
+  width: 100%;
+  min-width:1000px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: #B0B0B0;
+  font-family:Arial, sans-serif;
+  z-index:2000;
+}
+
+.annotation-menubar .menu-container {
+  padding:5px 10px;
+  position:relative;
+  overflow:auto;
+}
+
+.annotation-menubar label {
+  margin-left:10px;
+}
+
+.annotation-menubar .controls * {
+  vertical-align: middle;
+}
+
+.annotation-menubar label input {
+  /* despite the vertical-align: middle rule above, still have to nudge these up */
+  margin-bottom:7px;
+}
+
+.annotation-menubar .mode-controls {
+  float:left;
+}
+
+.annotation-menubar .controls a {
+  display:inline-block;
+  border:1px solid #999;
+  background:#fff;
+  border-radius:4px;
+  margin-right:1em;
+  padding:0.2em;
+}
+
+.annotation-menubar .controls a.active {
+  border-color:#222;
+  background:rgb(190, 233, 255);
+}
+
+.annotation-menubar .controls img {
+  display:inline-block;
+}
+
+.annotation-menubar .highlight-controls {
+  float:left;
+  margin-left:30%;
+}
+.annotation-menubar .display-controls,
+.annotation-menubar .info-control {
+  float:right;
+}
+
+.annotation-menubar .info-control {
+  margin-left:20px;
+}
+
+.annotation-info {
+  font-family:Arial, sans-serif;
+  position:fixed;
+  top:3em;
+  right:-200px;
+  background: #ccc;
+  padding:10px 20px 10px;  
+}
+
+.annotation-info.visible {
+  right:20px;
+}
+
+.annotation-info,
+.annotation-info.visible {
+  transition:right 0.75s;
+}
+
+/*
+.annotator-wrapper {
+  margin: 50px 50px 50px 100px;
+}*/
+.annotator-wrapper .annotator-hl.nested-1 {
+  background: #ffffd2;
+}
+.annotator-wrapper .annotator-hl.nested-2 {
+  background: #ffffb9;
+}
+.annotator-wrapper .annotator-hl.nested-3 {
+  background: #ffffa8;
+}
+.annotator-wrapper .annotator-hl.active {
+  background: #ffdede;
+}
+.annotator-wrapper .annotator-hl.active.nested-1 {
+  background: #ffdede;
+}
+.annotator-wrapper .annotator-hl.active.nested-2 {
+  background: #ffcdcd;
+}
+.annotator-wrapper .annotator-hl.active.nested-3 {
+  background: #ffbfbf;
+}
+.annotator-wrapper .annotator-hl.hidden {
+  background: transparent;
+}
+.annotator-wrapper blockquote {
+  width: 500px;
+}
+.annotator-wrapper .text-container {
+  position: relative;
+  width: 600px;
+}
+
+/* include #container to increase specificity */
+.hide-annotations #container .annotator-wrapper .annotator-hl {
+  background: transparent;
+}
+
+#annotation-panel {
+  font-family: verdana, sans-serif;
+  color: #444;
+  font-size: 11px;
+  position:relative;
+  top:0;
+  overflow: scroll;
+  position: fixed;
+  right: 32px;
+}
+
+#annotation-panel .annotation-pane {
+  /*position:relative;
+  left:0;*/
+  margin-top:20px;
+  /*overflow-y: scroll;*/
+  overflow-x: visible;
+  /*border:1px solid #ccc;*/
+  padding:10px 10px 0;
+  width:100%;
+  background: #fff;
+  z-index:1000;
+}
+
+#annotation-panel .annotation-pane.active {
+  box-shadow:1px 1px 6px #333;
+  z-index:2000;
+  max-height:none !important;
+}
+
+#annotation-panel .expand-pane {
+  position:absolute;
+  top:0;
+  right:0;
+}
+
+#annotation-panel .annotation-contents {
+  margin-bottom:5px;
+  cursor: pointer;
+}
+
+#annotation-panel .annotation-contents * {
+  vertical-align: middle;
+}
+
+#annotation-panel .annotation-contents .annotation {
+  max-height:3.8em;
+  overflow:hidden;
+  position:relative;
+}
+
+#annotation-panel .annotation-contents .annotation:before,
+#annotation-panel .annotation-contents .annotation:after {
+  content: " ";
+  display: table;
+}
+
+#annotation-panel .annotation-contents .annotation:after {
+  clear: both;
+  content: " ";
+  background: url(../img/gradient-mask.png) bottom right;
+  width: 100%;
+  height: 20px;
+  position: absolute;
+  top: 2.2em;
+  z-index: 1500;
+  left: 0;    
+}
+
+#annotation-panel.full .annotation-contents .annotation:after,
+#annotation-panel .annotation-contents .active:after {
+  background: none;
+  position:static;
+  height:0;
+}
+
+/*
+#annotation-panel .annotation-contents .annotation.long {
+  position:relative;
+}
+
+#annotation-panel .annotation-contents .annotation.long:after {
+  content: " ";
+  background: url(../img/gradient-mask.png) bottom right;
+  width: 100%;
+  height: 20px;
+  position: absolute;
+  top: 2.2em;
+  z-index: 1500;
+  left: 0;  
+}
+
+#annotation-panel .annotation-contents .active.long:after {
+  display:none;
+}*/
+
+/**
+ * If an annotation is active (hovered over) or if showing full text,
+ * remove max height restriction and overflow properties.
+ */
+#annotation-panel.full .annotation-contents .annotation,
+#annotation-panel .annotation-contents .annotation.active {
+  max-height:none;
+  overflow:visible;
+}
+
+#annotation-panel .annotation-contents img {
+  margin-right: 5px;
+  height: 24px;
+  width: 24px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  float:left;
+}
+
+/*
+ * Snippets are shown by default, no class required.
+ */
+#annotation-panel .annotation-contents .text {
+  padding-bottom: 4px;
+  margin-left: 3px;
+  position:relative;
+  z-index:800;
+  cursor: text;
+}
+
+#annotation-panel.icons .annotation-contents .user-id,
+#annotation-panel.icons .annotation-contents .text {
+  display:none;
+}
+
+#annotation-panel.icons .annotation-contents {
+  float:left;
+}
+
+#annotation-panel .annotation-contents .user-id {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+#annotation-panel .annotation.active {
+  background: lightpink;
+}
+
+#annotation-panel .annotation.active img {
+  border: 1px solid red;
+}
+
+#scrollbar {
+  width: 24px;
+  height:100%;
+  position: fixed;
+  top: 51px; /* hard-coded for now to fit under the .annotation-menubar */
+  right: 0;
+  bottom: 0;
+  background: #333;
+}
+#scrollbar.hidden {
+  display: none;
+}
+#scrollbar div.scrollbar-block {
+  position: fixed;
+  opacity: .3;
+  background: yellow;
+  width: 25px;
+}
+#scrollbar div.scrollbar-block.active {
+  background: red;
+  opacity: 1;
+  margin-left: -3px;
+  padding-right: 3px;
+  z-index: 100;
+}
+.annotator-viewer {
+  position: fixed;
+  top: 0;
+  right: 100px;
+  height: 100%;
+}
+.annotator-editor .annotator-controls .annotator-save {
+  display: none;
+}
+
+/* Append text to this element to measure the height; used to
+ * determine if annotation text will need a class of "long" for shortening
+ */
+#measuring-block {
+  display:none;
+  width:385px;
+}
+
+@media (min-width: 1400px){
+  #annotation-panel {
+    right: 20%;
+  }
+}

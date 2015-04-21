@@ -502,59 +502,9 @@ console.log("Adding new annotation to existing pane ", annotationPane);
                 } 
             });            
 
-
-//console.log("Highlight start", highlightStart);
-        //bringNewAnnotationIntoView(highlightStart);
         this.bringAnnotationIntoView({ target: highlightStart[0] });
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
-    
-    function bringNewAnnotationIntoView(highlight){        
-        //the highlight clicked
-        var annotationHighlight = highlight;
-        var className = annotationHighlight[0].className;
-        var annotationId = getAnnotationIdFromClass(className);
-        //the corresponding annotation for this highlight
-        var annotation = $('#annotation-panel .' + annotationId);
-        //what to bring into view
-        var highlightTop = $(annotationHighlight).offset().top;
-console.log("Trying to get offset for annotation. ", annotation);
-//STILL THROWING ERRORS
-        //current position of annotation in annotation panel
-        var annotationTop = annotation.offset().top;
-
-        var annotationPositionTop = annotation.position().top;
-        //get top for panel
-        var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
-
-        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
-        var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
-        
-        var windowScrollTop = $(window).scrollTop();
-        var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
-//console.log(windowScrollTop, windowScrollBottom, annotationTop);
-        //if(annotationTop >= windowScrollTop && annotationTop <= windowScrollBottom){
-            //console.log("Annotation already in view.");
-        //} else {
-            $("#annotation-panel").velocity({ 
-                    top: topOfHighlight
-                }, 
-                { 
-                    duration: 400, 
-                    easing: [500, 50],
-                    complete: function(){
-                        //console.log("After scroll ----------");
-                        //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
-                        //console.log("Annotation top after: ", $("#annotation-panel ." + id).offset().top);
-                        //console.log("Highlight top after: ", $(highlightsInView[0]).offset().top);
-                    } 
-                }
-            );   
-        //}
-
-        //prevent the nested <span>s from causing multiple instances to fire
-        return false;
-    }
 
     Viewer.prototype.bringAnnotationIntoView = function(e){
 //console.log("bringAnnotationIntoView");        
@@ -592,7 +542,11 @@ console.log("Bring annotation into view for ID: ", annotationId);
                 { 
                     duration: 400, 
                     easing: [500, 50],
-                    complete: function(){
+                    complete: function(element){
+                        if(topOfHighlight < 0){
+                            //get rid of excess white space left behind by moving the annotations up
+                            $(element).css("margin-bottom", topOfHighlight);    
+                        }             
                         //console.log("After scroll ----------");
                         //console.log("Highlight offset top: ", $(annotationHighlight).offset().top);
                         //console.log("Annotation offset top: ", $("#annotation-panel ." + annotationId).offset().top);
@@ -838,7 +792,11 @@ console.log("Scroll event fired.");
                             { 
                                 duration: 400, 
                                 easing: [500, 50],
-                                complete: function(){
+                                complete: function(element){
+                                    if(topOfViewableArea < 0){
+                                        //get rid of excess white space left behind by moving the annotations up
+                                        $(element).css("margin-bottom", topOfViewableArea);    
+                                    }                                    
                                     //console.log("After scroll ----------");
                                     //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
                                     //console.log("Annotation top after: ", $("#annotation-panel ." + id).offset().top);

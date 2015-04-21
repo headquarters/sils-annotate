@@ -242,6 +242,10 @@ Annotator.Plugin.Viewer = (function(_super) {
             var $this = $(this);
             var className = "id-" + $this.data().annotation.id;
             $this.addClass(className);
+
+            if($this.data().annotation.userId === AnnotationView.userId){
+                $this.addClass("my-annotation");
+            }
             
             //add a nested-depth class
             var numberOfHighlightParents = $this.parents(".annotator-hl").length + 1;
@@ -529,24 +533,24 @@ console.log("Trying to get offset for annotation. ", annotation);
         var windowScrollTop = $(window).scrollTop();
         var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
 //console.log(windowScrollTop, windowScrollBottom, annotationTop);
-        if(annotationTop >= windowScrollTop && annotationTop <= windowScrollBottom){
+        //if(annotationTop >= windowScrollTop && annotationTop <= windowScrollBottom){
             //console.log("Annotation already in view.");
-        } else {
+        //} else {
             $("#annotation-panel").velocity({ 
-                                top: topOfHighlight
-                            }, 
-                            { 
-                                duration: 400, 
-                                easing: [500, 50],
-                                complete: function(){
-                                    //console.log("After scroll ----------");
-                                    //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
-                                    //console.log("Annotation top after: ", $("#annotation-panel ." + id).offset().top);
-                                    //console.log("Highlight top after: ", $(highlightsInView[0]).offset().top);
-                                } 
-                            }
-                        );   
-        }
+                    top: topOfHighlight
+                }, 
+                { 
+                    duration: 400, 
+                    easing: [500, 50],
+                    complete: function(){
+                        //console.log("After scroll ----------");
+                        //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
+                        //console.log("Annotation top after: ", $("#annotation-panel ." + id).offset().top);
+                        //console.log("Highlight top after: ", $(highlightsInView[0]).offset().top);
+                    } 
+                }
+            );   
+        //}
 
         //prevent the nested <span>s from causing multiple instances to fire
         return false;
@@ -579,9 +583,9 @@ console.log("Bring annotation into view for ID: ", annotationId);
 //console.log("Highlight offset top: ", highlightTop); 
 //console.log("Annotation offset top: ", annotationTop);
 //console.log("Top of highlight: ", topOfHighlight); 
-        if(annotationPositionTop >= windowScrollTop && annotationPositionTop <= windowScrollBottom){
-            console.log("Annotation already in view.");
-        } else {
+        //if(annotationPositionTop >= windowScrollTop && annotationPositionTop <= windowScrollBottom){
+        //    console.log("Annotation already in view.");
+        //} else {
             $("#annotation-panel").velocity({ 
                     top: topOfHighlight
                 }, 
@@ -596,7 +600,7 @@ console.log("Bring annotation into view for ID: ", annotationId);
                     } 
                 }
             );   
-        }
+        //}
 
         //prevent the nested <span>s from causing multiple instances to fire
         //return false;

@@ -244,7 +244,15 @@ Annotator = (function(_super) {
       normed = normedRanges[_j];
       annotation.quote.push($.trim(normed.text()));
       annotation.ranges.push(normed.serialize(this.wrapper[0], '.annotator-hl'));
-      $.merge(annotation.highlights, this.highlightRange(normed));
+
+/* MODIFIED */
+      if (window.location.href.match(/user=(\w+)/)[1] === annotation.userId){
+        //if userId in URL matches this annotation's userId add extra "my-annotation" class
+        $.merge(annotation.highlights, this.highlightRange(normed, "annotator-hl my-annotation"));
+      } else {
+        $.merge(annotation.highlights, this.highlightRange(normed));
+      }
+/* END MODIFIED */
     }
     annotation.quote = annotation.quote.join(' / ');
     $(annotation.highlights).data('annotation', annotation);
@@ -325,7 +333,7 @@ Annotator = (function(_super) {
     _ref = normedRange.textNodes();
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      node = _ref[_i];
+      node = _ref[_i];   
       if (!white.test(node.nodeValue)) {
         _results.push($(node).wrapAll(hl).parent().show()[0]);
       }

@@ -139,7 +139,11 @@ Annotator.Plugin.Viewer = (function(_super) {
             return false;
         }
         
-        var activeIdsSelector = "." + shortestIds.join(", .")
+        shortestIds = shortestIds.map(function(s){
+            return "[data-annotation-id='" + s + "']";
+        });
+
+        var activeIdsSelector = shortestIds.join(", ");
         $(activeIdsSelector).find(".annotator-hl").andSelf().addClass("active");
         
         var annotationInPane = $(activeIdsSelector, annotationPanel);
@@ -152,9 +156,9 @@ Annotator.Plugin.Viewer = (function(_super) {
      */    
     function annotationFocus(annotations) { 
         $(annotations).each(function(){
-            var thisId = getAnnotationIdFromClass(this.className);
+            var thisId = $(this).data("annotation").id;//getAnnotationIdFromClass(this.className);
 //console.log(thisId, $('.annotator-hl.' + thisId).text().length);
-            focusedIds[thisId] = $('.annotator-hl.' + thisId).text().length;
+            focusedIds[thisId] = $('.annotator-hl[data-annotation-id="' + thisId + '"]').text().length;
         });
 
         activateShortestId();
@@ -165,7 +169,7 @@ Annotator.Plugin.Viewer = (function(_super) {
      * Deletes the annotation ID from focusedIds on blur.
      */
     function annotationBlur(annotation){     
-        var annotationId = getAnnotationIdFromClass(annotation.className);
+        var annotationId = $(annotation).data("annotation").id;//getAnnotationIdFromClass(annotation.className);
         delete focusedIds[annotationId];
         activateShortestId();
     }
@@ -217,7 +221,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         var annotationClass = "annotation id-" + annotation.id;
         
         var annotationContents = '<div class="annotation-contents">\
-                                    <div class="' + annotationClass + '">\
+                                    <div class="' + annotationClass + '" data-annotation-id="' + annotation.id + '">\
                                         <img src="/static/' + interfaceName + '/img/users/' + annotation.userId + '.png" alt="" />\
                                         <span class="user-id">' + annotation.userId + '</span>\
                                         <span class="text">' + annotation.text + '</span>\
@@ -299,11 +303,31 @@ Annotator.Plugin.Viewer = (function(_super) {
         }).on("mouseleave", ".annotator-hl:not(.hidden)", function(e){
             annotationBlur(this);
         });
-        
-        $(document).on("mouseenter", ".annotation", function(e){
-            var id = getAnnotationIdFromClass(this.className);
-            var annotation = $(".annotator-hl." + id);
 
+/*        
+        $(document).on("mouseover", ".annotator-hl:not(.hidden)", function(e){
+            var targets = $([]);
+            var highlight = $(e.target).parents('.annotator-hl').addBack();
+
+            highlight.map(function(){
+                //add highlights for this ID
+                highlight.add($(".annotator-hl[data-annotation-id='" + $(this).data("annotation").id + ']"'));
+
+                //add annotations for this ID
+                highlight.add($("#annotation-panel .annotation.id-" + $(this).data("annotation").id));
+            });
+
+            //highlight.add(annotations.substring(0, annotations.length - 2)).addClass("active");
+            //highlight.addClass("active");
+            console.log($(e.target));
+        }).on("mouseout", ".annotator-hl:not(.hidden)", function(e){
+            
+        });
+*/        
+        $(document).on("mouseenter", ".annotation", function(e){
+            var id = $(this).data("annotation-id");//getAnnotationIdFromClass(this.className);
+            var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
+console.log("mouseenter", annotation);
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
                 var text = "edit";
                 if ($(this).children(".text").text().length > 0){
@@ -315,8 +339,9 @@ Annotator.Plugin.Viewer = (function(_super) {
             //pass DOM elements to focus
             annotationFocus(annotation[0]);
         }).on("mouseleave", ".annotation", function(e){
-            var id = getAnnotationIdFromClass(this.className);
-            var annotation = $(".annotator-hl." + id);
+            var id = $(this).data("annotation-id");//getAnnotationIdFromClass(this.className);
+console.log("mouseleave", annotation);   
+            var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
 
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
                 if ($(this).children(".text").text() == "edit"){
@@ -375,7 +400,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $("#all-annotations-count").text(numberOfAnnotationsByAllUsers);
         $("#number-of-annotators").text(numberOfUsers);
         
-        setAnnotationHighlightClassNames();
+        //setAnnotationHighlightClassNames();
         
         var annotationPanes = "";
 //console.time("Writing annotations");

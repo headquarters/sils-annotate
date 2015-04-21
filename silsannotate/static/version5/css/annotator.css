@@ -42,15 +42,15 @@
 
 /* Annotator Highlight
 -------------------------------------------------------------------- */
-/*
+
 .annotator-hl {
 	background: rgba(255, 255, 10, 0.3);
-}*/
+}
 /**
 MODIFIED: Instead of overriding these in main.css, replace them here
 to fix the "flicker" of different yellows that shows up as CSS files load
 */
-.annotator-wrapper .annotator-hl.nested-1 {
+/*.annotator-wrapper .annotator-hl.nested-1 {
   background: #ffffd2;
 }
 .annotator-wrapper .annotator-hl.nested-2 {
@@ -71,13 +71,20 @@ to fix the "flicker" of different yellows that shows up as CSS files load
 .annotator-wrapper .annotator-hl.active.nested-3 {
   background: #ffbfbf;
 }
+*/
+
 .annotator-wrapper .annotator-hl.my-annotation {
-  background: lightblue; 
+  background: rgba(108, 255, 255, 0.3); 
 }
-/*
+
 .annotator-wrapper .annotator-hl.active {
-  background: rgba(255, 222, 222, 0.7);
-}*/
+  background: rgba(255, 222, 222, 0.8);
+}
+
+
+.annotator-wrapper .annotator-hl.my-annotation.active {
+  background: rgba(108, 179, 255, 0.8); 
+}
 
 .annotator-hl-temporary {
 	background: rgba(0, 124, 255, 0.3);

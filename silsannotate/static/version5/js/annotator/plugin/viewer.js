@@ -28,22 +28,26 @@ Annotator.Plugin.Viewer = (function(_super) {
                         <div class="info-item">Your annotations: <span id="current-user-annotations-count"></span></div>\
                         <div class="info-item">All annotations: <span id="all-annotations-count"></span></div>\
                         <div class="info-item">Number of users: <span id="number-of-annotators"></span></div>\
+                        <div class="display-controls"> \
+                            Show: \
+                            <a href="#icons" data-mode="icons" title="Icons">Icons</a> |\
+                            <a href="#snippets" data-mode="snippets" class="active" title="Snippets">Snippets</a> |\
+                            <a href="#full" data-mode="full" title="Full text">Full Text</a> <br /> \
+                        <a href="#hide-empty-annotations">Hide Empty Annotations</a> \
+                        </div> \
                     </div>';
     //the menu bar at the top of the screen that holds all the interface icons                    
     var menuBar =   '<div class="annotation-menubar">\
                         <div class="menu-container">\
                             <div class="mode-controls controls">\
-                                <a href="#highlight" data-mode="highlight" title="Highlight" class="active">\
-                                    <img src="/static/' + interfaceName + '/img/highlight-icon.png" alt="Highlight" />\
-                                </a>\
                                 <a href="#select" data-mode="select" title="Select">\
                                     <img src="/static/' + interfaceName + '/img/select-icon.png" alt="Select" />\
                                 </a>\
+                                <a href="#highlight" data-mode="highlight" title="Highlight" class="active">\
+                                    <img src="/static/' + interfaceName + '/img/highlight-icon.png" alt="Highlight" />\
+                                </a>\
                             </div>\
                             <div class="highlight-controls controls">\
-                                <a href="#hide-highlights" title="Hide highlights">\
-                                    <img src="/static/' + interfaceName + '/img/highlights-off-icon.png" alt="Hide highlights" />\
-                                </a>\
                                 <a href="#show-my-highlights" title="Show only my highlights">\
                                     <img src="/static/' + interfaceName + '/img/highlights-mine-only.png" alt="Show only my highlights" />\
                                 </a>\
@@ -54,17 +58,6 @@ Annotator.Plugin.Viewer = (function(_super) {
                             <div class="info-control controls">\
                                 <a href="#annotation-info" class="info-panel-trigger" title="Info">\
                                     <img src="/static/' + interfaceName + '/img/info-icon.png" alt="Info" />\
-                                </a>\
-                            </div>\
-                            <div class="display-controls controls">\
-                                <a href="#icons" data-mode="icons" title="Icons">\
-                                    <img src="/static/' + interfaceName + '/img/icons-icon.png" alt="Icons" />\
-                                </a>\
-                                <a href="#snippets" data-mode="snippets" class="active" title="Snippets">\
-                                    <img src="/static/' + interfaceName + '/img/snippets-icon.png" alt="Snippets" />\
-                                </a>\
-                                <a href="#full" data-mode="full" title="Full text">\
-                                    <img src="/static/' + interfaceName + '/img/full-icon.png" alt="Full text" />\
                                 </a>\
                             </div>\
                         </div>\
@@ -344,13 +337,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         this.bringAnnotationIntoView = __bind(this.bringAnnotationIntoView, this);
         
         this.disableDefaultEvents();
-
-        //set highlighting by default
-        $(document).unbind({
-            "mouseup": Annotator.checkForEndSelection
-        }).bind({
-            "mouseup": this.saveHighlight
-        }); 
         
         //attach menubar controls here...not working as part of prototype.events for some reason
         $(document).on("click", ".annotation-menubar .mode-controls a", this.changeInteractiveMode);
@@ -375,9 +361,7 @@ Annotator.Plugin.Viewer = (function(_super) {
 
             $this.attr("target", "_blank");
         });
-        $(window).on("scroll", function(e){
-            //console.log("scrolled", e);
-        });
+
     }
     
     Viewer.prototype.showAnnotations = function(annotations) {
@@ -883,19 +867,12 @@ console.time("changeInteractiveMode");
         } else {
             //allow highlighting and annotating
             $(document).unbind({
-                "mouseup": this.annotator.checkForEndSelection,
-            }).bind({
-                "mouseup": this.saveHighlight
-            });
-        } /*else {
-            //enable annotating (default)
-            $(document).unbind({
                 "mouseup": this.saveHighlight
             }).bind({
                 "mouseup": this.annotator.checkForEndSelection,
                 "mousedown": this.annotator.checkForStartSelection
             });
-        }*/
+        } 
         
         $("article").removeClass(interactiveMode).addClass(newInteractiveMode);
         

@@ -116,7 +116,7 @@ p,h1,h2,h3,h4,h5,h6,
 
 .annotation-menubar .highlight-controls {
   float:left;
-  margin-left:30%;
+  margin-left:35%;
 }
 .annotation-menubar .display-controls,
 .annotation-menubar .info-control {
@@ -131,7 +131,7 @@ p,h1,h2,h3,h4,h5,h6,
   font-family:Arial, sans-serif;
   position:fixed;
   top:3em;
-  right:-200px;
+  right:-400px;
   background: #ccc;
   padding:10px 20px 10px;  
 }
@@ -142,7 +142,7 @@ p,h1,h2,h3,h4,h5,h6,
 
 .annotation-info,
 .annotation-info.visible {
-  transition:right 0.75s;
+  transition:right 0.25s;
 }
 
 /*

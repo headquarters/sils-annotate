@@ -33,7 +33,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                             <a href="#icons" data-mode="icons" title="Icons">Icons</a> |\
                             <a href="#snippets" data-mode="snippets" class="active" title="Snippets">Snippets</a> |\
                             <a href="#full" data-mode="full" title="Full text">Full Text</a> <br /> \
-                        <a href="#hide-empty-annotations">Hide Empty Annotations</a> \
+                        <a href="#hide-empty-annotations" class="hide-empty-annotations">Hide Empty Annotations</a> \
                         </div> \
                     </div>';
     //the menu bar at the top of the screen that holds all the interface icons                    
@@ -235,7 +235,10 @@ Annotator.Plugin.Viewer = (function(_super) {
     };
     
     /**
-     *
+     * Adds "my-annotation" class to highlights the current user created. 
+     * Adds data-annotation-id attribute to highlights.
+     * @param {jQuery Object} highlightElements - The elements to add classes to.
+     * @returns void
      */
     function setAnnotationHighlightClassNames(highlightElements){
         var highlights;
@@ -283,10 +286,12 @@ Annotator.Plugin.Viewer = (function(_super) {
         //this list is chosen based on what makes the most sense in an article format
         textDivisions = $("p,h1,h2,h3,h4,h5,h6");
         
+        //add the UI elements to the page
         $("#container").append(annotationPanel);
         $(document.body).append(menuBar);
         $(document.body).append(infoPanel);
         
+        //get the height of the menu bar; helps with adjusting vertical placement of other items
         menuBarHeight = $(".annotation-menubar").height();
 //DEBUG 
         var readingSection = $('<div id="reading-section"></div>').css({
@@ -310,29 +315,9 @@ Annotator.Plugin.Viewer = (function(_super) {
         }).on("mouseleave", ".annotator-hl:not(.hidden)", function(e){
             annotationBlur(this);
         });
-
-/*        
-        $(document).on("mouseover", ".annotator-hl:not(.hidden)", function(e){
-            var targets = $([]);
-            var highlight = $(e.target).parents('.annotator-hl').addBack();
-
-            highlight.map(function(){
-                //add highlights for this ID
-                highlight.add($(".annotator-hl[data-annotation-id='" + $(this).data("annotation").id + ']"'));
-
-                //add annotations for this ID
-                highlight.add($("#annotation-panel .annotation.id-" + $(this).data("annotation").id));
-            });
-
-            //highlight.add(annotations.substring(0, annotations.length - 2)).addClass("active");
-            //highlight.addClass("active");
-            console.log($(e.target));
-        }).on("mouseout", ".annotator-hl:not(.hidden)", function(e){
-            
-        });
-*/        
+      
         $(document).on("mouseenter", ".annotation", function(e){
-            var id = $(this).data("annotation-id");//getAnnotationIdFromClass(this.className);
+            var id = $(this).data("annotation-id");
             var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
 //console.log("mouseenter", annotation);
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
@@ -346,7 +331,7 @@ Annotator.Plugin.Viewer = (function(_super) {
             //pass DOM elements to focus
             annotationFocus(annotation[0]);
         }).on("mouseleave", ".annotation", function(e){
-            var id = $(this).data("annotation-id");//getAnnotationIdFromClass(this.className);
+            var id = $(this).data("annotation-id");
 //console.log("mouseleave", annotation);   
             var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
 
@@ -371,12 +356,14 @@ Annotator.Plugin.Viewer = (function(_super) {
         this.saveHighlight = __bind(this.saveHighlight, this);
         this.editAnnotation = __bind(this.editAnnotation, this);        
         this.bringAnnotationIntoView = __bind(this.bringAnnotationIntoView, this);
+        this.hideEmptyAnnotations = __bind(this.hideEmptyAnnotations, this);
         
         this.disableDefaultEvents();
         
         //attach menubar controls here...not working as part of prototype.events for some reason
         $(document).on("click", ".annotation-menubar .mode-controls a", this.changeInteractiveMode);
-        $(document).on("click", ".annotation-menubar .display-controls a", this.changeDisplayMode);;
+        $(document).on("click", ".annotation-info .display-controls a", this.changeDisplayMode);
+        $(document).on("click", ".annotation-info .hide-empty-annotations", this.hideEmptyAnnotations);
         $(document).on("click", ".annotation-menubar .highlight-controls a", this.toggleHighlights);
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#scrollbar", this.goToScrollbarClickPosition);
@@ -385,7 +372,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         $(document).on("scroll", keepAnnotationsInView);
-        //$(document).on("click", "article a", function(e){ console.log("clicked on link", e); });
 
         $("article .reference").each(function(){
             var $this = $(this);
@@ -406,8 +392,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         $("#current-user-annotations-count").text(numberOfAnnotationsByCurrentUser);
         $("#all-annotations-count").text(numberOfAnnotationsByAllUsers);
         $("#number-of-annotators").text(numberOfUsers);
-        
-        //setAnnotationHighlightClassNames();
         
         var annotationPanes = "";
 //console.time("Writing annotations");
@@ -595,15 +579,6 @@ console.log("Bring annotation into view for ID: ", annotationId, e);
     //this isn't bound to Viewer.prototype because that method of binding
     //makes `this` the Viewer object, rather than the clicked element
     //and `this` is always the .annotation element with this method
-    /**
-        User clicks an annotation to bring the corresponding highlight into view in the
-        article pane. If this scrolls the window, though, then keepAnnotationsInView will fire.
-
-
-        So, move the article instead? Then that would require resetting on any window scroll event...
-        Also, can't scroll window because the annotation panel will scroll with it.
-        How easy to pass a flag to keepAnnotationsInView to NOT run?
-    */
     function bringHighlightIntoView(e){  
         allowKeepAnnotationsInView = false;
         if(e.target.className === "text"){
@@ -683,94 +658,11 @@ console.log("Bring highlight into view for ID: ", annotationId);
                                 
                             }
                         });
-
-
-                        //DONE, SEEMS TO WORK
-                        /*$("#annotation-panel").velocity({ 
-                                top: topOfHighlight // + clickedOffset
-                                //top: topOfViewableArea
-                            }, 
-                            { 
-                                duration: 300, 
-                                easing: [500, 50],
-                                complete: function(){
-                                    //console.log("After scroll ----------");
-                                    //console.log("Highlight top: ", $(annotationHighlight).offset().top);
-                                    //console.log("Annotation top: ", $(annotation).offset().top);
-                                    //console.log("Annotation panel top: ", $("#annotation-panel").offset().top); 
-                                    clearTimeout(timer);
-                                    allowKeepAnnotationsInView = true;        
-                                    console.log("Set allowKeepAnnotationsInView", allowKeepAnnotationsInView);                               
-                                } 
-                            }
-                        );*/
                     } 
         //prevent the nested <span>s from causing multiple instances to fire
         //return false;
     }      
 
-    Viewer.prototype.disableDefaultEvents = function(e){
-        this._removeEvent(".annotator-hl", "mouseover", "onHighlightMouseover");
-    };
-    
-    Viewer.prototype.saveHighlight = function(e) {
-//console.log("Save highlight");
-/*        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"], e.target.nodeName.toLowerCase())){
-            //do not allow annotations that go outside the bounds of the text divisions
-            //i.e. this will fail if the target nodeName is "article"
-            return;
-        }*/
-        var adder = this.annotator.checkForEndSelection(e);
-//console.log("Save highlight", adder, e);
-        if(typeof adder == "undefined" || adder.css("display") === "none"){
-//console.log("adder:", typeof adder);            
-            //checkForEndSelection failed to find a valid selection    
-            return;
-        } else {
-            //valid end selection
-            //submit the annotator editor without any annotation text
-            this.annotator.editor.element.children("form").submit();
-        }
-    };
-
-    Viewer.prototype.editAnnotation = function(e){
-
-        var _this = this;
-        //TODO: rather than grabbing text, this should probably be a data attribute or class
-        var annotationText = $(e.target);
-        var userId = annotationText.prev(".user-id").text();
-        var text = annotationText.text() == "edit" ? "" : annotationText.text();
-        var editor = $("<textarea />").val(text);
-
-        if(userId !== AnnotationView.userId){
-            return;
-        }
-
-        console.log(editor);
-        annotationText.after(editor);
-        annotationText.hide();
-        editor.focus();
-
-
-        $(document).on("click.saveEditedAnnotation", function(){
-            editor.remove();
-            if(editor.val().length > 0){
-                annotationText.text(editor.val());
-                
-                //TODO: save it!
-                var id = annotationText.parents(".annotation").data("annotation-id")//getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
-                var annotation = $(".annotator-hl." + id).data().annotation;
-                annotation.text = editor.val();
-console.log(annotation);
-                annotationUpdated = true;
-                _this.publish('annotationUpdated', [annotation]);
-            }
-            annotationText.show();
-            $(document).off("click.saveEditedAnnotation");
-        });
-        //this.annotator.editor.load();
-    }    
-    
     function keepAnnotationsInView(e){   
 console.log("Scroll event fired.");
         var viewportThird = window.outerHeight / 4;
@@ -846,6 +738,69 @@ console.log("Scroll event fired.");
         }, 150);
     }    
 
+    Viewer.prototype.disableDefaultEvents = function(e){
+        this._removeEvent(".annotator-hl", "mouseover", "onHighlightMouseover");
+    };
+    
+    Viewer.prototype.saveHighlight = function(e) {
+//console.log("Save highlight");
+/*        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"], e.target.nodeName.toLowerCase())){
+            //do not allow annotations that go outside the bounds of the text divisions
+            //i.e. this will fail if the target nodeName is "article"
+            return;
+        }*/
+        var adder = this.annotator.checkForEndSelection(e);
+//console.log("Save highlight", adder, e);
+        if(typeof adder == "undefined" || adder.css("display") === "none"){
+//console.log("adder:", typeof adder);            
+            //checkForEndSelection failed to find a valid selection    
+            return;
+        } else {
+            //valid end selection
+            //submit the annotator editor without any annotation text
+            this.annotator.editor.element.children("form").submit();
+        }
+    };
+
+    Viewer.prototype.editAnnotation = function(e){
+
+        var _this = this;
+        //TODO: rather than grabbing text, this should probably be a data attribute or class
+        var annotationText = $(e.target);
+        var userId = annotationText.prev(".user-id").text();
+        var text = annotationText.text() == "edit" ? "" : annotationText.text();
+        var editor = $("<textarea />").val(text);
+
+        if(userId !== AnnotationView.userId){
+            return;
+        }
+
+        console.log(editor);
+        annotationText.after(editor);
+        annotationText.hide();
+        editor.focus();
+
+
+        $(document).on("click.saveEditedAnnotation", function(){
+            editor.remove();
+            if(editor.val().length > 0){
+                annotationText.text(editor.val());
+                
+                //TODO: save it!
+                var id = annotationText.parents(".annotation").data("annotation-id")//getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
+                var annotation = $(".annotator-hl." + id).data().annotation;
+                annotation.text = editor.val();
+console.log(annotation);
+                annotationUpdated = true;
+                _this.publish('annotationUpdated', [annotation]);
+            }
+            annotationText.show();
+            $(document).off("click.saveEditedAnnotation");
+        });
+        //this.annotator.editor.load();
+    }    
+    
+
     Viewer.prototype.changeInteractiveMode = function(e){
 console.time("changeInteractiveMode");    
         var link = $(e.target).parent();
@@ -855,14 +810,12 @@ console.time("changeInteractiveMode");
         if (newInteractiveMode === "select") {
             //disable annotating
             $(document).unbind({
-                "mouseup": this.saveHighlight,
+                "mouseup": this.annotator.checkForEndSelection,
                 "mousedown": this.annotator.checkForStartSelection
             });
         } else {
             //allow highlighting and annotating
-            $(document).unbind({
-                "mouseup": this.saveHighlight
-            }).bind({
+            $(document).bind({
                 "mouseup": this.annotator.checkForEndSelection,
                 "mousedown": this.annotator.checkForStartSelection
             });
@@ -879,7 +832,7 @@ console.timeEnd("changeInteractiveMode");
     
     Viewer.prototype.changeDisplayMode = function(e){
 console.time("changeDisplayMode");
-        var link = $(e.target).parent();
+        var link = $(e.target);
         var newDisplayMode = link.data("mode");
         
         annotationPanel.removeClass(displayMode).addClass(newDisplayMode);
@@ -889,6 +842,14 @@ console.time("changeDisplayMode");
         displayMode = newDisplayMode;
 console.timeEnd("changeDisplayMode");        
     };
+
+    Viewer.prototype.hideEmptyAnnotations = function(e){
+        //create array of annotations that have empty text
+
+        //get all of their IDs
+
+        //find those elements in the DOM and hide them
+    };    
     
     Viewer.prototype.toggleHighlights = function(e){
         e.preventDefault();
@@ -916,8 +877,8 @@ console.timeEnd("changeDisplayMode");
     }
     
     Viewer.prototype.goToScrollbarClickPosition = function(e){
-        var percentFromTop = ((e.clientY - menuBarHeight) / $("#scrollbar").height());
-        var offset = $("html").height() * percentFromTop;
+        var percentFromTop = ((e.clientY - menuBarHeight - 50) / $("#scrollbar").height());
+        var offset = $("article").height() * percentFromTop;
 console.log("% from top: ", percentFromTop, offset);        
         $("html").velocity("scroll", { offset: offset, duration: 500 });
     }
@@ -952,7 +913,8 @@ console.log("% from top: ", percentFromTop, offset);
     
     function showScrollbar() {
 //console.time("showScrollbar");
-        var availableScreenHeight = screen.height - menuBarHeight; 
+        //http://stackoverflow.com/questions/1248081/get-the-browser-viewport-dimensions-with-javascript
+        var availableScreenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - menuBarHeight; //$(window).height(); // - menuBarHeight; 
 
         scrollbar = $('<canvas id="scrollbar" width="24" height="' + availableScreenHeight + '"></canvas>');
         $(document.body).append(scrollbar);
@@ -966,10 +928,12 @@ console.log("% from top: ", percentFromTop, offset);
         
         var annotations = $("article .annotator-hl");
 
+console.log(availableScreenHeight, $("article").height(), scrollbarScaleFactor);        
+
         for(var i = 0; i < annotations.length; i++){
             var elem = annotations[i];
             var elem$ = $(elem);
-            var top = (elem$.offset().top * scrollbarScaleFactor);
+            var top = (elem$.offset().top) * scrollbarScaleFactor;
             var height = (elem$.height() * scrollbarScaleFactor);
             
             ctx.fillRect(0, top, 24, height);

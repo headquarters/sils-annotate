@@ -81,6 +81,7 @@ to fix the "flicker" of different yellows that shows up as CSS files load
   background: rgba(108, 255, 255, 0.3); 
 }
 
+.annotation.active,
 .annotator-wrapper .annotator-hl.active {
   background: rgba(255, 222, 222, 0.8);
 }

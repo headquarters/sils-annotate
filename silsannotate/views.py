@@ -146,24 +146,10 @@ def delete_annotation(id):
     
     g.db = couch[db_name]
 
-    doc = g.db[id]
+    doc = g.db.get(id)
 
-    # rev = doc['_rev']
-    rev = doc.json()['_rev']
+    result = g.db.delete(doc)
 
-    doc.delete(rev)
-    # resp = g.db.delete(rev)
-
-    print "REV"
-    print rev
-    print "RESPONSE"
-    print resp
-
-    #if "annotationstudy1-2014" != db_name: # and "annotationplaypen" != db_name:
-    #    couch_resp = g.db.save(doc)
-        # resp_object = { "id": couch_resp[0], "_rev": couch_resp[1] }
-
-    #print couch_resp
     # Sample
     # $ curl -i -X DELETE http://example.com/api/annotations/d41d8cd98f00b204e9800998ecf8427e
     # HTTP/1.0 204 NO CONTENT (no content)

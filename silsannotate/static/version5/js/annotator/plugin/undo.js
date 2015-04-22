@@ -35,17 +35,28 @@ Annotator.Plugin.Undo = (function(_super) {
     }
 
     Undo.prototype.undo = function(){
-        console.log("calling undo");
+        console.log("Undoing last annotation...");
 
-        var annotation = recentAnnotations.pop();
+        if(recentAnnotations.length > 0){
+            var annotation = recentAnnotations.pop();
+            var id = annotation.id;
 
-        this.annotator.deleteAnnotation(annotation);
+            //Delete AnnotatorJS-controlled annotation 
+            this.annotator.deleteAnnotation(annotation);
+
+            //Delete custom annotation
+            //Store removed to allow redo?
+            var removed = $("#annotation-panel [data-annotation-id='" + id + "']").remove();
+        }
     }
 
     Undo.prototype.addAnnotationToUndoList = function(annotation) {
         //show Undo icon
-        console.log("addAnnotationToUndoList", annotation);
-
+        //console.log("addAnnotationToUndoList", annotation);
+        if(recentAnnotations.length > 3){
+            //undo goes back 3 steps...this may be dangerous because other commands could happen in the mean time
+            recentAnnotations.pop();    
+        }
         recentAnnotations.push(annotation);
     };
 

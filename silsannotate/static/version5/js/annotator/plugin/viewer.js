@@ -254,15 +254,18 @@ Annotator.Plugin.Viewer = (function(_super) {
             if($this.data().annotation.userId === AnnotationView.userId){
                 $this.addClass("my-annotation");
             }
+
+            //FIXES: https://github.com/openannotation/annotator/issues/495
+            $this.attr("data-annotation-id", $this.data().annotation.id);
             
             //add a nested-depth class
-            var numberOfHighlightParents = $this.parents(".annotator-hl").length + 1;
+            /*var numberOfHighlightParents = $this.parents(".annotator-hl").length + 1;
             if (numberOfHighlightParents > 3){
                 numberOfHighlightParents = 3;
             }
             
             var nestedDepthClassName = "nested-" + numberOfHighlightParents;
-            $this.addClass(nestedDepthClassName);          
+            $this.addClass(nestedDepthClassName);*/          
         });
     }  
     
@@ -542,7 +545,7 @@ console.log(e);
         var annotationHighlight = e.target;
         var annotationId = $(e.target).data("annotation-id"); //getAnnotationIdFromClass(annotationHighlight.className);
 
-console.log("Bring annotation into view for ID: ", annotationId);
+console.log("Bring annotation into view for ID: ", annotationId, e);
         //the corresponding annotation for this highlight
         var annotation = $('#annotation-panel [data-annotation-id="' + annotationId + '"]');
         //what to bring into view

@@ -336,10 +336,10 @@ p,h1,h2,h3,h4,h5,h6,
   font-weight: bold;
   margin-right: 4px;
 }
-
+/*
 #annotation-panel .annotation.active {
   background: lightpink;
-}
+}*/
 
 #annotation-panel .annotation.active img {
   border: 1px solid red;

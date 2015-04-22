@@ -1,5 +1,6 @@
 import json, couchdb, os, shortuuid
 import time
+import inspect
 from flask import render_template, request, make_response, g, abort
 from jinja2 import TemplateNotFound
 from silsannotate import app
@@ -20,9 +21,6 @@ def set_db():
         # Needs a try/except block, but can't figure out what kind of exception a missing DB throws
         g.db = couch[db_name]
         g.api_root = "/api"
-
-    
-    
 
 @app.teardown_request
 def teardown(exception=None):
@@ -68,8 +66,9 @@ def search():
     order by ranges[0].start?
     '''    
     view = g.db.view("main/by_textId")
-
+    
     matches = view[textId]
+
     ret = {
         "total": matches.total_rows,
         "rows": []
@@ -137,3 +136,36 @@ def edit_annotation(id):
     resp = make_response(json.dumps(resp_object, indent=4), 200)
     resp.mimetype = "application/json"
     return resp
+
+@app.route("/api/annotations/<id>", methods=["DELETE"])
+def delete_annotation(id):
+    doc = request.json
+
+    # Which database to save to?
+    db_name = doc["db"]
+    
+    g.db = couch[db_name]
+
+    doc = g.db[id]
+
+    # rev = doc['_rev']
+    rev = doc.json()['_rev']
+
+    doc.delete(rev)
+    # resp = g.db.delete(rev)
+
+    print "REV"
+    print rev
+    print "RESPONSE"
+    print resp
+
+    #if "annotationstudy1-2014" != db_name: # and "annotationplaypen" != db_name:
+    #    couch_resp = g.db.save(doc)
+        # resp_object = { "id": couch_resp[0], "_rev": couch_resp[1] }
+
+    #print couch_resp
+    # Sample
+    # $ curl -i -X DELETE http://example.com/api/annotations/d41d8cd98f00b204e9800998ecf8427e
+    # HTTP/1.0 204 NO CONTENT (no content)
+    # Content-Length: 0
+    return '', 204

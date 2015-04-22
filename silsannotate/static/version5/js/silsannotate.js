@@ -34,7 +34,8 @@ var AnnotationView = (function($, window){
         });
         
         content.annotator("addPlugin", "Viewer");
-        content.annotator("addPlugin", "Scrollbar");
+        content.annotator("addPlugin", "Undo");
+        //content.annotator("addPlugin", "Scrollbar");
     };    
     
     self.init = function(){

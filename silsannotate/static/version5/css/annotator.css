@@ -73,6 +73,10 @@ to fix the "flicker" of different yellows that shows up as CSS files load
 }
 */
 
+.annotation.my-annotation {
+	background: rgba(108, 255, 255, 0.1); 
+}
+
 .annotator-wrapper .annotator-hl.my-annotation {
   background: rgba(108, 255, 255, 0.3); 
 }
@@ -81,8 +85,8 @@ to fix the "flicker" of different yellows that shows up as CSS files load
   background: rgba(255, 222, 222, 0.8);
 }
 
-
-.annotator-wrapper .annotator-hl.my-annotation.active {
+.annotator-wrapper .annotator-hl.my-annotation.active,
+.annotation.my-annotation.active {
   background: rgba(108, 179, 255, 0.8); 
 }
 
@@ -101,11 +105,11 @@ to fix the "flicker" of different yellows that shows up as CSS files load
        you should update Annotator._setupDynamicStyle() */
 .annotator-adder,
 .annotator-outer {
-	z-index: 1020;
+	z-index: 5000;
 }
 
 .annotator-notice {
-	z-index: 4000;
+	z-index: 6000;
 }
 
 .annotator-filter {

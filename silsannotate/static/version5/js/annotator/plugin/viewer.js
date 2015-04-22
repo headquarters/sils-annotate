@@ -219,6 +219,10 @@ Annotator.Plugin.Viewer = (function(_super) {
         }
         
         var annotationClass = "annotation id-" + annotation.id;
+
+        if(AnnotationView.userId === annotation.userId){
+            annotationClass += " my-annotation";
+        }
         
         var annotationContents = '<div class="annotation-contents">\
                                     <div class="' + annotationClass + '" data-annotation-id="' + annotation.id + '">\
@@ -327,7 +331,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("mouseenter", ".annotation", function(e){
             var id = $(this).data("annotation-id");//getAnnotationIdFromClass(this.className);
             var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
-console.log("mouseenter", annotation);
+//console.log("mouseenter", annotation);
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
                 var text = "edit";
                 if ($(this).children(".text").text().length > 0){
@@ -340,7 +344,7 @@ console.log("mouseenter", annotation);
             annotationFocus(annotation[0]);
         }).on("mouseleave", ".annotation", function(e){
             var id = $(this).data("annotation-id");//getAnnotationIdFromClass(this.className);
-console.log("mouseleave", annotation);   
+//console.log("mouseleave", annotation);   
             var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
 
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
@@ -536,11 +540,11 @@ console.log("Adding new annotation to existing pane ", annotationPane);
 console.log(e);
         //the highlight clicked
         var annotationHighlight = e.target;
-        var annotationId = getAnnotationIdFromClass(annotationHighlight.className);
+        var annotationId = $(e.target).data("annotation-id"); //getAnnotationIdFromClass(annotationHighlight.className);
 
 console.log("Bring annotation into view for ID: ", annotationId);
         //the corresponding annotation for this highlight
-        var annotation = $('#annotation-panel .' + annotationId);
+        var annotation = $('#annotation-panel [data-annotation-id="' + annotationId + '"]');
         //what to bring into view
         var highlightTop = $(annotationHighlight).offset().top;
         //current position of annotation in annotation panel
@@ -608,8 +612,8 @@ console.log("Turning off scroll event.");
             $(document).off("scroll", keepAnnotationsInView);
         }
         var annotation = this;
-        var annotationId = getAnnotationIdFromClass(annotation.className);
-        var annotationHighlight = $('article .' + annotationId).eq(0);
+        var annotationId = $(annotation).data("annotation-id"); //getAnnotationIdFromClass(annotation.className);
+        var annotationHighlight = $('.annotator-hl[data-annotation-id="' + annotationId + '"]').eq(0);
 console.log("Bring highlight into view for ID: ", annotationId);        
         var annotationTop = $(annotation).offset().top;
         var annotationPositionTop = $(annotation).position().top;
@@ -751,7 +755,7 @@ console.log("Bring highlight into view for ID: ", annotationId);
                 annotationText.text(editor.val());
                 
                 //TODO: save it!
-                var id = getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
+                var id = annotationText.parents(".annotation").data("annotation-id")//getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
                 var annotation = $(".annotator-hl." + id).data().annotation;
                 annotation.text = editor.val();
 console.log(annotation);
@@ -790,7 +794,7 @@ console.log("Scroll event fired.");
                 try {
 
                     //$(highlightsInView[0])
-                    var id = getAnnotationIdFromClass(highlightsInView[0].className);
+                    var id = $(highlightsInView[0]).data("annotation-id"); //getAnnotationIdFromClass(highlightsInView[0].className);
                     //what to bring into view
                     var highlightTop = $(highlightsInView[0]).offset().top;
                     //current position of annotation in annotation panel

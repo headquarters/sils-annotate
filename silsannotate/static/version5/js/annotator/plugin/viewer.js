@@ -801,14 +801,14 @@ console.log("Scroll event fired.");
                     //what to bring into view
                     var highlightTop = $(highlightsInView[0]).offset().top;
                     //current position of annotation in annotation panel
-                    var annotationTop = $("#annotation-panel ." + id).offset().top;
-                    var annotationPositionTop = $("#annotation-panel ." + id).position().top;
+                    //var annotationTop = $("#annotation-panel [data-annotation-id='" + id + "']").offset().top;
+                    var annotationPositionTop = $("#annotation-panel [data-annotation-id='" + id + "']").position().top;
                     //get top for panel
                     var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
 
-                    var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop;
+                    //var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
                     var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
-
+                    
     //console.log("Before scroll ----------");
     //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
     //console.log("Annotation top: ", annotationTop); 

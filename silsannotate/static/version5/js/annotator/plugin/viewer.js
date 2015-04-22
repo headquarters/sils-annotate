@@ -384,6 +384,10 @@ Annotator.Plugin.Viewer = (function(_super) {
             $this.attr("target", "_blank");
         });
 
+        this.subscribe("annotationEditorHidden", function(e){
+            console.log("annotation editor hidden", e);
+        });
+
     }
     
     Viewer.prototype.showAnnotations = function(annotations) {

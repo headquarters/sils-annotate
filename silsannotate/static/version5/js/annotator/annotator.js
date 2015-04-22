@@ -374,6 +374,7 @@ Annotator = (function(_super) {
   };
 
   Annotator.prototype.showEditor = function(annotation, location) {
+console.log("show editor", annotation);
     this.editor.element.css(location);
     this.editor.load(annotation);
     this.publish('annotationEditorShown', [this.editor, annotation]);
@@ -476,10 +477,47 @@ Annotator = (function(_super) {
     if (event != null) {
       event.preventDefault();
     }
-    position = this.adder.position();
+
+    var remainingHighlight = $(".annotator-hl-temporary");
+
+console.log("on adder click", $(".annotator-hl-temporary"));
+
+    position = this.adder.position();    
     this.adder.hide();
     annotation = this.setupAnnotation(this.createAnnotation());
     $(annotation.highlights).addClass('annotator-hl-temporary');
+
+/****
+    var boundingBox = annotation.highlights[0].getBoundingClientRect();
+
+jQuery.fn.inlineOffset = function() {
+    var el = $('<i>&nbsp;</i>').css('display','inline').insertBefore(this[0]);
+    var pos = el.offset();
+    el.remove();
+    return pos;
+};
+
+  var inlineOffset = $(annotation.highlights[0]).inlineOffset()
+
+    //http://stackoverflow.com/a/11854456/360509
+    var body = document.body,
+    html = document.documentElement,
+    scrollTop = window.pageYOffset || html.scrollTop || body.scrollTop || 0,
+    scrollLeft = window.pageXOffset || html.scrollLeft || body.scrollLeft || 0,
+
+    box = annotation.highlights[0].getBoundingClientRect(),
+
+    top = box.top + scrollTop - $(annotation.highlights[0]).height(),
+    left = box.left + scrollLeft;
+
+    position = { top: inlineOffset.top - $(annotation.highlights[0]).height(), left: inlineOffset.left };
+//console.log("onAdderClick");
+console.log("Bounding Box: ", box);
+//console.log("Position: ", position);
+//console.log("jQuery offset: ", $(annotation.highlights[0]).offset());    
+//console.log("jQuery position: ", $(annotation.highlights[0]).position());  
+console.log("jQuery inline offset", $(annotation.highlights[0]).inlineOffset());  
+*/
     save = (function(_this) {
       return function() {
         cleanup();
@@ -499,6 +537,19 @@ Annotator = (function(_super) {
         return _this.unsubscribe('annotationEditorSubmit', save);
       };
     })(this);
+
+    if(remainingHighlight.length > 0){
+      var remainingAnnotation = remainingHighlight.data("annotation");
+
+      if (typeof remainingAnnotation.text === "undefined"){
+        remainingAnnotation.text = "";
+      }
+      this.unsubscribe('annotationEditorHidden', cancel);
+      this.unsubscribe('annotationEditorSubmit', save);
+      $(annotation.highlights).removeClass('annotator-hl-temporary');
+      this.publish('annotationCreated', [remainingAnnotation]);
+    }
+
     this.subscribe('annotationEditorHidden', cancel);
     this.subscribe('annotationEditorSubmit', save);
     return this.showEditor(annotation, position);

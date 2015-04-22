@@ -74,11 +74,12 @@ to fix the "flicker" of different yellows that shows up as CSS files load
 */
 
 .annotation.my-annotation {
-	background: rgba(108, 255, 255, 0.1); 
+	/*background: rgba(108, 255, 255, 0.1); */
+	background: rgba(189, 238, 255, 1);
 }
 
 .annotator-wrapper .annotator-hl.my-annotation {
-  background: rgba(108, 255, 255, 0.3); 
+  background: rgba(189, 238, 255, 1); 
 }
 
 .annotation.active,
@@ -88,7 +89,7 @@ to fix the "flicker" of different yellows that shows up as CSS files load
 
 .annotator-wrapper .annotator-hl.my-annotation.active,
 .annotation.my-annotation.active {
-  background: rgba(108, 179, 255, 0.8); 
+  background: rgba(127, 185, 255, 1); 
 }
 
 .annotator-hl-temporary {
@@ -170,6 +171,11 @@ to fix the "flicker" of different yellows that shows up as CSS files load
 	width: 0;
 	height: 0;
 }
+/*
+.annotator-outer.annotator-editor {
+	min-width:265px;
+	min-height:110px;
+}*/
 
 .annotator-widget {
 	margin: 0;

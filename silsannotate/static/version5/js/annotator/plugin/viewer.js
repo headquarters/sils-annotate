@@ -325,12 +325,16 @@ console.log("calling annotationBlue...");
             var id = $(this).data("annotation-id");
             var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
-                var text = "edit";
+                
+                var edit = $("<a href='#edit-annotation' class='edit-annotation'>Edit</a>");
+                $(this).append(edit);
+
+                /*var text = "edit";
                 if ($(this).children(".text").text().length > 0){
                     text = $(this).children(".text").text();
                 }
 
-                $(this).children(".text").text(text).css({ "font-style": "italic" });
+                $(this).children(".text").text(text).css({ "font-style": "italic" });*/
             }            
             //pass DOM elements to focus
             annotationFocus(annotation[0]);
@@ -339,9 +343,10 @@ console.log("calling annotationBlue...");
             var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
 
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
-                if ($(this).children(".text").text() == "edit"){
+                
+                /*if ($(this).children(".text").text() == "edit"){
                     $(this).children(".text").text("").css({ "font-style": "normal" });
-                }                               
+                }*/                               
             }
 
             //pass DOM elements to blur           
@@ -370,7 +375,7 @@ console.log("calling annotationBlue...");
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#scrollbar", this.goToScrollbarClickPosition);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
-        $(document).on("click", "#annotation-panel .annotation .text", this.editAnnotation);
+        $(document).on("click", "#annotation-panel .annotation .edit-annotation", this.editAnnotation);
         $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         $(document).on("scroll", keepAnnotationsInView);
@@ -385,11 +390,6 @@ console.log("calling annotationBlue...");
 
             $this.attr("target", "_blank");
         });
-
-        this.subscribe("annotationEditorHidden", function(e){
-            console.log("annotation editor hidden", e);
-        });
-
     }
     
     Viewer.prototype.showAnnotations = function(annotations) {
@@ -604,9 +604,9 @@ console.log("Bring annotation into view for ID: ", annotationId);
                 duration: 400, 
                 easing: [500, 50],
                 complete: function(element){
-                    if(topOfHighlight < 0){
+                    if(newAnnotationPanelTop < 0){
                         //get rid of excess white space left behind by moving the annotations up
-                        $(element).css("margin-bottom", topOfHighlight);    
+                        $(element).css("margin-bottom", newAnnotationPanelTop);    
                     }             
                     //console.log("After scroll ----------");
                     //console.log("Highlight offset top: ", $(annotationHighlight).offset().top);

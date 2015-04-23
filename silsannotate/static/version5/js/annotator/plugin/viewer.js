@@ -610,14 +610,10 @@ console.log("Bring annotation into view for ID: ", annotationId);
     //and `this` is always the .annotation element with this method
     function bringHighlightIntoView(e){  
         allowKeepAnnotationsInView = false;
-        if(e.target.className === "text"){
-            //don't run when clicking text, otherwise the view jumps when user is trying to edit an annotation
-            allowKeepAnnotationsInView = true;
-            return;
-        } else {
+        console.log(e.target);
 //console.log("Turning off scroll event.");            
-            $(document).off("scroll", keepAnnotationsInView);
-        }
+        $(document).off("scroll", keepAnnotationsInView);
+        
         var annotation = this;
         var annotationId = $(annotation).data("annotation-id"); //getAnnotationIdFromClass(annotation.className);
         var annotationHighlight = $('.annotator-hl[data-annotation-id="' + annotationId + '"]').eq(0);

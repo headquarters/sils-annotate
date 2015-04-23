@@ -19,14 +19,23 @@ article {
   padding:50px 50px 50px 100px;
   cursor: url(../img/highlight-cursor.png), auto;
   position:relative;
-  /*z-index:99;*/
+  z-index:100;
 }
 
-/*article.highlight {
-  cursor: url(../img/highlight-cursor.png), auto; 
-}*/
+#reading-section {
+  position: fixed;
+  top:35%;
+  height:35%;
+  width:800px;
+  height:25%;
+  opacity:0.5;
+  border: 1px solid #999;
+  z-index:50;
+  cursor: url(../img/highlight-cursor.png), auto;
+}
 
-article.select {
+.select #reading-section,
+.select article {
   cursor: auto;
 }
 
@@ -98,16 +107,16 @@ p,h1,h2,h3,h4,h5,h6,
 
 .annotation-menubar .controls a {
   display:inline-block;
-  border:1px solid #999;
+  border:2px solid #666;
   background:#fff;
-  border-radius:4px;
+  border-radius:10px;
   margin-right:1em;
-  padding:0.2em;
+  padding:3px
 }
 
 .annotation-menubar .controls a.active {
   border-color:#222;
-  background:rgb(190, 233, 255);
+  background:rgb(208, 231, 239);
 }
 
 .annotation-menubar .controls img {
@@ -242,6 +251,14 @@ p,h1,h2,h3,h4,h5,h6,
   max-height:3.8em;
   overflow:hidden;
   position:relative;
+}
+
+#annotation-panel .annotation-contents .annotation.hidden {
+  /* 
+    .hidden for a highlight just changes the background color
+    but here it hides the annotation 
+  */
+  display:none;
 }
 
 #annotation-panel .annotation-contents .annotation:before,

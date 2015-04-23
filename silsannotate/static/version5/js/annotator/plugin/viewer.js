@@ -32,7 +32,8 @@ Annotator.Plugin.Viewer = (function(_super) {
                             Show: \
                             <a href="#icons" data-mode="icons" title="Icons">Icons</a> |\
                             <a href="#snippets" data-mode="snippets" class="active" title="Snippets">Snippets</a> |\
-                            <a href="#full" data-mode="full" title="Full text">Full Text</a> <br /> \
+                            <a href="#full" data-mode="full" title="Full text">Full Text</a> \
+                        </div> \
                         <a href="#hide-empty-annotations" class="hide-empty-annotations">Hide Empty Annotations</a> \
                         </div> \
                     </div>';
@@ -91,6 +92,10 @@ Annotator.Plugin.Viewer = (function(_super) {
 
     //if an annotation was just updated or not
     var annotationUpdated = false;
+
+    var annotations = [];
+
+    var hidingEmptyAnnotations = false;
     
     Viewer.prototype.events = {
         "annotationsLoaded": "showAnnotations",
@@ -295,14 +300,9 @@ Annotator.Plugin.Viewer = (function(_super) {
         menuBarHeight = $(".annotation-menubar").height();
 //DEBUG 
         var readingSection = $('<div id="reading-section"></div>').css({
-            position: "fixed",
             top: (window.outerHeight / 4),
             bottom: ((window.outerHeight / 4) * 2),
-            height: (window.outerHeight / 4),
-            width: 800,
-            opacity: 0.5,
-            border: "1px solid #999",
-            zIndex: 50
+            height: (window.outerHeight / 4)
         });
 
         $(document.body).append(readingSection);
@@ -353,7 +353,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         this.toggleHighlights = __bind(this.toggleHighlights, this);
         this.goToScrollbarClickPosition = __bind(this.goToScrollbarClickPosition, this);
         this.disableDefaultEvents = __bind(this.disableDefaultEvents, this);
-        this.saveHighlight = __bind(this.saveHighlight, this);
         this.editAnnotation = __bind(this.editAnnotation, this);        
         this.bringAnnotationIntoView = __bind(this.bringAnnotationIntoView, this);
         this.hideEmptyAnnotations = __bind(this.hideEmptyAnnotations, this);
@@ -391,6 +390,8 @@ Annotator.Plugin.Viewer = (function(_super) {
     }
     
     Viewer.prototype.showAnnotations = function(annotations) {
+        this.annotations = annotations;
+
         getCounts(annotations);
         
         $("#current-user-annotations-count").text(numberOfAnnotationsByCurrentUser);
@@ -446,6 +447,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     }
     
     Viewer.prototype.showNewAnnotation = function(annotation){
+        annotations.push(annotation);
 console.log("showNewAnnotation", annotation);        
         if(annotationUpdated){
             annotationUpdated = false;
@@ -746,26 +748,6 @@ console.log("Scroll event fired.");
         this._removeEvent(".annotator-hl", "mouseover", "onHighlightMouseover");
     };
     
-    Viewer.prototype.saveHighlight = function(e) {
-//console.log("Save highlight");
-/*        if (!_.contains(["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"], e.target.nodeName.toLowerCase())){
-            //do not allow annotations that go outside the bounds of the text divisions
-            //i.e. this will fail if the target nodeName is "article"
-            return;
-        }*/
-        var adder = this.annotator.checkForEndSelection(e);
-//console.log("Save highlight", adder, e);
-        if(typeof adder == "undefined" || adder.css("display") === "none"){
-//console.log("adder:", typeof adder);            
-            //checkForEndSelection failed to find a valid selection    
-            return;
-        } else {
-            //valid end selection
-            //submit the annotator editor without any annotation text
-            this.annotator.editor.element.children("form").submit();
-        }
-    };
-
     Viewer.prototype.editAnnotation = function(e){
 
         var _this = this;
@@ -825,7 +807,7 @@ console.time("changeInteractiveMode");
             });
         } 
         
-        $("article").removeClass(interactiveMode).addClass(newInteractiveMode);
+        $(document.body).removeClass(interactiveMode).addClass(newInteractiveMode);
         
         $(".mode-controls .active").removeClass("active");
         link.addClass("active");
@@ -849,10 +831,34 @@ console.timeEnd("changeDisplayMode");
 
     Viewer.prototype.hideEmptyAnnotations = function(e){
         //create array of annotations that have empty text
+        var emptyTextAnnotations = this.annotations.filter(function(annotation){
+            return (annotation.text.length < 1);
+        });
 
-        //get all of their IDs
+        var elements = "";
 
         //find those elements in the DOM and hide them
+        for(var i = 0; i < emptyTextAnnotations.length; i++){
+            var annotation = emptyTextAnnotations[i];
+
+            //hide the highlight that has empty text and the annotation itself in the right pane
+            elements += ".annotator-hl[data-annotation-id='" + annotation.id + "'], "; 
+            elements += ".annotation[data-annotation-id='" + annotation.id + "'], ";              
+        }
+
+        elements = elements.substring(0, elements.length - 2);
+        if(!hidingEmptyAnnotations){
+            $(elements).addClass("hidden");
+
+            hidingEmptyAnnotations = true;
+        } else {
+            $(elements).removeClass("hidden");
+
+            hidingEmptyAnnotations = false;
+        }
+
+        //TODO: this could be handled by switching a class on the body, but each 
+        //empty annotation would need a class to designate that it has not ext
     };    
     
     Viewer.prototype.toggleHighlights = function(e){

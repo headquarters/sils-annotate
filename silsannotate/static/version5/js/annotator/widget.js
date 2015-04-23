@@ -29,8 +29,12 @@ Annotator.Widget = (function(_super) {
     window = $(Annotator.Util.getGlobal());
     widget = this.element.children(":first");
     offset = widget.offset();
+    /**
+      MODIFIED
+      Includes menu bar height in calculation to prevent editor from disappearing behind it when window isn't scrolled    
+    */
     viewport = {
-      top: window.scrollTop(),
+      top: window.scrollTop() + $(".annotation-menubar").outerHeight(),
       right: window.width() + window.scrollLeft()
     };
     current = {

@@ -314,27 +314,18 @@ Annotator.Plugin.Viewer = (function(_super) {
         //binding events elsewhere screws up the context for `this`, which
         //was used by the original code, so stick with the manual document event binding
         $(document).on("mouseenter", ".annotator-hl:not(.hidden)", function(e){
-console.log("calling annotationFocus...");            
             annotationFocus(this);
-        }).on("mouseleave", ".annotator-hl:not(.hidden)", function(e){
-console.log("calling annotationBlue...");            
+        }).on("mouseleave", ".annotator-hl:not(.hidden)", function(e){      
             annotationBlur(this);
         });
       
         $(document).on("mouseenter", ".annotation", function(e){
             var id = $(this).data("annotation-id");
             var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
-            if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
+            if(annotation.data().annotation.userId == AnnotationView.userId){
                 
                 var edit = $("<a href='#edit-annotation' class='edit-annotation'>Edit</a>");
                 $(this).append(edit);
-
-                /*var text = "edit";
-                if ($(this).children(".text").text().length > 0){
-                    text = $(this).children(".text").text();
-                }
-
-                $(this).children(".text").text(text).css({ "font-style": "italic" });*/
             }            
             //pass DOM elements to focus
             annotationFocus(annotation[0]);
@@ -342,11 +333,8 @@ console.log("calling annotationBlue...");
             var id = $(this).data("annotation-id");
             var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
 
-            if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
-                
-                /*if ($(this).children(".text").text() == "edit"){
-                    $(this).children(".text").text("").css({ "font-style": "normal" });
-                }*/                               
+            if(annotation.data().annotation.userId == AnnotationView.userId){
+                $(this).find(".edit-annotation").remove();                             
             }
 
             //pass DOM elements to blur           
@@ -451,7 +439,7 @@ console.log("calling annotationBlue...");
     
     Viewer.prototype.showNewAnnotation = function(annotation){
         annotations.push(annotation);
-console.log("showNewAnnotation", annotation);        
+//console.log("showNewAnnotation", annotation);        
         if(annotationUpdated){
             annotationUpdated = false;
             return;
@@ -666,7 +654,6 @@ console.log("Bring highlight into view for ID: ", annotationId);
                         }, 
                         { 
                             duration: 300, 
-                            easing: [500, 50],
                             complete: function(){
                                 //console.log("After scroll ----------");
                                 //console.log("Highlight top: ", $(annotationHighlight).offset().top);
@@ -769,12 +756,14 @@ console.log("Bring highlight into view for ID: ", annotationId);
     };
     
     Viewer.prototype.editAnnotation = function(e){
-
+console.log("called editAnnotation");
         var _this = this;
         //TODO: rather than grabbing text, this should probably be a data attribute or class
-        var annotationText = $(e.target);
-        var userId = annotationText.prev(".user-id").text();
-        var text = annotationText.text() == "edit" ? "" : annotationText.text();
+        var id = $(e.target).parent().data("annotation-id");
+        var annotation = $(".annotator-hl[data-annotation-id='" + id + "']").data("annotation");
+        var annotationText = $(e.target).prev(".text");
+        var userId = annotation.userId;
+        var text = annotation.text;
         var editor = $("<textarea />").val(text);
 
         if(userId !== AnnotationView.userId){
@@ -786,20 +775,25 @@ console.log("Bring highlight into view for ID: ", annotationId);
         annotationText.hide();
         editor.focus();
 
-
-        $(document).on("click.saveEditedAnnotation", function(){
-            editor.remove();
-            if(editor.val().length > 0){
-                annotationText.text(editor.val());
-                
-                //TODO: save it!
-                var id = annotationText.parents(".annotation").data("annotation-id")//getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
-                var annotation = $(".annotator-hl." + id).data().annotation;
-                annotation.text = editor.val();
-console.log(annotation);
-                annotationUpdated = true;
-                _this.publish('annotationUpdated', [annotation]);
+        $(document).on("click.saveEditedAnnotation", function(e){
+            //":not(.annotation textarea)" selector didn't work, so manually check the click wasn't inside the text area
+            if(e.target === editor[0]){
+                return false;
+            } else {
+                editor.remove();
+                if(editor.val().length > 0){
+                    annotationText.text(editor.val());
+                    
+                    //TODO: save it!
+                    //var id = annotationText.parents(".annotation").data("annotation-id");//getAnnotationIdFromClass(annotationText.parents(".annotation")[0].className);
+                    //var annotation = $(".annotator-hl[data-annotation-id='" + id + "']").data("annotation");
+                    annotation.text = editor.val();
+    console.log(annotation);
+                    annotationUpdated = true;
+                    _this.publish('annotationUpdated', [annotation]);
+                }
             }
+            
             annotationText.show();
             $(document).off("click.saveEditedAnnotation");
         });

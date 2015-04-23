@@ -288,6 +288,12 @@ p,h1,h2,h3,h4,h5,h6,
   height:0;
 }
 
+#annotation-panel .annotation .edit-annotation {
+  position:absolute;
+  right:2px;
+  top:2px;
+}
+
 /*
 #annotation-panel .annotation-contents .annotation.long {
   position:relative;

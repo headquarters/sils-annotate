@@ -19,7 +19,7 @@ article {
   padding:50px 50px 50px 100px;
   cursor: url(../img/highlight-cursor.png), auto;
   position:relative;
-  z-index:99;
+  /*z-index:99;*/
 }
 
 /*article.highlight {

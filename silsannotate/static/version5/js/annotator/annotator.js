@@ -478,9 +478,8 @@ console.log("show editor", annotation);
       event.preventDefault();
     }
 
+    //if user starts a new highlight and leaves the last one behind, grab it
     var remainingHighlight = $(".annotator-hl-temporary");
-
-console.log("on adder click", $(".annotator-hl-temporary"));
 
     position = this.adder.position();    
     this.adder.hide();
@@ -538,14 +537,20 @@ console.log("jQuery inline offset", $(annotation.highlights[0]).inlineOffset());
       };
     })(this);
 
+    //if there was a left over highlight, save it
     if(remainingHighlight.length > 0){
       var remainingAnnotation = remainingHighlight.data("annotation");
 
+      //if there was no text present, make it blank
       if (typeof remainingAnnotation.text === "undefined"){
         remainingAnnotation.text = "";
       }
+
+      //run the equivalent of cleanup() here
       this.unsubscribe('annotationEditorHidden', cancel);
       this.unsubscribe('annotationEditorSubmit', save);
+
+      //run the equivalent of save() here
       $(annotation.highlights).removeClass('annotator-hl-temporary');
       this.publish('annotationCreated', [remainingAnnotation]);
     }

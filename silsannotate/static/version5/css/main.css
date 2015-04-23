@@ -45,10 +45,17 @@ article img {
 
 #annotation-panel {
   float:left;
-  width:440px;
-  padding-right:20px;
+  width:450px;
+  padding-right:30px;
   margin-top:50px;
   margin-left:50px;  
+  font-family: verdana, sans-serif;
+  color: #444;
+  font-size: 11px;
+  position:relative;
+  top:0;
+  left:0;
+  z-index:10;  
 }
 
 /* DEBUG: 
@@ -201,16 +208,6 @@ p,h1,h2,h3,h4,h5,h6,
   background: transparent;
 }
 
-#annotation-panel {
-  font-family: verdana, sans-serif;
-  color: #444;
-  font-size: 11px;
-  position:relative;
-  top:0;
-  left:0;
-  z-index:10;
-}
-
 #annotation-panel .annotation-pane {
   /*position:relative;
   left:0;*/
@@ -292,6 +289,8 @@ p,h1,h2,h3,h4,h5,h6,
   position:absolute;
   right:2px;
   top:2px;
+  padding:2px;
+  background:#fff;
 }
 
 /*

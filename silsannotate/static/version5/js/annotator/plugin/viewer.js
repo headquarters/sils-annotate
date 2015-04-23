@@ -146,18 +146,15 @@ Annotator.Plugin.Viewer = (function(_super) {
             return false;
         }
 
-console.log("Activating these IDs:");        
+//console.log("Activating these IDs:");        
         shortestIds = shortestIds.map(function(s){
-console.log(s);
+//console.log(s);
             return "[data-annotation-id='" + s + "']";
         });
 
         var activeIdsSelector = shortestIds.join(", ");
         $(activeIdsSelector).find(".annotator-hl").andSelf().addClass("active");
-        
-        
-
-        //var annotationInPane = $(activeIdsSelector, annotationPanel);
+    
         
         //TODO: draw the activated red line on the scrollbar
     }
@@ -239,7 +236,7 @@ console.log(s);
                                     <div class="' + annotationClass + '" data-annotation-id="' + annotation.id + '">\
                                         <img src="/static/' + interfaceName + '/img/users/' + annotation.userId + '.png" alt="" />\
                                         <span class="user-id">' + annotation.userId + '</span>\
-                                        <span class="text">' + annotation.id + " | " + annotation.text + '</span>\
+                                        <span class="text">' + annotation.text + '</span>\
                                     </div>\
                                 </div>';
         return annotationContents;
@@ -654,7 +651,7 @@ console.log("Bring highlight into view for ID: ", annotationId);
         //var offset = -(annotationTop - windowScrollTop);
         var clickedOffset = this.getBoundingClientRect().top;
    
-        if(window.scrollY !== 0){ \
+        if(window.scrollY !== 0){ 
             //scroll the highlight into view, inline with where user clicked mouse
             annotationHighlight.velocity("scroll", { 
                 duration: 300, 

@@ -45,7 +45,8 @@ article img {
 
 #annotation-panel {
   float:left;
-  width:420px;
+  width:440px;
+  padding-right:20px
   margin-top:50px;
   margin-left:50px;  
 }

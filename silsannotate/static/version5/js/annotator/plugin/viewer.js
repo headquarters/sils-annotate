@@ -129,6 +129,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         var shortestIds = [];
         var shortestLenSoFar = Infinity;
         
+//console.log("IDs that were hovered on:");
         _.each(focusedIds, function(len, id){
             if (len < shortestLenSoFar) {
                 shortestLenSoFar = len;
@@ -137,21 +138,26 @@ Annotator.Plugin.Viewer = (function(_super) {
             else if (len == shortestLenSoFar) {
                 shortestIds.push(id);
             }
+//console.log(id, len);            
         });
 
         $(".annotator-hl.active, .annotation.active").removeClass("active");
         if (!shortestIds.length){
             return false;
         }
-        
+
+console.log("Activating these IDs:");        
         shortestIds = shortestIds.map(function(s){
+console.log(s);
             return "[data-annotation-id='" + s + "']";
         });
 
         var activeIdsSelector = shortestIds.join(", ");
         $(activeIdsSelector).find(".annotator-hl").andSelf().addClass("active");
         
-        var annotationInPane = $(activeIdsSelector, annotationPanel);
+        
+
+        //var annotationInPane = $(activeIdsSelector, annotationPanel);
         
         //TODO: draw the activated red line on the scrollbar
     }
@@ -233,7 +239,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                                     <div class="' + annotationClass + '" data-annotation-id="' + annotation.id + '">\
                                         <img src="/static/' + interfaceName + '/img/users/' + annotation.userId + '.png" alt="" />\
                                         <span class="user-id">' + annotation.userId + '</span>\
-                                        <span class="text">' + annotation.text + '</span>\
+                                        <span class="text">' + annotation.id + " | " + annotation.text + '</span>\
                                     </div>\
                                 </div>';
         return annotationContents;
@@ -311,15 +317,16 @@ Annotator.Plugin.Viewer = (function(_super) {
         //binding events elsewhere screws up the context for `this`, which
         //was used by the original code, so stick with the manual document event binding
         $(document).on("mouseenter", ".annotator-hl:not(.hidden)", function(e){
+console.log("calling annotationFocus...");            
             annotationFocus(this);
         }).on("mouseleave", ".annotator-hl:not(.hidden)", function(e){
+console.log("calling annotationBlue...");            
             annotationBlur(this);
         });
       
         $(document).on("mouseenter", ".annotation", function(e){
             var id = $(this).data("annotation-id");
             var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
-//console.log("mouseenter", annotation);
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
                 var text = "edit";
                 if ($(this).children(".text").text().length > 0){
@@ -332,7 +339,6 @@ Annotator.Plugin.Viewer = (function(_super) {
             annotationFocus(annotation[0]);
         }).on("mouseleave", ".annotation", function(e){
             var id = $(this).data("annotation-id");
-//console.log("mouseleave", annotation);   
             var annotation = $(".annotator-hl[data-annotation-id='" + id + "']");
 
             if(annotation.data().annotation.userId == AnnotationView.userId && annotation.data().annotation.text.length < 1){
@@ -528,14 +534,60 @@ console.log("Adding new annotation to existing pane ", annotationPane);
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
 
-    Viewer.prototype.bringAnnotationIntoView = function(e){
-//console.log("bringAnnotationIntoView");        
-console.log(e);
-        //the highlight clicked
-        var annotationHighlight = e.target;
-        var annotationId = $(e.target).data("annotation-id"); //getAnnotationIdFromClass(annotationHighlight.className);
 
-console.log("Bring annotation into view for ID: ", annotationId, e);
+    var highlights = {};
+
+    Viewer.prototype.bringAnnotationIntoView = function(e){
+        var highlight = $(e.currentTarget).data("annotation");
+
+        //add this element to the highlights array, indexed by its ID
+        //and having value of its length, then we can activate the shortest one on click
+        //when all the bubbling is done
+        highlights[highlight.id] = $('.annotator-hl[data-annotation-id="' + highlight.id + '"]').text().length;
+        
+        if($(e.currentTarget).parents(".annotator-hl").length === 0){
+            //bubbled as far as we need to go
+            bringShortestIdIntoView();
+            return false;
+        }
+    }
+
+    var bringShortestIdIntoView = function(){
+        var shortestIds = [];
+        var shortestLenSoFar = Infinity;
+        
+//console.log("IDs that were clicked on:");
+        _.each(highlights, function(len, id){
+            if (len < shortestLenSoFar) {
+                shortestLenSoFar = len;
+                shortestIds = [id];
+            }
+            else if (len == shortestLenSoFar) {
+                shortestIds.push(id);
+            }
+//console.log(id, len);            
+        });
+
+        if (!shortestIds.length){
+            return false;
+        }
+
+//console.log("Activating these IDs:");        
+        shortestIds = shortestIds.map(function(s){
+//console.log(s);
+            return "[data-annotation-id='" + s + "']";
+        });
+
+        var activeIdsSelector = shortestIds.join(", ");
+
+        highlights = {};
+
+        //the highlight clicked
+        //only bring into view the first annotation that was found (should be the top one this way)
+        var annotationHighlight = $(activeIdsSelector)[0]//e.target;
+        var annotationId = $(annotationHighlight).data("annotation-id"); //getAnnotationIdFromClass(annotationHighlight.className);
+
+console.log("Bring annotation into view for ID: ", annotationId);
         //the corresponding annotation for this highlight
         var annotation = $('#annotation-panel [data-annotation-id="' + annotationId + '"]');
         //what to bring into view
@@ -545,41 +597,27 @@ console.log("Bring annotation into view for ID: ", annotationId, e);
         var annotationPositionTop = annotation.position().top;
         //get top for panel
         var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
+ 
+        var newAnnotationPanelTop = (highlightTop - annotationTop) + annotationPanelTop;
 
-        var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
-        //var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
-        
-        var windowScrollTop = $(window).scrollTop();
-        var windowScrollBottom = windowScrollTop + $(window).height() - menuBarHeight;
-//console.log("Before scroll ---------");
-//console.log("Highlight offset top: ", highlightTop); 
-//console.log("Annotation offset top: ", annotationTop);
-//console.log("Top of highlight: ", topOfHighlight); 
-        //if(annotationPositionTop >= windowScrollTop && annotationPositionTop <= windowScrollBottom){
-        //    console.log("Annotation already in view.");
-        //} else {
-            $("#annotation-panel").velocity({ 
-                    top: topOfHighlight
-                }, 
-                { 
-                    duration: 400, 
-                    easing: [500, 50],
-                    complete: function(element){
-                        if(topOfHighlight < 0){
-                            //get rid of excess white space left behind by moving the annotations up
-                            $(element).css("margin-bottom", topOfHighlight);    
-                        }             
-                        //console.log("After scroll ----------");
-                        //console.log("Highlight offset top: ", $(annotationHighlight).offset().top);
-                        //console.log("Annotation offset top: ", $("#annotation-panel ." + annotationId).offset().top);
-                        //console.log("Annotation panel offset top: ", $("#annotation-panel").offset().top);                                
-                    } 
-                }
-            );   
-        //}
-
-        //prevent the nested <span>s from causing multiple instances to fire
-        //return false;
+        $("#annotation-panel").velocity({ 
+                top: newAnnotationPanelTop
+            }, 
+            { 
+                duration: 400, 
+                easing: [500, 50],
+                complete: function(element){
+                    if(topOfHighlight < 0){
+                        //get rid of excess white space left behind by moving the annotations up
+                        $(element).css("margin-bottom", topOfHighlight);    
+                    }             
+                    //console.log("After scroll ----------");
+                    //console.log("Highlight offset top: ", $(annotationHighlight).offset().top);
+                    //console.log("Annotation offset top: ", $("#annotation-panel ." + annotationId).offset().top);
+                    //console.log("Annotation panel offset top: ", $("#annotation-panel").offset().top);                                
+                } 
+            }
+        );  
     }
     
     //this isn't bound to Viewer.prototype because that method of binding
@@ -592,7 +630,7 @@ console.log("Bring annotation into view for ID: ", annotationId, e);
             allowKeepAnnotationsInView = true;
             return;
         } else {
-console.log("Turning off scroll event.");            
+//console.log("Turning off scroll event.");            
             $(document).off("scroll", keepAnnotationsInView);
         }
         var annotation = this;
@@ -615,62 +653,47 @@ console.log("Bring highlight into view for ID: ", annotationId);
         //rather than just putting it at the top of the window
         //var offset = -(annotationTop - windowScrollTop);
         var clickedOffset = this.getBoundingClientRect().top;
-
-//console.log("Before scroll ------- ");
-//console.log("Highlight top", highlightTop);
-//console.log("Annotation top", annotationTop);
-//console.log("Annotation panel top", annotationPanelTop);
-
-                    
-                    //var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
    
-                    //scrollTo(<object>) puts that object at the top of the scrollbar
-                    //we want it to be inline with its corresponding highlight
-                    if(window.scrollY !== 0){ 
-//$(annotationHighlight).css("background-color", "green !important");
-//$(annotation).css("background-color", "green");
-                        //scroll the highlight into view, inline with where user clicked mouse
-                        //DONE, DON'T TOUCH THIS CODE
-                        annotationHighlight.velocity("scroll", { 
+        if(window.scrollY !== 0){ \
+            //scroll the highlight into view, inline with where user clicked mouse
+            annotationHighlight.velocity("scroll", { 
+                duration: 300, 
+                offset: -clickedOffset,
+                progress: function(){
+                    //clearTimeout(timer);
+                },
+                begin: function(elements){
+                        $("#annotation-panel").velocity({ 
+                            top: topOfHighlight // + clickedOffset
+                            //top: topOfViewableArea
+                        }, 
+                        { 
                             duration: 300, 
-                            offset: -clickedOffset,
-                            progress: function(){
-                                //clearTimeout(timer);
-                            },
-                            begin: function(elements){
-                                    $("#annotation-panel").velocity({ 
-                                        top: topOfHighlight // + clickedOffset
-                                        //top: topOfViewableArea
-                                    }, 
-                                    { 
-                                        duration: 300, 
-                                        easing: [500, 50],
-                                        complete: function(){
-                                            //console.log("After scroll ----------");
-                                            //console.log("Highlight top: ", $(annotationHighlight).offset().top);
-                                            //console.log("Annotation top: ", $(annotation).offset().top);
-                                            //console.log("Annotation panel top: ", $("#annotation-panel").offset().top); 
-                                        } 
-                                    }
-                                );
-                            },
-                            complete: function(elements){
-                                console.log("Rebinding scroll event.");
-                                //cheap attempt to avoid race condition with scroll event firing immediately after
-                                //this scroll finishes
-                                setTimeout(function(){
-                                    $(document).on("scroll", keepAnnotationsInView);
-                                }, 150);
-                                
-                            }
-                        });
-                    } 
-        //prevent the nested <span>s from causing multiple instances to fire
-        //return false;
+                            easing: [500, 50],
+                            complete: function(){
+                                //console.log("After scroll ----------");
+                                //console.log("Highlight top: ", $(annotationHighlight).offset().top);
+                                //console.log("Annotation top: ", $(annotation).offset().top);
+                                //console.log("Annotation panel top: ", $("#annotation-panel").offset().top); 
+                            } 
+                        }
+                    );
+                },
+                complete: function(elements){
+                    //console.log("Rebinding scroll event.");
+                    //cheap attempt to avoid race condition with scroll event firing immediately after
+                    //this scroll finishes
+                    setTimeout(function(){
+                        $(document).on("scroll", keepAnnotationsInView);
+                    }, 150);
+                    
+                }
+            });
+        } 
     }      
 
     function keepAnnotationsInView(e){   
-console.log("Scroll event fired.");
+//console.log("Scroll event fired.");
         var viewportThird = window.outerHeight / 4;
 
         if(timer !== null){
@@ -938,7 +961,7 @@ console.log("% from top: ", percentFromTop, offset);
         
         var annotations = $("article .annotator-hl");
 
-console.log(availableScreenHeight, $("article").height(), scrollbarScaleFactor);        
+//console.log(availableScreenHeight, $("article").height(), scrollbarScaleFactor);        
 
         for(var i = 0; i < annotations.length; i++){
             var elem = annotations[i];

@@ -613,7 +613,7 @@ console.log("Bring annotation into view for ID: ", annotationId);
         console.log(e.target);
 //console.log("Turning off scroll event.");            
         $(document).off("scroll", keepAnnotationsInView);
-        
+
         var annotation = this;
         var annotationId = $(annotation).data("annotation-id"); //getAnnotationIdFromClass(annotation.className);
         var annotationHighlight = $('.annotator-hl[data-annotation-id="' + annotationId + '"]').eq(0);
@@ -724,7 +724,7 @@ console.log("Bring highlight into view for ID: ", annotationId);
                             }, 
                             { 
                                 duration: 400, 
-                                easing: [500, 50],
+                                /*easing: [500, 50],*/
                                 complete: function(element){
                                     if(topOfViewableArea < 0){
                                         //get rid of excess white space left behind by moving the annotations up
@@ -738,7 +738,7 @@ console.log("Bring highlight into view for ID: ", annotationId);
                             }
                         );    
                     } else {
-                        $("#annotation-panel").velocity({ top: 0 }, { duration: 400, easing: [500, 0] });    
+                        $("#annotation-panel").velocity({ top: 0 }, { duration: 300/*, easing: [500, 0]*/ });    
                     }
                 } catch (e){
                     console.log("Failed to bring annotation into view.", e.message);

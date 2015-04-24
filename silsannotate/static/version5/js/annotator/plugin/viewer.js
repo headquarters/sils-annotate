@@ -234,7 +234,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         
         var annotationContents = '<div class="annotation-contents">\
                                     <div class="' + annotationClass + '" data-annotation-id="' + annotation.id + '">\
-                                        <img src="/static/' + interfaceName + '/img/users/' + annotation.userId + '.png" alt="" />\
+                                        <img src="/static/' + interfaceName + '/img/users/' + annotation.userId.toLowerCase() + '.png" alt="" />\
                                         <span class="user-id">' + annotation.userId + '</span>\
                                         <span class="text">' + annotation.text + '</span>\
                                     </div>\
@@ -382,8 +382,9 @@ Annotator.Plugin.Viewer = (function(_super) {
         var _this = this;
 
         this.subscribe('annotationCreated', function(){
-            $("#current-user-annotations-count").text(_this.annotations.length);
-            $("all-annotations-count").text(_this.annotations.length);
+            //TODO: rely on data, rather than text
+            $("#current-user-annotations-count").text(parseInt($("#current-user-annotations-count").text()) + 1);
+            $("#all-annotations-count").text(parseInt($("#all-annotations-count").text()) + 1);
         });
     }
     
@@ -522,7 +523,7 @@ console.log("Adding new annotation to existing pane ", annotationPane);
                 } 
             });            
 
-        this.bringAnnotationIntoView({ target: highlightStart[0] });
+        this.bringAnnotationIntoView({ currentTarget: highlightStart[0] });
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
 

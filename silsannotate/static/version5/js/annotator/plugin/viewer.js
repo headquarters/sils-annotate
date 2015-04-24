@@ -378,6 +378,13 @@ Annotator.Plugin.Viewer = (function(_super) {
 
             $this.attr("target", "_blank");
         });
+
+        var _this = this;
+
+        this.subscribe('annotationCreated', function(){
+            $("#current-user-annotations-count").text(_this.annotations.length);
+            $("all-annotations-count").text(_this.annotations.length);
+        });
     }
     
     Viewer.prototype.showAnnotations = function(annotations) {

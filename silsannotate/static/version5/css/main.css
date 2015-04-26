@@ -371,19 +371,20 @@ p,h1,h2,h3,h4,h5,h6,
   width: 24px;
   height:100%;
   position: fixed;
-  top: 51px; /* hard-coded for now to fit under the .annotation-menubar */
+  top: 53px; /* hard-coded for now to fit under the .annotation-menubar */
   right: 0;
   bottom: 0;
   background: #333;
+  transform: translate3d(0,0,0);
 }
 #scrollbar.hidden {
   display: none;
 }
 #scrollbar div.scrollbar-block {
   position: fixed;
-  opacity: .3;
+  opacity: 0.3;
   background: yellow;
-  width: 25px;
+  width: 24px;
 }
 #scrollbar div.scrollbar-block.active {
   background: red;
@@ -400,12 +401,4 @@ p,h1,h2,h3,h4,h5,h6,
 }
 .annotator-editor .annotator-controls .annotator-save {
   display: none;
-}
-
-/* Append text to this element to measure the height; used to
- * determine if annotation text will need a class of "long" for shortening
- */
-#measuring-block {
-  display:none;
-  width:385px;
 }

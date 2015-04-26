@@ -172,7 +172,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         this.changeInteractiveMode = __bind(this.changeInteractiveMode, this);
         this.changeDisplayMode = __bind(this.changeDisplayMode, this);
         this.toggleHighlights = __bind(this.toggleHighlights, this);
-        //this.goToScrollbarClickPosition = __bind(this.goToScrollbarClickPosition, this);
         this.disableDefaultEvents = __bind(this.disableDefaultEvents, this);
         this.editAnnotation = __bind(this.editAnnotation, this);        
         this.bringAnnotationIntoView = __bind(this.bringAnnotationIntoView, this);
@@ -186,21 +185,25 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", ".annotation-info .hide-empty-annotations", this.hideEmptyAnnotations);
         $(document).on("click", ".annotation-menubar .highlight-controls a", this.toggleHighlights);
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
-        //$(document).on("click", "#scrollbar", this.goToScrollbarClickPosition);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
         $(document).on("click", "#annotation-panel .annotation .edit-annotation", this.editAnnotation);
         $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         $(document).on("scroll", keepAnnotationsInView);
 
-        $("article .reference").each(function(){
+        $("article a").each(function(){
             var $this = $(this);
-            var referenceID = $this.attr("href");
 
-            var referenceLink = $(referenceID).find("a:eq(0)").attr("href");
+            //replace reference links with actual HREF values rather than in-page links
+            if($this.hasClass("reference")){
+                var referenceID = $this.attr("href");
 
-            $this.attr("href", referenceLink);
+                var referenceLink = $(referenceID).find("a:eq(0)").attr("href");
 
+                $this.attr("href", referenceLink);    
+            }            
+
+            //open all links in external tab/window
             $this.attr("target", "_blank");
         });
 
@@ -532,6 +535,15 @@ console.log("Adding new annotation to existing pane ", annotationPane);
 
     Viewer.prototype.bringAnnotationIntoView = function(e){
         var highlight = $(e.currentTarget).data("annotation");
+
+        //if a highlight <span> is inside a link, fire off the link rather than
+        //bringing the annotation into view
+        if($(e.target).parents("a").length > 0){
+            var href = $(e.target).parents("a").attr("href");
+            window.open(href);
+            e.preventDefault();
+            return false;
+        }
 
         //add this element to the highlights array, indexed by its ID
         //and having value of its length, then we can activate the shortest one on click

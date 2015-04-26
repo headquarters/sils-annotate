@@ -961,7 +961,13 @@ console.log("Bring highlight into view for ID: ", annotationId);
             var top = ($elem.offset().top) * scrollbarScaleFactor;
             var height = ($elem.height() * scrollbarScaleFactor);
 
-            $("<div></div>").css({
+            var block = $("<div></div>");
+
+            if($elem.data("annotation").userId === AnnotationView.userId){
+                block.addClass("my-annotation");
+            }
+
+            block.css({
                 top: top + "px",
                 left: 0,
                 height: height + "px"
@@ -994,7 +1000,8 @@ console.log("Bring highlight into view for ID: ", annotationId);
             var block = $(e.target);
             var id = block.attr("data-annotation-id");
             var highlight = $(".annotator-hl[data-annotation-id='" + id + "']");
-            var offset = -$("#reading-section").position().top - highlight.height();
+            //TODO: tweak this offset to get things inside the reading section
+            var offset = -$("#reading-section").position().top - highlight.height() - 50;
             //TODO: disable the scrolling keepAnnotationInView here
             highlight.velocity("scroll", { offset: offset, duration: 500 });
         }

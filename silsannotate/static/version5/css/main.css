@@ -386,13 +386,24 @@ p,h1,h2,h3,h4,h5,h6,
   background: yellow;
   width: 24px;
 }
+
+#scrollbar div.scrollbar-block.my-annotation {
+  background: rgba(214, 244, 255, 1);
+}
+
 #scrollbar div.scrollbar-block.active {
   background: red;
+  /*background: rgba(255, 222, 222, 1);*/
   opacity: 1;
   margin-left: -3px;
   padding-right: 3px;
   z-index: 100;
 }
+
+#scrollbar div.scrollbar-block.my-annotation.active {
+  background: rgba(171, 208, 252, 1);
+}
+
 .annotator-viewer {
   position: fixed;
   top: 0;

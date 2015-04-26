@@ -492,9 +492,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                     }
                 });
 
-console.log("Adding new annotation to existing pane ", annotationPane);
-            //add to existing .annotation-pane
-
+console.log("Adding new annotation with ID: ", id);
         var numberOfPreviousHighlights = 0;
     
         var highlightsInTextDivision = getAnnotationsFromHighlights(highlightTextDivision);
@@ -529,7 +527,8 @@ console.log("Adding new annotation to existing pane ", annotationPane);
                 } 
             });            
 
-        this.bringAnnotationIntoView({ currentTarget: highlightStart[0] });
+        highlights[id] = 1;
+        bringShortestIdIntoView();
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
 
@@ -558,6 +557,7 @@ console.log("Adding new annotation to existing pane ", annotationPane);
     }
 
     var bringShortestIdIntoView = function(){
+
         var shortestIds = [];
         var shortestLenSoFar = Infinity;
         

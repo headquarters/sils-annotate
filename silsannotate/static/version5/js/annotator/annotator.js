@@ -374,7 +374,7 @@ Annotator = (function(_super) {
   };
 
   Annotator.prototype.showEditor = function(annotation, location) {
-console.log("show editor", annotation);
+//console.log("Show editor", annotation, location);
     this.editor.element.css(location);
     this.editor.load(annotation);
     this.publish('annotationEditorShown', [this.editor, annotation]);
@@ -526,6 +526,7 @@ console.log("jQuery inline offset", $(annotation.highlights[0]).inlineOffset());
     })(this);
     cancel = (function(_this) {
       return function() {
+console.log("Cancel: ", annotation);        
         cleanup();
         return _this.deleteAnnotation(annotation);
       };
@@ -537,6 +538,9 @@ console.log("jQuery inline offset", $(annotation.highlights[0]).inlineOffset());
       };
     })(this);
 
+//console.log("Remaining highlight(s): ", remainingHighlight);
+//console.log("Cancel fn: ", cancel.toString());
+    
     //if there was a left over highlight, save it
     if(remainingHighlight.length > 0){
       var remainingAnnotation = remainingHighlight.data("annotation");
@@ -546,12 +550,12 @@ console.log("jQuery inline offset", $(annotation.highlights[0]).inlineOffset());
         remainingAnnotation.text = "";
       }
 
-      //run the equivalent of cleanup() here
-      this.unsubscribe('annotationEditorHidden', cancel);
-      this.unsubscribe('annotationEditorSubmit', save);
+      //run the equivalent of cleanup() here      
+      this.element.unbind('annotationEditorHidden');
+      this.element.unbind('annotationEditorSubmit');
 
       //run the equivalent of save() here
-      $(annotation.highlights).removeClass('annotator-hl-temporary');
+      $(remainingAnnotation.highlights).removeClass('annotator-hl-temporary');
       this.publish('annotationCreated', [remainingAnnotation]);
     }
 

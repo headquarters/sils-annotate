@@ -569,6 +569,7 @@ console.log("Adding new annotation with ID: ", id);
 
         highlights[id] = 1;
         bringShortestIdIntoView();
+        addAnnotationToScrollbar(annotation);
         //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
 
@@ -990,8 +991,6 @@ console.log("Bring highlight into view for ID: ", annotationId);
     function showScrollbar() {
 //console.time("showScrollbar");        
         var scrollbar = $('<div id="scrollbar"></div>').appendTo(document.body);
-        //TODO: draw with SVG and give each rectangle an ID that can be referenced later to highlight
-        //also, clicking it activates that ID and brings THAT ID into view, rather than this proportionate scrolling crap
         var availableScreenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - menuBarHeight; //$(window).height(); // - menuBarHeight; 
         var scrollbarScaleFactor = availableScreenHeight / $("article").height();
         //var scrollbar = SVG('scrollbar').size(24, availableScreenHeight);
@@ -1046,6 +1045,28 @@ console.log("Bring highlight into view for ID: ", annotationId);
             //TODO: disable the scrolling keepAnnotationInView here
             highlight.velocity("scroll", { offset: offset, duration: 500 });
         }
+    }
+
+    function addAnnotationToScrollbar(annotation){
+        //TODO: refactor showScrollbar to use this smaller function for adding annotations
+        var scrollbar = $("#scrollbar");
+        var availableScreenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - menuBarHeight; //$(window).height(); // - menuBarHeight; 
+        var scrollbarScaleFactor = availableScreenHeight / $("article").height();
+        
+        var $element = $(".annotator-hl[data-annotation-id='" + annotation.id + "']");
+
+        var top = ($element.offset().top) * scrollbarScaleFactor;
+        var height = ($element.height() * scrollbarScaleFactor);
+        var block = $("<div></div>");
+
+        block.css({
+            top: top + "px",
+            left: 0,
+            height: height + "px"
+        })
+        .attr("data-annotation-id", $element.data("annotation-id"))
+        .addClass("scrollbar-block")
+        .appendTo(scrollbar);
     }
 
     return Viewer;

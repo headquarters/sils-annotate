@@ -78,9 +78,9 @@ Annotator.Plugin.Viewer = (function(_super) {
                                     <img src="/static/' + interfaceName + '/img/highlights-everyone.png" alt="Show all highlights" />\
                                 </a>\
                             </div>\
-                            <div class="debug-controls">\
-                                <label>Duration: <input type="text" name="duration" /></label>\
-                                <label>Timeout: <input type="text" name="timeout" /></label>\
+                            <div class="debug-controls" style="width:260px;float:left;">\
+                                <label>Duration: <input type="text" name="duration" style="width:30px;"/></label>\
+                                <label>Timeout: <input type="text" name="timeout" style="width:30px;" /></label>\
                             </div>\
                             <div class="info-control controls">\
                                 <a href="#annotation-info" class="info-panel-trigger" title="Info">\

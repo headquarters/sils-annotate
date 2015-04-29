@@ -245,7 +245,7 @@ p,h1,h2,h3,h4,h5,h6,
 }
 
 #annotation-panel.hidden {
-  display:none;
+  visibility: hidden;
 }
 
 #annotation-panel .annotation-pane.active {

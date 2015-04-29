@@ -50,49 +50,34 @@
 MODIFIED: Instead of overriding these in main.css, replace them here
 to fix the "flicker" of different yellows that shows up as CSS files load
 */
-/*.annotator-wrapper .annotator-hl.nested-1 {
-  background: #ffffd2;
-}
-.annotator-wrapper .annotator-hl.nested-2 {
-  background: #ffffb9;
-}
-.annotator-wrapper .annotator-hl.nested-3 {
-  background: #ffffa8;
-}
-.annotator-wrapper .annotator-hl.active {
-  background: #ffdede;
-}
-.annotator-wrapper .annotator-hl.active.nested-1 {
-  background: #ffdede;
-}
-.annotator-wrapper .annotator-hl.active.nested-2 {
-  background: #ffcdcd;
-}
-.annotator-wrapper .annotator-hl.active.nested-3 {
-  background: #ffbfbf;
-}
-*/
+
 .annotator-wrapper .annotator-hl.hidden {
-  background: transparent;
+  	background: transparent;
 }
 .annotation.my-annotation {
-  /*background: rgba(108, 255, 255, 0.1); */
-  /*background: rgba(189, 238, 255, 1);*/
-  background: rgba(214, 244, 255, 1);
+	  /*background: rgba(108, 255, 255, 0.1); */
+	  /*background: rgba(189, 238, 255, 1);*/
+	  background: rgba(214, 244, 255, 1);
 }
 
 .annotator-wrapper .annotator-hl.my-annotation {
-  background: rgba(214, 244, 255, 1);
+  	background: rgba(214, 244, 255, 1);
 }
 
 .annotation.active,
 .annotator-wrapper .annotator-hl.active {
-  background: rgba(255, 222, 222, 0.8);
+  	background: rgba(255, 222, 222, 0.8);
 }
 
 .annotator-wrapper .annotator-hl.my-annotation.active,
 .annotation.my-annotation.active {
-  background: rgba(171, 208, 252, 1);
+  	background: rgba(171, 208, 252, 1);
+}
+
+/* my annotation's take precedence over others' annotations
+to prevent blue-yellow mixing as a green color */
+.annotator-wrapper .my-annotation .annotator-hl {
+  	background:none;
 }
 
 .annotator-hl-temporary {

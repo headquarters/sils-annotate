@@ -991,7 +991,7 @@ console.log("Bring highlight into view for ID: ", annotationId);
     function showScrollbar() {
 //console.time("showScrollbar");        
         var scrollbar = $('<div id="scrollbar"></div>').appendTo(document.body);
-        var availableScreenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - menuBarHeight; //$(window).height(); // - menuBarHeight; 
+        var availableScreenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0); // - menuBarHeight; //$(window).height(); // - menuBarHeight; 
         var scrollbarScaleFactor = availableScreenHeight / $("article").height();
         //var scrollbar = SVG('scrollbar').size(24, availableScreenHeight);
         

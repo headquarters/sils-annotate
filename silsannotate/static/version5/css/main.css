@@ -141,7 +141,7 @@ p,h1,h2,h3,h4,h5,h6,
 }
 
 .annotation-menubar .info-control {
-  margin-left:20px;
+  margin-right:10px;
 }
 
 .annotation-info {
@@ -399,10 +399,11 @@ p,h1,h2,h3,h4,h5,h6,
   width: 24px;
   height:100%;
   position: fixed;
-  top: 53px; /* hard-coded for now to fit under the .annotation-menubar */
+  top: 0; /* hard-coded for now to fit under the .annotation-menubar */
   right: 0;
   bottom: 0;
   background: #333;
+  z-index:3000;
   transform: translate3d(0,0,0);
 }
 #scrollbar.hidden {

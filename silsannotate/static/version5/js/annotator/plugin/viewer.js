@@ -25,17 +25,31 @@ Annotator.Plugin.Viewer = (function(_super) {
     var annotationPanel;
     //the information panel that is hidden off screen until a user clicks the upper "info" button
     var infoPanel = '<div class="annotation-info">\
-                        <div class="info-item">Your annotations: <span id="current-user-annotations-count"></span></div>\
-                        <div class="info-item">All annotations: <span id="all-annotations-count"></span></div>\
-                        <div class="info-item">Number of users: <span id="number-of-annotators"></span></div>\
-                        <div class="display-controls"> \
-                            Show: \
-                            <a href="#icons" data-mode="icons" title="Icons">Icons</a> |\
-                            <a href="#snippets" data-mode="snippets" class="active" title="Snippets">Snippets</a> |\
-                            <a href="#full" data-mode="full" title="Full text">Full Text</a> \
-                        </div> \
-                        <a href="#hide-empty-annotations" class="hide-empty-annotations">Hide Empty Annotations</a> \
-                        </div> \
+                        <div class="panel-section clearfix">\
+                            <div class="panel-title">Display annotations as</div>\
+                            <div class="panel-details display-controls"> \
+                                <label><input type="radio" name="display_annotations" value="icons" /> Icons </label><br />\
+                                <label><input type="radio" name="display_annotations" value="snippets" checked="checked" /> Snippets </label><br />\
+                                <label><input type="radio" name="display_annotations" value="full" /> Full text </label>\
+                            </div> \
+                        </div>\
+                        <hr />\
+                        <div class="panel-section clearfix">\
+                            <div class="panel-title">Empty annotations</div>\
+                            <div class="panel-details hide-empty-annotations">\
+                                <label><input type="radio" name="show_empty_annotations" value="show" checked="checked" /> Show</label><br />\
+                                <label><input type="radio" name="show_empty_annotations" value="hide" /> Hide</label>\
+                            </div>\
+                        </div>\
+                        <hr />\
+                        <div class="panel-section clearfix">\
+                            <div class="panel-title">About this article</div>\
+                            <div class="panel-details">\
+                                <div class="info-item">Your annotations: <span id="current-user-annotations-count"></span></div>\
+                                <div class="info-item">All annotations: <span id="all-annotations-count"></span></div>\
+                                <div class="info-item">Number of users: <span id="number-of-annotators"></span></div>\
+                            </div>\
+                        </div>\
                     </div>';
     //the menu bar at the top of the screen that holds all the interface icons                    
     var menuBar =   '<div class="annotation-menubar">\
@@ -181,8 +195,8 @@ Annotator.Plugin.Viewer = (function(_super) {
         
         //attach menubar controls here...not working as part of prototype.events for some reason
         $(document).on("click", ".annotation-menubar .mode-controls a", this.changeInteractiveMode);
-        $(document).on("click", ".annotation-info .display-controls a", this.changeDisplayMode);
-        $(document).on("click", ".annotation-info .hide-empty-annotations", this.hideEmptyAnnotations);
+        $(document).on("change", ".annotation-info .display-controls input", this.changeDisplayMode);
+        $(document).on("change", ".annotation-info .hide-empty-annotations input", this.hideEmptyAnnotations);
         $(document).on("click", ".annotation-menubar .highlight-controls a", this.toggleHighlights);
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
@@ -466,7 +480,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     
         var highlightStart = $(annotation.highlights[0]);
         //TODO: get rid of flicker of yellow before the lightblue is added
-        highlightStart.css("background-color", "#9CFBFC");
+        //highlightStart.css("background-color", "#9CFBFC");
 
         var highlightTextDivision = highlightStart.parents("h1,h2,h3,h4,h5,h6,p");
 
@@ -479,7 +493,7 @@ Annotator.Plugin.Viewer = (function(_super) {
 
         //Velocity only supports hex values for colors and .css("background-color") returns
         //rgb() instead, so it needs to be converted
-        var bgColor = highlightStart.css("background-color");
+        /*var bgColor = highlightStart.css("background-color");
         var bgColorAsHex = rgb2hex(bgColor);
         highlightStart.velocity({
                     backgroundColor: bgColorAsHex
@@ -491,7 +505,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                         $(e).css("background-color", "");
                     }
                 });
-
+        */
 console.log("Adding new annotation with ID: ", id);
         var numberOfPreviousHighlights = 0;
     
@@ -516,7 +530,18 @@ console.log("Adding new annotation with ID: ", id);
                 .children(".annotation-contents:nth-child(" + numberOfPreviousHighlights + ")" )
                 .after(contents);    
         }
+
+
+        highlightStart.css("border", "1px solid #333");
+        contents.css("border", "1px solid #333");
+
+        setTimeout(function(){
+            highlightStart.css("border", "none");
+            contents.css("border", "none");
+
+        }, 2000);
         
+        /*
         contents.css("background-color", "#9CFBFC").velocity({
                 backgroundColor: "#ffffff"
             }, { 
@@ -525,7 +550,8 @@ console.log("Adding new annotation with ID: ", id);
                 complete: function(e){ 
                     $(e).css("background-color", ""); 
                 } 
-            });            
+            });
+        */            
 
         highlights[id] = 1;
         bringShortestIdIntoView();
@@ -836,18 +862,17 @@ console.log("Bring highlight into view for ID: ", annotationId);
     
     Viewer.prototype.changeDisplayMode = function(e){
 //console.time("changeDisplayMode");
-        var link = $(e.target);
-        var newDisplayMode = link.data("mode");
+        var radio = $(e.target);
+        var newDisplayMode = radio.val();
         
         annotationPanel.removeClass(displayMode).addClass(newDisplayMode);
         
-        $(".display-controls .active").removeClass("active");
-        link.addClass("active");
         displayMode = newDisplayMode;
 //console.timeEnd("changeDisplayMode");        
     };
 
     Viewer.prototype.hideEmptyAnnotations = function(e){
+        var radio = $(e.target);
         //create array of annotations that have empty text
         var emptyTextAnnotations = this.annotations.filter(function(annotation){
             return (annotation.text.length < 1);
@@ -865,14 +890,11 @@ console.log("Bring highlight into view for ID: ", annotationId);
         }
 
         elements = elements.substring(0, elements.length - 2);
-        if(!hidingEmptyAnnotations){
-            $(elements).addClass("hidden");
 
-            hidingEmptyAnnotations = true;
+        if(radio.val() == "hide"){
+            $(elements).addClass("hidden");
         } else {
             $(elements).removeClass("hidden");
-
-            hidingEmptyAnnotations = false;
         }
 
         //TODO: this could be handled by switching a class on the body, but each 
@@ -962,10 +984,6 @@ console.log("Bring highlight into view for ID: ", annotationId);
             var height = ($elem.height() * scrollbarScaleFactor);
 
             var block = $("<div></div>");
-
-            if($elem.data("annotation").userId === AnnotationView.userId){
-                block.addClass("my-annotation");
-            }
 
             block.css({
                 top: top + "px",

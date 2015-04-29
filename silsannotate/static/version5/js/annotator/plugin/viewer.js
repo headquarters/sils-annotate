@@ -35,10 +35,18 @@ Annotator.Plugin.Viewer = (function(_super) {
                         </div>\
                         <hr />\
                         <div class="panel-section clearfix">\
-                            <div class="panel-title">Empty annotations</div>\
+                            <div class="panel-title">Show empty annotations</div>\
                             <div class="panel-details hide-empty-annotations">\
                                 <label><input type="radio" name="show_empty_annotations" value="show" checked="checked" /> Show</label><br />\
                                 <label><input type="radio" name="show_empty_annotations" value="hide" /> Hide</label>\
+                            </div>\
+                        </div>\
+                        <hr />\
+                        <div class="panel-section clearfix">\
+                            <div class="panel-title">Show annotation panel</div>\
+                            <div class="panel-details hide-annotation-panel">\
+                                <label><input type="radio" name="show_annotation_panel" value="show" checked="checked" /> Show</label><br />\
+                                <label><input type="radio" name="show_annotation_panel" value="hide" /> Hide</label>\
                             </div>\
                         </div>\
                         <hr />\
@@ -190,6 +198,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         this.editAnnotation = __bind(this.editAnnotation, this);        
         this.bringAnnotationIntoView = __bind(this.bringAnnotationIntoView, this);
         this.hideEmptyAnnotations = __bind(this.hideEmptyAnnotations, this);
+        this.hideAnnotationPanel = __bind(this.hideAnnotationPanel, this);
         
         this.disableDefaultEvents();
         
@@ -197,6 +206,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", ".annotation-menubar .mode-controls a", this.changeInteractiveMode);
         $(document).on("change", ".annotation-info .display-controls input", this.changeDisplayMode);
         $(document).on("change", ".annotation-info .hide-empty-annotations input", this.hideEmptyAnnotations);
+        $(document).on("change", ".annotation-info .hide-annotation-panel input", this.hideAnnotationPanel);
         $(document).on("click", ".annotation-menubar .highlight-controls a", this.toggleHighlights);
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
@@ -901,6 +911,16 @@ console.log("Bring highlight into view for ID: ", annotationId);
         //empty annotation would need a class to designate that it has not empty
     };    
     
+    Viewer.prototype.hideAnnotationPanel = function(e){ 
+        var radio = $(e.target);
+
+        if(radio.val() == "hide"){
+            annotationPanel.addClass("hidden");
+        } else {
+            annotationPanel.removeClass("hidden");
+        }
+    }
+
     Viewer.prototype.toggleHighlights = function(e){
         e.preventDefault();
         

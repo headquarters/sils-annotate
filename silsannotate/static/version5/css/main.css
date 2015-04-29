@@ -244,6 +244,10 @@ p,h1,h2,h3,h4,h5,h6,
   z-index:1000;
 }
 
+#annotation-panel.hidden {
+  display:none;
+}
+
 #annotation-panel .annotation-pane.active {
   box-shadow:1px 1px 6px #333;
   z-index:2000;

@@ -472,6 +472,13 @@ Annotator = (function(_super) {
     return this.ignoreMouseup = true;
   };
 
+  jQuery.fn.inlineOffset = function() {
+      var el = $('<i>&nbsp;</i>').css('display','inline').insertBefore(this[0]);
+      var pos = el.offset();
+      el.remove();
+      return pos;
+  };  
+
   Annotator.prototype.onAdderClick = function(event) {
     var annotation, cancel, cleanup, position, save;
     if (event != null) {
@@ -486,17 +493,10 @@ Annotator = (function(_super) {
     annotation = this.setupAnnotation(this.createAnnotation());
     $(annotation.highlights).addClass('annotator-hl-temporary');
 
-/****
+
     var boundingBox = annotation.highlights[0].getBoundingClientRect();
 
-jQuery.fn.inlineOffset = function() {
-    var el = $('<i>&nbsp;</i>').css('display','inline').insertBefore(this[0]);
-    var pos = el.offset();
-    el.remove();
-    return pos;
-};
-
-  var inlineOffset = $(annotation.highlights[0]).inlineOffset()
+    var inlineOffset = $(annotation.highlights[0]).inlineOffset();
 
     //http://stackoverflow.com/a/11854456/360509
     var body = document.body,
@@ -509,14 +509,18 @@ jQuery.fn.inlineOffset = function() {
     top = box.top + scrollTop - $(annotation.highlights[0]).height(),
     left = box.left + scrollLeft;
 
-    position = { top: inlineOffset.top - $(annotation.highlights[0]).height(), left: inlineOffset.left };
-//console.log("onAdderClick");
-console.log("Bounding Box: ", box);
-//console.log("Position: ", position);
-//console.log("jQuery offset: ", $(annotation.highlights[0]).offset());    
-//console.log("jQuery position: ", $(annotation.highlights[0]).position());  
-console.log("jQuery inline offset", $(annotation.highlights[0]).inlineOffset());  
-*/
+    position = { top: inlineOffset.top - $(annotation.highlights[0]).height(), left: inlineOffset.left - box.left };
+
+    //annotation.highlights should just have one element, but if a section is highlighted, then canceled, then highlighted again
+    //the text nodes get increased each time, so annotation.highlights could have many more elements in it
+    //this throws off measuring the bounding client and the height
+    //ideally, deleteAnnotation would restore the DOM textnode(s) appropriately, but this appears to be an existing issue
+    //as a result, the new positioning only works *most* of the time
+    //console.log(annotation.highlights);
+    //console.log("Bounding Box: ", box);
+    //console.log("jQuery inline offset", $(annotation.highlights[0]).inlineOffset()); 
+    //console.log("Position: ", position); 
+
     save = (function(_this) {
       return function() {
         cleanup();
@@ -526,7 +530,6 @@ console.log("jQuery inline offset", $(annotation.highlights[0]).inlineOffset());
     })(this);
     cancel = (function(_this) {
       return function() {
-console.log("Cancel: ", annotation);        
         cleanup();
         return _this.deleteAnnotation(annotation);
       };
@@ -537,9 +540,6 @@ console.log("Cancel: ", annotation);
         return _this.unsubscribe('annotationEditorSubmit', save);
       };
     })(this);
-
-//console.log("Remaining highlight(s): ", remainingHighlight);
-//console.log("Cancel fn: ", cancel.toString());
     
     //if there was a left over highlight, save it
     if(remainingHighlight.length > 0){

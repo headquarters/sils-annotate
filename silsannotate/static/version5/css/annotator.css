@@ -464,6 +464,7 @@ to prevent blue-yellow mixing as a green color */
 	-moz-border-radius: 0 0 5px 5px;
 	-o-border-radius: 0 0 5px 5px;
 	border-radius: 0 0 5px 5px;
+	cursor:move;
 }
 
 .annotator-editor.annotator-invert-y .annotator-controls {
@@ -657,6 +658,7 @@ to prevent blue-yellow mixing as a green color */
 	width: 12px;
 	height: 12px;
 	background-position: 2px -150px;
+	cursor:nesw-resize;
 }
 
 .annotator-invert-x .annotator-resize {

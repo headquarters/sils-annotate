@@ -89,7 +89,7 @@ Delegator = (function() {
 
   Delegator.prototype.unsubscribe = function() {
 //Annotator, [article], "annotationEditorHidden"
-console.log(this, this.element, arguments);
+//console.log(this, this.element, arguments);
     this.element.unbind.apply(this.element, arguments);
     return this;
   };

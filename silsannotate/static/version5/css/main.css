@@ -399,7 +399,7 @@ p,h1,h2,h3,h4,h5,h6,
   width: 24px;
   height:100%;
   position: fixed;
-  top: 0; /* hard-coded for now to fit under the .annotation-menubar */
+  top: 0; 
   right: 0;
   bottom: 0;
   background: #333;
@@ -441,4 +441,8 @@ p,h1,h2,h3,h4,h5,h6,
 }
 .annotator-editor .annotator-controls .annotator-save {
   display: none;
+}
+
+.debug-controls {
+  display:none;
 }

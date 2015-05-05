@@ -231,8 +231,12 @@ Annotator.Plugin.Viewer = (function(_super) {
                 $this.attr("href", referenceLink);    
             }            
 
-            //open all links in external tab/window
-            $this.attr("target", "_blank");
+            var href = $this.attr("href");
+            if(href.indexOf("#") !== 0){
+                //open all interpage links in external tab/window
+                $this.attr("target", "_blank");    
+            }
+            
         });
 
         var _this = this;

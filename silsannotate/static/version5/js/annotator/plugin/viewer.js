@@ -413,16 +413,7 @@ Annotator.Plugin.Viewer = (function(_super) {
             }
 
             //FIXES: https://github.com/openannotation/annotator/issues/495
-            $this.attr("data-annotation-id", $this.data().annotation.id);
-            
-            //add a nested-depth class
-            /*var numberOfHighlightParents = $this.parents(".annotator-hl").length + 1;
-            if (numberOfHighlightParents > 3){
-                numberOfHighlightParents = 3;
-            }
-            
-            var nestedDepthClassName = "nested-" + numberOfHighlightParents;
-            $this.addClass(nestedDepthClassName);*/          
+            $this.attr("data-annotation-id", $this.data().annotation.id);         
         });
     }      
 
@@ -473,14 +464,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         annotationPanel.append(annotationPanes);       
 //console.timeEnd("Writing annotations");
     };
-
-    function rgb2hex(rgb) {
-        rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-        function hex(x) {
-            return ("0" + parseInt(x).toString(16)).slice(-2);
-        }
-        return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-    }
     
     Viewer.prototype.showNewAnnotation = function(annotation){
         annotations.push(annotation);
@@ -496,8 +479,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         annotation.userId = AnnotationView.userId; 
     
         var highlightStart = $(annotation.highlights[0]);
-        //TODO: get rid of flicker of yellow before the lightblue is added
-        //highlightStart.css("background-color", "#9CFBFC");
 
         var highlightTextDivision = highlightStart.parents("h1,h2,h3,h4,h5,h6,p");
 
@@ -508,21 +489,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         
         var annotationPane = annotationPanel.children("." + annotationPaneClass);
 
-        //Velocity only supports hex values for colors and .css("background-color") returns
-        //rgb() instead, so it needs to be converted
-        /*var bgColor = highlightStart.css("background-color");
-        var bgColorAsHex = rgb2hex(bgColor);
-        highlightStart.velocity({
-                    backgroundColor: bgColorAsHex
-                }, { 
-                    delay: 1000, 
-                    duration: 500,
-                    complete: function(e){
-                        //TODO: this can be moved to the other callbacks below to make the changes sync up
-                        $(e).css("background-color", "");
-                    }
-                });
-        */
 console.log("Adding new annotation with ID: ", id);
         var numberOfPreviousHighlights = 0;
     
@@ -558,22 +524,9 @@ console.log("Adding new annotation with ID: ", id);
 
         }, 2000);
         
-        /*
-        contents.css("background-color", "#9CFBFC").velocity({
-                backgroundColor: "#ffffff"
-            }, { 
-                delay: 1000, 
-                duration: 500, 
-                complete: function(e){ 
-                    $(e).css("background-color", ""); 
-                } 
-            });
-        */            
-
         highlights[id] = 1;
         bringShortestIdIntoView();
         addAnnotationToScrollbar(annotation);
-        //TODO: add the newest annotation's heatmap mark on the scrollbar
     };
 
     Viewer.prototype.bringAnnotationIntoView = function(e){

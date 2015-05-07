@@ -375,8 +375,13 @@ Annotator = (function(_super) {
 
   Annotator.prototype.showEditor = function(annotation, location) {
 //console.log("Show editor", annotation, location);
+    if(this.editor.isInvertedY()){
+      location.top = location.top + 20;
+    }
     this.editor.element.css(location);
     this.editor.load(annotation);
+
+//console.log();    
     this.publish('annotationEditorShown', [this.editor, annotation]);
     return this;
   };
@@ -506,10 +511,10 @@ Annotator = (function(_super) {
 
     box = annotation.highlights[0].getBoundingClientRect(),
 
-    top = box.top + scrollTop - $(annotation.highlights[0]).height(),
+    top = box.top + scrollTop - $(annotation.highlights[0]).height() ,
     left = box.left + scrollLeft;
 
-    position = { top: inlineOffset.top - $(annotation.highlights[0]).height(), left: inlineOffset.left - box.left };
+    position = { top: inlineOffset.top - $(annotation.highlights[0]).height() - 10, left: inlineOffset.left - box.left };
 
     //annotation.highlights should just have one element, but if a section is highlighted, then canceled, then highlighted again
     //the text nodes get increased each time, so annotation.highlights could have many more elements in it

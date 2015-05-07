@@ -566,6 +566,7 @@ console.log($(elements).children("input"));
         //Override annotation.userId since this setup does not currently use Annotator's permissions plugin
         annotation.userId = AnnotationView.userId; 
     
+console.log("Highlights:", annotation.highlights);
         var highlightStart = $(annotation.highlights[0]);
 
         var highlightTextDivision = highlightStart.parents("h1,h2,h3,h4,h5,h6,p");
@@ -603,11 +604,36 @@ console.log("Adding new annotation with ID: ", id);
         }
 
 
-        highlightStart.css("border", "1px solid #333");
+        if(annotation.highlights.length === 1){
+            highlightStart.css("border", "1px solid #333");
+        } else {
+            for(var i = 0; i < annotation.highlights.length; i++){
+                if(i === 0){
+                    //first highlight
+                    $(annotation.highlights[i]).css({
+                        "border-left": "1px solid #333"
+                    });
+                } 
+                if(i === annotation.highlights.length - 1){
+                    //last highlight
+                    $(annotation.highlights[i]).css({
+                        "border-right": "1px solid #333"
+                    });
+                } 
+                //all highlights need top and bottom border
+                $(annotation.highlights[i]).css({
+                    "border-top": "1px solid #333",
+                    "border-bottom": "1px solid #333"
+                });
+            }
+        }
+
+        //highlightStart.css("border", "1px solid #333");
         contents.css("border", "1px solid #333");
 
+
         setTimeout(function(){
-            highlightStart.css("border", "none");
+            $(annotation.highlights).css("border", "none");
             contents.css("border", "none");
 
         }, 2000);

@@ -187,6 +187,14 @@ p,h1,h2,h3,h4,h5,h6,
   border-color:#999;
 }
 
+.annotation-info .internal-controls label {
+  display:block;
+}
+
+.annotation-info .internal-controls input {
+  width:30px;
+}
+
 /*
 .annotator-wrapper {
   margin: 50px 50px 50px 100px;
@@ -273,6 +281,10 @@ p,h1,h2,h3,h4,h5,h6,
   vertical-align: middle;
 }
 
+#annotation-panel .annotation-contents .annotation input {
+  float:left;
+}
+
 #annotation-panel .annotation-contents .annotation {
   max-height:3.8em;
   overflow:hidden;
@@ -318,6 +330,19 @@ p,h1,h2,h3,h4,h5,h6,
   top:2px;
   padding:2px;
   background:#fff;
+}
+
+#annotation-panel .delete-controls {
+  margin-top:3px;
+  border:1px solid #ccc;
+  padding:8px;
+  background: #eee;
+  position:fixed;
+  margin-left:25px;
+}
+
+#annotation-panel .delete-controls * {
+  margin-right:10px;
 }
 
 /*

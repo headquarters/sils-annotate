@@ -16,7 +16,8 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
 /**
  * Instantiate the Viewer Plugin. There is also a viewer.js "module" used by Annotator, which
  * shows the annotations in a tooltip on mouseover. This plugin replaces that functionality altogether and shows
- * annotations in the right margin. 
+ * annotations in the right margin. Some modifications have also been made to the core annotator.js files. 
+ * Search for the word "MODIFIED" to find the code that was changed to support the prototype interfaces.
  */
 Annotator.Plugin.Viewer = (function(_super) {
     __extends(Viewer, _super);
@@ -123,6 +124,10 @@ Annotator.Plugin.Viewer = (function(_super) {
 
     var hidingEmptyAnnotations = false;
     
+    //AnnotatorJS events are tied to function callbacks by placing the callback name on the right side
+    //and the event name on the left side
+    //annotationsLoaded is an AnnotatorJS event
+    //annotationDataReady is an extra event added to the Store.js plugin 
     Viewer.prototype.events = {
         "annotationsLoaded": "showAnnotations",
         "annotationDataReady": "showNewAnnotation"
@@ -148,7 +153,8 @@ Annotator.Plugin.Viewer = (function(_super) {
         
         //get the height of the menu bar; helps with adjusting vertical placement of other items
         menuBarHeight = $(".annotation-menubar").height();
-//DEBUG 
+        
+        //originally intended for debugging the scrolling reading window section, but has become part of the interface
         var readingSection = $('<div id="reading-section"></div>').css({
             top: (window.outerHeight / 4),
             bottom: ((window.outerHeight / 4) * 2),
@@ -156,7 +162,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         });
 
         $(document.body).append(readingSection);
-//DEBUG          
+        //end the reading section          
 
         //binding events elsewhere screws up the context for `this`, which
         //was used by the original code, so stick with the manual document event binding
@@ -203,7 +209,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         
         this.disableDefaultEvents();
         
-        //attach menubar controls here...not working as part of prototype.events for some reason
+        //extra events are attached here because they were not working as part of the Viewer.prototype.events object
         $(document).on("click", ".annotation-menubar .mode-controls a", this.changeInteractiveMode);
         $(document).on("change", ".annotation-info .display-controls input", this.changeDisplayMode);
         $(document).on("change", ".annotation-info .hide-empty-annotations input", this.hideEmptyAnnotations);
@@ -216,6 +222,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         $(document).on("scroll", keepAnnotationsInView);
 
+        //all external links should open in new tabs/windows
         $("article a").each(function(){
             var $this = $(this);
 
@@ -230,20 +237,20 @@ Annotator.Plugin.Viewer = (function(_super) {
 
             var href = $this.attr("href");
             if(href.indexOf("#") !== 0){
-                //open all interpage links in external tab/window
+                //open all external links in external tab/window
                 $this.attr("target", "_blank");    
             }
             
         });
 
-        var _this = this;
-
+        //when a new annotation is created, increment the counters in the info panel
         this.subscribe('annotationCreated', function(){
             //TODO: rely on data, rather than text
             $("#current-user-annotations-count").text(parseInt($("#current-user-annotations-count").text()) + 1);
             $("#all-annotations-count").text(parseInt($("#all-annotations-count").text()) + 1);
         });
 
+        //if user=admin, show extra controls in the info panel
         if(AnnotationView.userId === "admin"){
             this.addAdminControls();
         }
@@ -276,7 +283,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         var shortestIds = [];
         var shortestLenSoFar = Infinity;
         
-//console.log("IDs that were hovered on:");
         _.each(focusedIds, function(len, id){
             if (len < shortestLenSoFar) {
                 shortestLenSoFar = len;
@@ -284,18 +290,15 @@ Annotator.Plugin.Viewer = (function(_super) {
             }
             else if (len == shortestLenSoFar) {
                 shortestIds.push(id);
-            }
-//console.log(id, len);            
+            }          
         });
 
         $(".annotator-hl.active, .annotation.active, .scrollbar-block.active").removeClass("active");
         if (!shortestIds.length){
             return false;
         }
-
-//console.log("Activating these IDs:");        
+    
         shortestIds = shortestIds.map(function(s){
-//console.log(s);
             return "[data-annotation-id='" + s + "']";
         });
 
@@ -303,7 +306,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         var highlights = $(activeIdsSelector).find(".annotator-hl").andSelf();
 
         highlights.addClass("active");
-        //TODO: draw the activated red line on the scrollbar
     }
     
     /**
@@ -311,8 +313,7 @@ Annotator.Plugin.Viewer = (function(_super) {
      */    
     function annotationFocus(annotations) { 
         $(annotations).each(function(){
-            var thisId = $(this).data("annotation").id;//getAnnotationIdFromClass(this.className);
-//console.log(thisId, $('.annotator-hl.' + thisId).text().length);
+            var thisId = $(this).data("annotation").id;
             focusedIds[thisId] = $('.annotator-hl[data-annotation-id="' + thisId + '"]').text().length;
         });
 
@@ -324,7 +325,7 @@ Annotator.Plugin.Viewer = (function(_super) {
      * Deletes the annotation ID from focusedIds on blur.
      */
     function annotationBlur(annotation){     
-        var annotationId = $(annotation).data("annotation").id;//getAnnotationIdFromClass(annotation.className);
+        var annotationId = $(annotation).data("annotation").id;
         delete focusedIds[annotationId];
         activateShortestId();
     }
@@ -369,7 +370,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     function buildAnnotationContents(annotation){        
         if (annotation.highlights.length < 1 || annotation.ranges.length < 1) {
             //In the "pilot" article, there are 2 annotations with .highlights and .ranges
-            //equal to Array[0] (i.e. empty values). They were not shown originally.
+            //equal to Array[0] (i.e. empty values). They were not shown originally, so don't include them here.
             return "";
         }
         
@@ -422,9 +423,9 @@ Annotator.Plugin.Viewer = (function(_super) {
      * These controls should only be visible when user=admin is present in the URL.
      * These provide ways to tweak the duration and timeout values for the keepAnnotationsInView function
      * and a means for batch deleting annotations. 
+     * @returns void
      */
     Viewer.prototype.addAdminControls = function(){
-        //console.log(this, annotations);
         var self = this;
         var infoPanel = $(".annotation-info");
 
@@ -499,12 +500,15 @@ Annotator.Plugin.Viewer = (function(_super) {
 
 
             elements = elements.substring(0, elements.length - 2);
-console.log($(elements).children("input"));
             $(elements).children("input").prop("checked", true);
-
         });
     }
 
+    /**
+     * Show annotations that were loaded in by AnnotatorJS framework. 
+     * @param {Array} annotations - all annotations loaded in when Store plugin was initiated.
+     * @returns void
+     */
     Viewer.prototype.showAnnotations = function(annotations) {
         this.annotations = annotations;
 
@@ -553,20 +557,24 @@ console.log($(elements).children("input"));
 //console.timeEnd("Writing annotations");
     };
     
+    /**
+     * Show the new annotation that was just created. 
+     * @param {object} annotation - annotation that was just created
+     * @returns void
+     */
     Viewer.prototype.showNewAnnotation = function(annotation){
         annotations.push(annotation);
-//console.log("showNewAnnotation", annotation);        
+
         if(annotationUpdated){
             annotationUpdated = false;
             return;
         }        
-//console.log("Show new annotation", annotation);
+
         var id = annotation.id;
         var text = annotation.text;
         //Override annotation.userId since this setup does not currently use Annotator's permissions plugin
         annotation.userId = AnnotationView.userId; 
     
-console.log("Highlights:", annotation.highlights);
         var highlightStart = $(annotation.highlights[0]);
 
         var highlightTextDivision = highlightStart.parents("h1,h2,h3,h4,h5,h6,p");
@@ -578,7 +586,6 @@ console.log("Highlights:", annotation.highlights);
         
         var annotationPane = annotationPanel.children("." + annotationPaneClass);
 
-console.log("Adding new annotation with ID: ", id);
         var numberOfPreviousHighlights = 0;
     
         var highlightsInTextDivision = getAnnotationsFromHighlights(highlightTextDivision);
@@ -628,7 +635,6 @@ console.log("Adding new annotation with ID: ", id);
             }
         }
 
-        //highlightStart.css("border", "1px solid #333");
         contents.css("border", "1px solid #333");
 
 
@@ -637,12 +643,21 @@ console.log("Adding new annotation with ID: ", id);
             contents.css("border", "none");
 
         }, 2000);
-        
+
         highlights[id] = 1;
         bringShortestIdIntoView();
         addAnnotationToScrollbar(annotation);
     };
 
+    /**
+     * When a highlight is clicked, get that highlights ID and its text length.
+     * Add that to the highlights array. 
+     * Once the event stops bubbling up (i.e. there a no more highlights above this one), 
+     * call bringShortestIdIntoView.
+     * 
+     * @param {object} e - click event
+     * @returns void
+     */
     Viewer.prototype.bringAnnotationIntoView = function(e){
         var highlight = $(e.currentTarget).data("annotation");
 
@@ -667,6 +682,11 @@ console.log("Adding new annotation with ID: ", id);
         }
     }
 
+    /**
+     * Bring the annotation into view for the shortest highlight that was clicked.
+     *
+     * @returns void
+     */
     var bringShortestIdIntoView = function(){
 
         var shortestIds = [];
@@ -699,7 +719,6 @@ console.log("Adding new annotation with ID: ", id);
         var annotationHighlight = $(activeIdsSelector)[0]
         var annotationId = $(annotationHighlight).data("annotation-id");
 
-console.log("Bring annotation into view for ID: ", annotationId);
         //the corresponding annotation for this highlight
         var annotation = $('#annotation-panel [data-annotation-id="' + annotationId + '"]');
         //what to bring into view
@@ -722,31 +741,32 @@ console.log("Bring annotation into view for ID: ", annotationId);
                     if(newAnnotationPanelTop < 0){
                         //get rid of excess white space left behind by moving the annotations up
                         $(element).css("margin-bottom", newAnnotationPanelTop);    
-                    }             
-                    //console.log("After scroll ----------");
-                    //console.log("Highlight offset top: ", $(annotationHighlight).offset().top);
-                    //console.log("Annotation offset top: ", $("#annotation-panel ." + annotationId).offset().top);
-                    //console.log("Annotation panel offset top: ", $("#annotation-panel").offset().top);                                
+                    }                                           
                 } 
             }
         );  
     }
     
-    //this isn't bound to Viewer.prototype because that method of binding
-    //makes `this` the Viewer object, rather than the clicked element
-    //and `this` is always the .annotation element with this method
+    /**
+     * Bring highlight into view for the annotation that was clicked.
+     * This method isn't bound to Viewer.prototype because that form of binding
+     * makes `this` the Viewer object, rather than the clicked element.  
+     * In this form of binding, `this` is always the .annotation element, 
+     * making it easier to access its properties.
+     * @param {object} e - click event
+     * @returns void
+     */
     function bringHighlightIntoView(e){  
         allowKeepAnnotationsInView = false;
-        console.log(e.target);
-//console.log("Turning off scroll event.");            
+         
         $(document).off("scroll", keepAnnotationsInView);
 
         var annotation = this;
-        var annotationId = $(annotation).data("annotation-id"); //getAnnotationIdFromClass(annotation.className);
-        var annotationHighlight = $('.annotator-hl[data-annotation-id="' + annotationId + '"]').eq(0);
-console.log("Bring highlight into view for ID: ", annotationId);        
+        var annotationId = $(annotation).data("annotation-id"); 
+        var annotationHighlight = $('.annotator-hl[data-annotation-id="' + annotationId + '"]').eq(0);        
         var annotationTop = $(annotation).offset().top;
         var annotationPositionTop = $(annotation).position().top;
+
         //how far from the top of the document is this highlight?
         var highlightTop = $(annotationHighlight).offset().top;
 
@@ -772,22 +792,14 @@ console.log("Bring highlight into view for ID: ", annotationId);
                 },
                 begin: function(elements){
                         $("#annotation-panel").velocity({ 
-                            top: topOfHighlight // + clickedOffset
-                            //top: topOfViewableArea
+                            top: topOfHighlight 
                         }, 
                         { 
-                            duration: 300, 
-                            complete: function(){
-                                //console.log("After scroll ----------");
-                                //console.log("Highlight top: ", $(annotationHighlight).offset().top);
-                                //console.log("Annotation top: ", $(annotation).offset().top);
-                                //console.log("Annotation panel top: ", $("#annotation-panel").offset().top); 
-                            } 
+                            duration: 300 
                         }
                     );
                 },
                 complete: function(elements){
-                    //console.log("Rebinding scroll event.");
                     //cheap attempt to avoid race condition with scroll event firing immediately after
                     //this scroll finishes
                     setTimeout(function(){
@@ -797,10 +809,18 @@ console.log("Bring highlight into view for ID: ", annotationId);
                 }
             });
         } 
-    }      
+    }     
 
-    function keepAnnotationsInView(e){   
-//console.log("Scroll event fired.");
+    /**
+     * Keeps annotations in view as user scrolls. When user stops scrolling and the timeout function
+     * fires, then the annotation that is inside the reading window area gets put at the top of the viewport.
+     * 
+     * @param {object} e - scroll event
+     * @returns void
+     */
+
+    function keepAnnotationsInView(e){ 
+        //get admin-controlled input values or use defaults
         var duration = $("input[name='duration']").val() || 100;
         var timeout = $("input[name='timeout']").val() || 50;
 
@@ -820,15 +840,12 @@ console.log("Bring highlight into view for ID: ", annotationId);
                 //return only those highlights that are inside the reading "area"
                 return (elementTop >= readingSectionTop && elementTop <= readingSectionBottom);
             });
-//console.log(viewportThird, readingSectionTop, readingSectionBottom);
-//console.log("In view: ", highlightsInView[0]);
+
             if(highlightsInView.length < 1){
                 return;
             } else {
                 try {
-
-                    //$(highlightsInView[0])
-                    var id = $(highlightsInView[0]).data("annotation-id"); //getAnnotationIdFromClass(highlightsInView[0].className);
+                    var id = $(highlightsInView[0]).data("annotation-id"); 
                     //what to bring into view
                     var highlightTop = $(highlightsInView[0]).offset().top;
                     //current position of annotation in annotation panel
@@ -839,11 +856,7 @@ console.log("Bring highlight into view for ID: ", annotationId);
 
                     //var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
                     var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
-
-    //console.log("Before scroll ----------");
-    //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
-    //console.log("Annotation top: ", annotationTop); 
-    //console.log("Highlight top: ", highlightTop);       
+   
                     if(window.scrollY === 0){ 
                         topOfViewableArea = 0;
                     }
@@ -859,10 +872,6 @@ console.log("Bring highlight into view for ID: ", annotationId);
                                     //get rid of excess white space left behind by moving the annotations up
                                     $(element).css("margin-bottom", topOfViewableArea);    
                                 }                                    
-                                //console.log("After scroll ----------");
-                                //console.log("Annotation panel top: ", $("#annotation-panel").offset().top);
-                                //console.log("Annotation top after: ", $("#annotation-panel ." + id).offset().top);
-                                //console.log("Highlight top after: ", $(highlightsInView[0]).offset().top);
                             } 
                         }
                     ); 
@@ -873,10 +882,22 @@ console.log("Bring highlight into view for ID: ", annotationId);
         }, timeout);
     }    
 
-    Viewer.prototype.disableDefaultEvents = function(e){
+    /**
+     * Disable the default mouseover event that would show the AnnotatorJS viewer,
+     * since this plugin replaces its functionality.
+     * 
+     * @returns void
+     */
+    Viewer.prototype.disableDefaultEvents = function(){
         this._removeEvent(".annotator-hl", "mouseover", "onHighlightMouseover");
     };
     
+    /**
+     * Show textarea to edit annotation text when user clicks "edit" link for an annotation.
+     * 
+     * @param {object} e - click event
+     * @returns void
+     */
     Viewer.prototype.editAnnotation = function(e){
         var _this = this;
         var id = $(e.target).parent().data("annotation-id");
@@ -890,7 +911,6 @@ console.log("Bring highlight into view for ID: ", annotationId);
             return;
         }
 
-        //console.log(editor);
         annotationText.after(editor);
         annotationText.hide();
         editor.focus();
@@ -914,7 +934,13 @@ console.log("Bring highlight into view for ID: ", annotationId);
         });
     }    
     
-
+    /**
+     * Change modes between selecting only (browser default)
+     * and highlighting mode.
+     * 
+     * @param {object} e - click event
+     * @returns void
+     */
     Viewer.prototype.changeInteractiveMode = function(e){
 //console.time("changeInteractiveMode");    
         var link = $(e.target).parent();
@@ -944,6 +970,12 @@ console.log("Bring highlight into view for ID: ", annotationId);
 //console.timeEnd("changeInteractiveMode");         
     };
     
+    /**
+     * Change how annotations are displayed, i.e. as icons, snippets, or full text.
+     * 
+     * @param {object} e - click event
+     * @returns void
+     */
     Viewer.prototype.changeDisplayMode = function(e){
 //console.time("changeDisplayMode");
         var radio = $(e.target);
@@ -955,6 +987,12 @@ console.log("Bring highlight into view for ID: ", annotationId);
 //console.timeEnd("changeDisplayMode");        
     };
 
+    /**
+     * Hide those annotations that have no user-specified text.
+     * 
+     * @param {object} e - click event
+     * @returns void
+     */
     Viewer.prototype.hideEmptyAnnotations = function(e){
         var radio = $(e.target);
         //create array of annotations that have empty text
@@ -985,6 +1023,12 @@ console.log("Bring highlight into view for ID: ", annotationId);
         //empty annotation would need a class to designate that it has not empty
     };    
     
+    /**
+     * Show or hide the annotations panel.
+     * 
+     * @param {object} e - click event
+     * @returns void
+     */
     Viewer.prototype.hideAnnotationPanel = function(e){ 
         var radio = $(e.target);
 
@@ -995,6 +1039,12 @@ console.log("Bring highlight into view for ID: ", annotationId);
         }
     }
 
+    /**
+     * Show all highlights or just the current user's highlights.
+     * 
+     * @param {object} e - click event
+     * @returns void
+     */
     Viewer.prototype.toggleHighlights = function(e){
         e.preventDefault();
         
@@ -1020,16 +1070,34 @@ console.log("Bring highlight into view for ID: ", annotationId);
         link.addClass("active");
     };
     
+    /**
+     * Show annotations info panel. A CSS transition takes care of showing it with a class.
+     * 
+     * @param {object} e - click event
+     * @returns void
+     */    
     function showAnnotationsInfoPanel(e) {
         e.preventDefault();
         
         $(".annotation-info").toggleClass("visible");
     }
     
+    /**
+     * Hide annotations info panel. A CSS transition takes care of hiding it by removing a class.
+     * 
+     * @param {object} e - click event
+     * @returns void
+     */
     function hideAnnotationsInfoPanel(e) {
         $(".annotation-info").removeClass("visible");
     }
     
+    /**
+     * Get counts to update the info panel.
+     * 
+     * @param {Array} annotations - all annotations
+     * @returns void
+     */    
     function getCounts(annotations) {
         var annotationsWithHighlights = _.filter(annotations, function(annotation){
             //only count annotations that have a highlight and a range value
@@ -1048,6 +1116,13 @@ console.log("Bring highlight into view for ID: ", annotationId);
         numberOfAnnotationsByCurrentUser = _.size(annotationsByThisUser);
     }
     
+    /**
+     * Add new annotation indicator to scrollbar. 
+     * TODO: should be handled by scrollbar plugin, rather than this plugin.
+     * 
+     * @param {object} annotation - new annotation added
+     * @returns void
+     */    
     function addAnnotationToScrollbar(annotation){
         //TODO: refactor showScrollbar to use this smaller function for adding annotations
         var scrollbar = $("#scrollbar");

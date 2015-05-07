@@ -78,10 +78,6 @@ Annotator.Plugin.Viewer = (function(_super) {
                                     <img src="/static/' + interfaceName + '/img/highlights-everyone.png" alt="Show all highlights" />\
                                 </a>\
                             </div>\
-                            <div class="debug-controls" style="width:260px;float:left;">\
-                                <label>Duration: <input type="text" name="duration" style="width:30px;"/></label>\
-                                <label>Timeout: <input type="text" name="timeout" style="width:30px;" /></label>\
-                            </div>\
                             <div class="info-control controls">\
                                 <a href="#annotation-info" class="info-panel-trigger" title="Info">\
                                     <img src="/static/' + interfaceName + '/img/info-icon.png" alt="Info" />\
@@ -203,6 +199,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         this.bringAnnotationIntoView = __bind(this.bringAnnotationIntoView, this);
         this.hideEmptyAnnotations = __bind(this.hideEmptyAnnotations, this);
         this.hideAnnotationPanel = __bind(this.hideAnnotationPanel, this);
+        this.addAdminControls = __bind(this.addAdminControls, this);
         
         this.disableDefaultEvents();
         
@@ -246,6 +243,10 @@ Annotator.Plugin.Viewer = (function(_super) {
             $("#current-user-annotations-count").text(parseInt($("#current-user-annotations-count").text()) + 1);
             $("#all-annotations-count").text(parseInt($("#all-annotations-count").text()) + 1);
         });
+
+        if(AnnotationView.userId === "admin"){
+            this.addAdminControls();
+        }
     }
     
     /**
@@ -416,6 +417,93 @@ Annotator.Plugin.Viewer = (function(_super) {
             $this.attr("data-annotation-id", $this.data().annotation.id);         
         });
     }      
+
+    /**
+     * These controls should only be visible when user=admin is present in the URL.
+     * These provide ways to tweak the duration and timeout values for the keepAnnotationsInView function
+     * and a means for batch deleting annotations. 
+     */
+    Viewer.prototype.addAdminControls = function(){
+        //console.log(this, annotations);
+        var self = this;
+        var infoPanel = $(".annotation-info");
+
+        var adminControls = '<div class="panel-section clearfix">\
+                                <div class="panel-title">Internal program settings</div>\
+                                <div class="panel-details internal-controls">\
+                                    <label>Duration: <input type="text" name="duration" /></label>\
+                                    <label>Timeout: <input type="text" name="timeout" /></label>\
+                                    <a href="#batch-delete">Show Batch Delete</a>\
+                                </div>\
+                            </div>'
+        infoPanel.append(adminControls);
+
+        $(".annotation-info [href='#batch-delete']").on("click", function(){
+            hideAnnotationsInfoPanel();
+            $("#annotation-panel .annotation").each(function(){
+                var id = $(this).data("annotation-id");
+                $(this).prepend('<input type="checkbox" name="delete" value="' + id + '" />');
+            });
+
+            var deleteControls = '<div class="delete-controls">\
+                                    <button type="button">Delete</button>\
+                                    <a href="#select-all">Select All</a>\
+                                    <a href="#select-none">Select None</a>\
+                                    <a href="#select-highlights">Select Empty Highlights</a>\
+                                </div>';
+
+            $("#annotation-panel").prepend(deleteControls);
+        });
+
+        $("#annotation-panel").on("click", ".delete-controls button", function(){
+            if(confirm("Are you sure you want to delete the selected annotations? This cannot be undone.")){
+                var id;
+                var inputs = $("#annotation-panel input:checked");
+                var annotation;
+
+                for(var i = 0; i < inputs.length; i++){
+                    id = inputs[i].value;
+                    annotation = $(".annotator-hl[data-annotation-id='" + id + "']").data("annotation");
+                    
+                    //Delete AnnotatorJS-controlled annotation 
+                    self.annotator.deleteAnnotation(annotation);
+
+                    //Delete custom annotation
+                    var removed = $(".annotation[data-annotation-id='" + id + "']").remove();
+                }
+            }
+        });
+
+        $("#annotation-panel").on("click", ".delete-controls [href='#select-all']", function(){
+            $("#annotation-panel input").prop("checked", true);
+        });
+
+        $("#annotation-panel").on("click", ".delete-controls [href='#select-none']", function(){
+            $("#annotation-panel input").prop("checked", false);
+        });
+
+        $("#annotation-panel").on("click", ".delete-controls [href='#select-highlights']", function(){
+            var emptyTextAnnotations = self.annotations.filter(function(annotation){
+                return (annotation.text.length < 1);
+            });
+            var elements = "";
+
+            //find those elements in the DOM and hide them
+            for(var i = 0; i < emptyTextAnnotations.length; i++){
+                var annotation = emptyTextAnnotations[i];
+
+                //hide the highlight that has empty text and the annotation itself in the right pane
+                elements += ".annotator-hl[data-annotation-id='" + annotation.id + "'], "; 
+                elements += ".annotation[data-annotation-id='" + annotation.id + "'], ";              
+            }
+
+
+            elements = elements.substring(0, elements.length - 2);
+console.log($(elements).children("input"));
+            $(elements).children("input").prop("checked", true);
+
+        });
+    }
 
     Viewer.prototype.showAnnotations = function(annotations) {
         this.annotations = annotations;

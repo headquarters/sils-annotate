@@ -1,11 +1,17 @@
 var AnnotationView = (function($, window){
     var self = this;
     
-    self.textId = window.location.pathname.substr(window.location.pathname.lastIndexOf("/") + 1);
-    if(self.textId == "a2-v0"){
-        self.textId = "a2";
+    try {
+        self.textId = window.location.pathname.substr(window.location.pathname.lastIndexOf("/") + 1);
+    } catch(e){
+        self.textId = null;
     }
-    self.userId = window.location.href.match(/user=(\w+)/)[1];
+
+    try {
+        self.userId = window.location.href.match(/user=(\w+)/)[1];
+    } catch(e){
+        self.userId = null;
+    }
     
     self.allowAnnotating = true;
     
@@ -35,7 +41,7 @@ var AnnotationView = (function($, window){
         
         content.annotator("addPlugin", "Viewer");
         content.annotator("addPlugin", "Undo");
-        //content.annotator("addPlugin", "Scrollbar");
+        content.annotator("addPlugin", "Scrollbar");
     };    
     
     self.init = function(){

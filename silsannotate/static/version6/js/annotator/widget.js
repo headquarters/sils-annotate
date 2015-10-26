@@ -37,9 +37,6 @@ Annotator.Widget = (function(_super) {
       MODIFIED
       Includes menu bar height in calculation to prevent editor from disappearing behind it when window isn't scrolled    
     */
-    this.element.animate({
-        'marginTop' : "-=10px" //moves UP
-    });
     viewport = {
       top: window.scrollTop() + $(".annotation-menubar").outerHeight(),
       right: window.width() + window.scrollLeft()

@@ -29,10 +29,17 @@ Annotator.Widget = (function(_super) {
     window = $(Annotator.Util.getGlobal());
     widget = this.element.children(":first");
     offset = widget.offset();
+    //This is to slightly adjust the position of annotator model
+    this.element.animate({
+        'marginTop' : "-=10px" //moves UP
+    });
     /**
       MODIFIED
       Includes menu bar height in calculation to prevent editor from disappearing behind it when window isn't scrolled    
     */
+    this.element.animate({
+        'marginTop' : "-=10px" //moves UP
+    });
     viewport = {
       top: window.scrollTop() + $(".annotation-menubar").outerHeight(),
       right: window.width() + window.scrollLeft()
@@ -51,6 +58,10 @@ Annotator.Widget = (function(_super) {
   };
 
   Widget.prototype.resetOrientation = function() {
+    //Reset the margin top
+    this.element.css({
+        'marginTop' : "0px" //moves UP
+    });
     this.element.removeClass(this.classes.invert.x).removeClass(this.classes.invert.y);
     return this;
   };

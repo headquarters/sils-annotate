@@ -819,67 +819,70 @@ Annotator.Plugin.Viewer = (function(_super) {
      * @returns void
      */
 
-    function keepAnnotationsInView(e){ 
-        //get admin-controlled input values or use defaults
-        var duration = $("input[name='duration']").val() || 100;
-        var timeout = $("input[name='timeout']").val() || 50;
+    function keepAnnotationsInView(e){
+        if(allowKeepAnnotationsInView) { 
+            //get admin-controlled input values or use defaults
+            var duration = $("input[name='duration']").val() || 100;
+            var timeout = $("input[name='timeout']").val() || 50;
 
-        var viewportThird = window.outerHeight / 4;
+            var viewportThird = window.outerHeight / 4;
 
-        if(timer !== null){
-            clearTimeout(timer);
-        }
-
-        timer = setTimeout(function(){     
-            var readingSectionTop = $(window).scrollTop() + viewportThird;            
-            var readingSectionBottom = readingSectionTop + viewportThird;    
-
-            var highlightsInView = $(".annotator-hl").filter(function(){
-                var elementTop = $(this).offset().top;
-
-                //return only those highlights that are inside the reading "area"
-                return (elementTop >= readingSectionTop && elementTop <= readingSectionBottom);
-            });
-
-            if(highlightsInView.length < 1){
-                return;
-            } else {
-                try {
-                    var id = $(highlightsInView[0]).data("annotation-id"); 
-                    //what to bring into view
-                    var highlightTop = $(highlightsInView[0]).offset().top;
-                    //current position of annotation in annotation panel
-                    //var annotationTop = $("#annotation-panel [data-annotation-id='" + id + "']").offset().top;
-                    var annotationPositionTop = $("#annotation-panel [data-annotation-id='" + id + "']").position().top;
-                    //get top for panel
-                    var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
-
-                    //var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
-                    var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
-   
-                    if(window.scrollY === 0){ 
-                        topOfViewableArea = 0;
-                    }
-
-                    $("#annotation-panel").velocity({ 
-                            //top: topOfHighlight
-                            top: topOfViewableArea
-                        }, 
-                        { 
-                            duration: duration, 
-                            complete: function(element){
-                                if(topOfViewableArea < 0){
-                                    //get rid of excess white space left behind by moving the annotations up
-                                    $(element).css("margin-bottom", topOfViewableArea);    
-                                }                                    
-                            } 
-                        }
-                    ); 
-                } catch (e){
-                    console.log("Failed to bring annotation into view.", e.message);
-                }
+            if(timer !== null){
+                clearTimeout(timer);
             }
-        }, timeout);
+
+            timer = setTimeout(function(){     
+                var readingSectionTop = $(window).scrollTop() + viewportThird;            
+                var readingSectionBottom = readingSectionTop + viewportThird;    
+
+                var highlightsInView = $(".annotator-hl").filter(function(){
+                    var elementTop = $(this).offset().top;
+
+                    //return only those highlights that are inside the reading "area"
+                    return (elementTop >= readingSectionTop && elementTop <= readingSectionBottom);
+                });
+
+                if(highlightsInView.length < 1){
+                    return;
+                } else {
+                    try {
+                        var id = $(highlightsInView[0]).data("annotation-id"); 
+                        //what to bring into view
+                        var highlightTop = $(highlightsInView[0]).offset().top;
+                        //current position of annotation in annotation panel
+                        //var annotationTop = $("#annotation-panel [data-annotation-id='" + id + "']").offset().top;
+                        var annotationPositionTop = $("#annotation-panel [data-annotation-id='" + id + "']").position().top;
+                        //get top for panel
+                        var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
+
+                        //var topOfHighlight = (highlightTop - annotationTop) + annotationPanelTop + menuBarHeight;
+                        var topOfViewableArea = window.scrollY - annotationPositionTop + menuBarHeight;
+       
+                        if(window.scrollY === 0){ 
+                            topOfViewableArea = 0;
+                        }
+
+                        $("#annotation-panel").velocity({ 
+                                //top: topOfHighlight
+                                top: topOfViewableArea
+                            }, 
+                            { 
+                                duration: duration, 
+                                complete: function(element){
+                                    if(topOfViewableArea < 0){
+                                        //get rid of excess white space left behind by moving the annotations up
+                                        $(element).css("margin-bottom", topOfViewableArea);    
+                                    }                                    
+                                } 
+                            }
+                        ); 
+                    } catch (e){
+                        console.log("Failed to bring annotation into view.", e.message);
+                    }
+                }
+            }, timeout); else {
+                allowKeepAnnotationsInView = true;
+            }
     }    
 
     /**

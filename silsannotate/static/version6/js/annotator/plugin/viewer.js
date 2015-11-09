@@ -880,9 +880,11 @@ Annotator.Plugin.Viewer = (function(_super) {
                         console.log("Failed to bring annotation into view.", e.message);
                     }
                 }
-            }, timeout); else {
-                allowKeepAnnotationsInView = true;
-            }
+            }, timeout);
+        }
+        else {
+            allowKeepAnnotationsInView = true;
+        }
     }    
 
     /**

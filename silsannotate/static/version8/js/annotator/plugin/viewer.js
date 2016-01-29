@@ -155,7 +155,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         menuBarHeight = $(".annotation-menubar").height();
         
         //originally intended for debugging the scrolling reading window section, but has become part of the interface
-        var readingSection = $('<div id="reading-section"></div>').css({
+        var readingSection = $('<div id="reading-section" style="display:none;"></div>').css({
             top: (window.outerHeight / 4),
             bottom: ((window.outerHeight / 4) * 2),
             height: (window.outerHeight / 4)
@@ -550,8 +550,8 @@ Annotator.Plugin.Viewer = (function(_super) {
                 var contents = buildAnnotationPane(annotations);
                 var textTop = $this.position().top + parseInt($this.css("margin-top")) + parseInt($this.css("padding-top")) - 10;
 
-                annotationPanes += '<div style="margin-top:0px;position:absolute;top: '+textTop+'px;" class="hasTooltip annotation-pane ' + textDivisionClass + 
-                '"><a href="#test" title="My tooltip text">Click!</a></div><div style="height:88vh;overflow-y:auto;display:none;">'
+                annotationPanes += '<div style="margin-left:-50px;margin-top:0px;position:absolute;top: '+textTop+'px;" class="hasTooltip annotation-pane ' + textDivisionClass + 
+                '"><a href="#plus-toggle"  class="plus-toggle" title="Plus"><img src="/static/version8/img/plus-icon.png" alt="Select" style="width:33px; height:33px;"></a></div><div style="height:88vh;overflow-y:auto;display:none;">'
                                         + contents +
                                     '</div>';
             } else {
@@ -564,7 +564,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $('.hasTooltip').each(function() { // Notice the .each() loop, discussed below
             $(this).qtip({
                 show: 'click',
-                hide: 'click',
+                hide: 'unfocus',
                 content: {
                     text: $(this).next('div') // Use the "div" element next to this for the content
                 },
@@ -573,7 +573,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                     at: 'bottom center', // at the bottom right of...
                     target: $('.menu-container'), // my target
                     adjust: {
-                        x: 360,
+                        x: 310,
                         y: 10
                     }
                 },
@@ -584,6 +584,12 @@ Annotator.Plugin.Viewer = (function(_super) {
                     //height: 200, 
                 }
             });
+        });
+
+        $(".plus-toggle").click(function(){
+            $(".plus-toggle").html('<img src="/static/version8/img/plus-icon.png" alt="Select" style="width:33px; height:33px;">');
+            $(this).html('<img src="/static/version8/img/minus-icon.png" alt="Select" style="width:33px; height:33px;">');
+
         });
 
 

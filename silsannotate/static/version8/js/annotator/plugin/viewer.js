@@ -220,7 +220,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", "#annotation-panel .annotation .edit-annotation", this.editAnnotation);
         $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
-        $(document).on("scroll", keepAnnotationsInView);
+        //$(document).on("scroll", keepAnnotationsInView);
 
         //all external links should open in new tabs/windows
         $("article a").each(function(){
@@ -380,11 +380,11 @@ Annotator.Plugin.Viewer = (function(_super) {
             annotationClass += " my-annotation";
         }
         
-        var annotationContents = '<div class="annotation-contents">\
+        var annotationContents = '<div class="annotation-contents" >\
                                     <div class="' + annotationClass + '" data-annotation-id="' + annotation.id + '">\
                                         <img src="/static/' + interfaceName + '/img/users/' + annotation.userId.toLowerCase() + '.png" alt="" />\
-                                        <span class="user-id">' + annotation.userId + '</span>\
-                                        <span class="text">' + annotation.text + '</span>\
+                                        <span class="user-id" style="font-size:11px;"><b>' + annotation.userId + '</b></span>\
+                                        <span class="text" style="font-size:11px;">' + annotation.text + '</span>\
                                     </div>\
                                 </div>';
         return annotationContents;
@@ -535,6 +535,11 @@ Annotator.Plugin.Viewer = (function(_super) {
             //get the total height of this text block to give this annotation pane a max height
             //using height() rather than outerHeight() because the extra height provided by including
             //padding or margin would not be useful (i.e. no annotation should be next to whitespace)
+            //get the top of this text block to match annotation pane top; minus 10 to compensate for padding on each .annotation-pane
+            var textTop = $this.position().top +
+                            parseInt($this.css("margin-top")) +
+                            parseInt($this.css("padding-top")) - 10;
+
             var maxHeight = $this.height();
             
             //get the annotations in this block for the annotation pane
@@ -543,8 +548,10 @@ Annotator.Plugin.Viewer = (function(_super) {
             if (annotations.length > 0) {
                 //build the HTML for annotation pane contents
                 var contents = buildAnnotationPane(annotations);
+                var textTop = $this.position().top + parseInt($this.css("margin-top")) + parseInt($this.css("padding-top")) - 10;
 
-                annotationPanes += '<div class="annotation-pane ' + textDivisionClass + '">'
+                annotationPanes += '<div style="margin-top:0px;position:absolute;top: '+textTop+'px;" class="hasTooltip annotation-pane ' + textDivisionClass + 
+                '"><a href="#test" title="My tooltip text">Click!</a></div><div style="height:88vh;overflow-y:auto;display:none;">'
                                         + contents +
                                     '</div>';
             } else {
@@ -553,7 +560,34 @@ Annotator.Plugin.Viewer = (function(_super) {
             }
         });
         
-        annotationPanel.append(annotationPanes);       
+        annotationPanel.append(annotationPanes);
+        $('.hasTooltip').each(function() { // Notice the .each() loop, discussed below
+            $(this).qtip({
+                show: 'click',
+                hide: 'click',
+                content: {
+                    text: $(this).next('div') // Use the "div" element next to this for the content
+                },
+                position: {
+                    my: 'top center',  // Position my top left...
+                    at: 'bottom center', // at the bottom right of...
+                    target: $('.menu-container'), // my target
+                    adjust: {
+                        x: 360,
+                        y: 10
+                    }
+                },
+                style: {
+                    //def: false,
+                    font: 11, 
+                    width:500,
+                    //height: 200, 
+                }
+            });
+        });
+
+
+
 //console.timeEnd("Writing annotations");
     };
     

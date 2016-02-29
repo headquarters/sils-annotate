@@ -551,7 +551,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                 var contents = buildAnnotationPane(annotations);
                 var textTop = $this.position().top + parseInt($this.css("margin-top")) + parseInt($this.css("padding-top")) - 10;
 
-                annotationPanes += '<div style="margin-left:-50px;margin-top:0px;width:30px;position:absolute;top: '+textTop+'px;" class="hasTooltip annotation-pane ' + textDivisionClass +
+                annotationPanes += '<div style="margin-left:-35px;margin-top:0px;width:30px;position:absolute;top: '+textTop+'px;" class="hasTooltip annotation-pane ' + textDivisionClass +
                 '"><a href="#plus-toggle"  class="plus-toggle" title="Plus"><img src="/static/version8a/img/article-icon.png" alt="Select" style="width:26px; height:33px;"></a></div><div style="height:88vh;overflow-y:auto;display:none;">'
                                         + contents +
                                     '</div>';
@@ -593,26 +593,11 @@ Annotator.Plugin.Viewer = (function(_super) {
                                  {  
                                     $(".plus-toggle").html('<img src="/static/version8a/img/article-icon.png" alt="Select" style="width:26px; height:33px;">');
                                 }
-                        //        //$(this).html('<img src="/static/version8/img/article-selected-icon.png" alt="Select" style="width:26px; height:33px;">');
-                        //
                         }
-                        //
-                        //
                         );
                     }
                 },
-                // Testing multiple hide methods - Zhenwei
-                //hide: {
-                //    effect: function() {
-                //        $(this).delay(100).slideUp("slow");
-                //    }
-                //},
-                //hide: 'unfocus',
-                //hide: 'click',
-                //hide: {
-                //    event: false,
-                //    inactive: 30000
-                //},
+
                 content: {
                     text: $(this).next('div') // Use the "div" element next to this for the content
                 },
@@ -638,8 +623,11 @@ Annotator.Plugin.Viewer = (function(_super) {
 
             //$(".plus-toggle").html('<img src="/static/version8/img/article-icon.png" alt="Select" style="width:26px; height:33px;">');
             //$(".hasTooltip").not($(this)).html('<img src="/static/version8/img/minus-icon.png" alt="Select" style="width:26px; height:33px;">');
-            $(this).html('<img src="/static/version8a/img/article-selected-icon.png" alt="Select" style="width:26px; height:33px;">');
-            $(".plus-toggle").not($(this)).html('<img src="/static/version8a/img/article-unselected-icon.png" alt="Select" style="width:26px; height:33px;">');
+            $(this).html('<img src="/static/version8a/img/article-selected-icon.png" alt="Select" style="width:28px; height:36px;">');
+            $(".plus-toggle").not($(this)).html('<img src="/static/version8a/img/article-unselected-icon.png" alt="Select" style="width:20px; height:26px;">');
+            //add a checker to avoid multiple click event in annotator/annotator.js line 529
+            $(this).data('clicked', true);
+            $(".plus-toggle").not($(this)).data('clicked', false);
         })
         ;
 

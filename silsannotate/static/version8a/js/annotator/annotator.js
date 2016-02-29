@@ -219,11 +219,13 @@ Annotator = (function(_super) {
   };
 
   Annotator.prototype.createAnnotation = function() {
-    alert("g1");
+
     var annotation;
     annotation = {};
     this.publish('beforeAnnotationCreated', [annotation]);
+
     return annotation;
+
   };
 
   Annotator.prototype.setupAnnotation = function(annotation) {
@@ -493,6 +495,7 @@ Annotator = (function(_super) {
   };
 
   Annotator.prototype.onAdderClick = function(event) {
+
     var annotation, cancel, cleanup, position, save;
     if (event != null) {
       event.preventDefault();
@@ -500,16 +503,39 @@ Annotator = (function(_super) {
 
     //if user starts a new highlight and leaves the last one behind, grab it
     var remainingHighlight = $(".annotator-hl-temporary");
+    //zhenwei
 
     position = this.adder.position();
     this.adder.hide();
+
     annotation = this.setupAnnotation(this.createAnnotation());
     $(annotation.highlights).addClass('annotator-hl-temporary');
 
-
     var boundingBox = annotation.highlights[0].getBoundingClientRect();
 
+    // get annotate height zhenwei
     var inlineOffset = $(annotation.highlights[0]).inlineOffset();
+
+    // display q-tip when user annotates
+      var parent = $(annotation.highlights[0]).parents('span').parent().length;
+      if (parent) {
+        var toggleDiv = $(annotation.highlights[0]).parents('span').parent().attr('class').split(' ')[0];
+        //console.log(toggleDiv);
+        //console.log($('.' + toggleDiv).find('.annotator-hl').length);
+        if ($('.' + toggleDiv).find('.annotator-hl').length) {
+          if (!$('.' + toggleDiv).find('.plus-toggle').data("clicked")) {
+            $('.' + toggleDiv).find('.plus-toggle').trigger("click");}
+        }
+    }
+    if (!parent) {
+      $('div.qtip:visible').qtip('hide');
+    }
+
+
+
+
+
+
 
     //http://stackoverflow.com/a/11854456/360509
     var body = document.body,

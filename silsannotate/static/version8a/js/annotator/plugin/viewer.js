@@ -592,6 +592,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                             ,function(){
                                  {  
                                     $(".plus-toggle").html('<img src="/static/version8a/img/article-icon.png" alt="Select" style="width:26px; height:33px;">');
+                                     $(".plus-toggle").data('clicked', false);
                                 }
                         }
                         );

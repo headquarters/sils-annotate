@@ -218,7 +218,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
         $(document).on("click", "#annotation-panel .annotation .edit-annotation", this.editAnnotation);
-        //$(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
+        $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         //$(document).on("scroll", keepAnnotationsInView);
 
@@ -560,8 +560,8 @@ Annotator.Plugin.Viewer = (function(_super) {
                 annotationPanes += '<div class="annotation-pane ' + textDivisionClass + '"></div>';
             }
         });
-        
         annotationPanel.append(annotationPanes);
+        //annotationPanel.children(annotationPanes).remove();
         $('.hasTooltip').each(function() { // Notice the .each() loop, discussed below
             $(this).qtip({
 
@@ -574,6 +574,8 @@ Annotator.Plugin.Viewer = (function(_super) {
                 show: {
                     event: 'click',
                     effect: function() {
+                        // close info panel when q-tip is displayed
+                        $(".annotation-info").removeClass("visible");
                         $(this).show('slide',500
                         //);
                             ,function(){
@@ -593,14 +595,14 @@ Annotator.Plugin.Viewer = (function(_super) {
                                  {  
                                     $(".plus-toggle").html('<img src="/static/version8a/img/article-icon.png" alt="Select" style="width:26px; height:33px;">');
                                      $(".plus-toggle").data('clicked', false);
+                                     $(".plus-toggle").animate({opacity:1});
                                 }
                         }
                         );
                     }
                 },
-
                 content: {
-                    text: $(this).next('div') // Use the "div" element next to this for the content
+                    text: $(this).next('div')
                 },
                 position: {
                     my: 'top center',  // Position my top left...
@@ -624,8 +626,12 @@ Annotator.Plugin.Viewer = (function(_super) {
 
             //$(".plus-toggle").html('<img src="/static/version8/img/article-icon.png" alt="Select" style="width:26px; height:33px;">');
             //$(".hasTooltip").not($(this)).html('<img src="/static/version8/img/minus-icon.png" alt="Select" style="width:26px; height:33px;">');
-            $(this).html('<img src="/static/version8a/img/article-selected-icon.png" alt="Select" style="width:28px; height:36px;">');
-            $(".plus-toggle").not($(this)).html('<img src="/static/version8a/img/article-unselected-icon.png" alt="Select" style="width:20px; height:26px;">');
+            //$(this).fadeOut(100);
+            $(this).html('<img src="/static/version8a/img/article-selected-icon.png" alt="Select" style="width:28px; height:36px;">').animate({opacity:1});
+
+            //$(".plus-toggle").not($(this)).fadeOut("fast");
+            //$(".plus-toggle").not($(this)).fadeIn("fast").html('<img src="/static/version8a/img/article-unselected-icon.png" alt="Select" style="width:20px; height:26px;">');
+            $(".plus-toggle").not($(this)).html('<img src="/static/version8a/img/article-unselected-icon.png" alt="Select" style="width:20px; height:26px;">').animate({opacity:0.4},'slow');
             //add a checker to avoid multiple click event in annotator/annotator.js line 529
             $(this).data('clicked', true);
             $(".plus-toggle").not($(this)).data('clicked', false);
@@ -1079,6 +1085,8 @@ Annotator.Plugin.Viewer = (function(_super) {
      * @returns void
      */
     Viewer.prototype.hideEmptyAnnotations = function(e){
+         //Zhenwei
+
         var radio = $(e.target);
         //create array of annotations that have empty text
         var emptyTextAnnotations = this.annotations.filter(function(annotation){
@@ -1104,7 +1112,7 @@ Annotator.Plugin.Viewer = (function(_super) {
             $(elements).removeClass("hidden");
         }
 
-        //TODO: this could be handled by switching a class on the body, but each 
+        //TODO: this could be handled by switching a class on the body, but each
         //empty annotation would need a class to designate that it has not empty
     };    
     
@@ -1163,7 +1171,7 @@ Annotator.Plugin.Viewer = (function(_super) {
      */    
     function showAnnotationsInfoPanel(e) {
         e.preventDefault();
-        
+        $('div.qtip:visible').qtip('hide');
         $(".annotation-info").toggleClass("visible");
     }
     

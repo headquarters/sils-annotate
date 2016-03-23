@@ -533,10 +533,6 @@ Annotator = (function(_super) {
 
 
 
-
-
-
-
     //http://stackoverflow.com/a/11854456/360509
     var body = document.body,
     html = document.documentElement,
@@ -564,6 +560,7 @@ Annotator = (function(_super) {
       return function() {
         cleanup();
         $(annotation.highlights).removeClass('annotator-hl-temporary');
+        //location.reload(); //zhenwei refresh page approach.
         return _this.publish('annotationCreated', [annotation]);
       };
     })(this);

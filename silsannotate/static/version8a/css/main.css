@@ -299,6 +299,18 @@ p,h1,h2,h3,h4,h5,h6,
   display:none;
 }
 
+/*
+ .hidden for a highlight in tooltip
+*/
+.qtip-content .annotation-contents .annotation.hidden {
+  /*
+    .hidden for a highlight just changes the background color
+    but here it hides the annotation
+  */
+  display:none;
+}
+
+
 #annotation-panel .annotation-contents .annotation:before,
 #annotation-panel .annotation-contents .annotation:after {
   content: " ";

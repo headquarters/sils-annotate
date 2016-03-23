@@ -220,7 +220,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", "#annotation-panel .annotation .edit-annotation", this.editAnnotation);
         $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
-        //$(document).on("scroll", keepAnnotationsInView);
+        $(document).on("scroll", keepAnnotationsInView);
 
         //all external links should open in new tabs/windows
         $("article a").each(function(){
@@ -587,7 +587,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         });
 
         $(".plus-toggle").click(function(){
-            $(".plus-toggle").html('<img src="/static/version8/img/plus-icon.png" alt="Select" style="width:33px; height:33px;">');
+            $(".plus-toggle").html('<img src="/static/version8/img/plus-icon.png" alt="Select" style="width:33px; height:33px;">').animate();
             $(this).html('<img src="/static/version8/img/minus-icon.png" alt="Select" style="width:33px; height:33px;">');
 
         });
@@ -603,6 +603,7 @@ Annotator.Plugin.Viewer = (function(_super) {
      * @returns void
      */
     Viewer.prototype.showNewAnnotation = function(annotation){
+
         annotations.push(annotation);
 
         if(annotationUpdated){
@@ -687,6 +688,8 @@ Annotator.Plugin.Viewer = (function(_super) {
         highlights[id] = 1;
         bringShortestIdIntoView();
         addAnnotationToScrollbar(annotation);
+        var toggleDiv = $(annotation.highlights[0]).parents('span').parent().attr('class').split(' ')[0];
+        $('.' + toggleDiv).find('.plus-toggle').trigger("click");}
     };
 
     /**

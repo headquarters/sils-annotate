@@ -648,7 +648,11 @@ Annotator.Plugin.Viewer = (function(_super) {
                 var docViewBottom = docViewTop + $window.height();
                 //console.log(offset-docViewBottom);
                 //console.log(offset>docViewTop);
-                if((offset>docViewBottom)||((offset<docViewTop))){$('div.qtip:visible').qtip('hide');}
+                if((offset>docViewBottom)||((offset<docViewTop))){
+                    $('div.qtip:visible').qtip('hide');
+                    $(".plus-toggle[clicked ='1']").data('clicked', false);
+                    $(".plus-toggle[clicked ='1']").attr('clicked', "0");
+                }
                 //console.log(offset);
 
 

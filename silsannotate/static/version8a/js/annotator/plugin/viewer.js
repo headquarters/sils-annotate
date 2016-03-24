@@ -218,8 +218,8 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
         $(document).on("click", "#annotation-panel .annotation .edit-annotation", this.editAnnotation);
-        $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
-        $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
+        //$(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
+        //$(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         //$(document).on("scroll", keepAnnotationsInView);
 
 
@@ -595,6 +595,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                                  {  
                                     $(".plus-toggle").html('<img src="/static/version8a/img/article-icon.png" alt="Select" style="width:26px; height:33px;">');
                                      $(".plus-toggle").data('clicked', false);
+                                     $(".plus-toggle").attr('clicked', "0");
                                      $(".plus-toggle").animate({opacity:1});
                                 }
                         }
@@ -635,8 +636,39 @@ Annotator.Plugin.Viewer = (function(_super) {
             //add a checker to avoid multiple click event in annotator/annotator.js line 529
             $(this).data('clicked', true);
             $(".plus-toggle").not($(this)).data('clicked', false);
+            $(this).attr('clicked', "1");
+            $(".plus-toggle").not($(this)).attr('clicked', "0");
+
+            // allow qtip to close when selected button is out of view.
+            $(window).scroll(function() {  //When the user scrolls
+                var elem=$(".plus-toggle[clicked ='1']");
+                var offset = elem.offset().top;
+                var $window = $(window);
+                var docViewTop = $window.scrollTop();
+                var docViewBottom = docViewTop + $window.height();
+                //console.log(offset-docViewBottom);
+                //console.log(offset>docViewTop);
+                if((offset>docViewBottom)||((offset<docViewTop))){$('div.qtip:visible').qtip('hide');}
+                //console.log(offset);
+
+
+            });
+            //var elem=$(this).attr("clicked", true);
+            //var $elem = $(elem);
+            //var $window = $(window);
+            //var docViewTop = $window.scrollTop();
+            //var docViewBottom = docViewTop + $window.height();
+            ////
+            ////
+            ////var elemBottom = elemTop + $elem.height();
+
+            //
+            //    if ((elemBottom <= docViewBottom) && (elemTop >= docViewTop)){
+            //
+            //};
         })
         ;
+
 
 
 

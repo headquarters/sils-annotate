@@ -563,6 +563,12 @@ Annotator.Plugin.Viewer = (function(_super) {
         annotationPanel.append(annotationPanes);
         //annotationPanel.children(annotationPanes).remove();
         $('.hasTooltip').each(function() { // Notice the .each() loop, discussed below
+            // set a ratio value to adpot qtip to dynamic window size
+            var windowWidth = $(window).width();
+            var qtipRatio= (windowWidth / 1440) - 0.2;
+
+
+
             $(this).qtip({
 
                 show: {
@@ -604,7 +610,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                     at: 'bottom center', // at the bottom right of...
                     target: $('.menu-container'), // my target
                     adjust: {
-                        x: 330,
+                        x: 330*(1/qtipRatio-0.3),
                         y: 10,
                         resize: false // prevent qtip from repositioning itself when size changes
                     },
@@ -612,7 +618,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                 style: {
                     // check main.css for detail
                     font:12,
-                    width:500
+                    width:550*qtipRatio
                 }
             });
         });

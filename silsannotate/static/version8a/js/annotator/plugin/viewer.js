@@ -218,8 +218,8 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
         $(document).on("click", "#annotation-panel .annotation .edit-annotation", this.editAnnotation);
-        //$(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
-        //$(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
+        $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
+        $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
         //$(document).on("scroll", keepAnnotationsInView);
 
 
@@ -551,8 +551,8 @@ Annotator.Plugin.Viewer = (function(_super) {
                 var contents = buildAnnotationPane(annotations);
                 var textTop = $this.position().top + parseInt($this.css("margin-top")) + parseInt($this.css("padding-top")) - 10;
 
-                annotationPanes += '<div style="margin-left:-35px;margin-top:0px;width:30px;position:absolute;top: '+textTop+'px;" class="hasTooltip annotation-pane ' + textDivisionClass +
-                '"><a href="#plus-toggle"  class="plus-toggle" title="Plus"><img src="/static/version8a/img/article-icon.png" alt="Select" style="width:26px; height:33px;"></a></div><div style="height:88vh;overflow-y:auto;display:none;">'
+                annotationPanes += '<div style="margin-left:-8%;margin-top:0px;width:30px;position:absolute;top: '+textTop+'px;" class="hasTooltip annotation-pane ' + textDivisionClass +
+                '"><a href="#plus-toggle"  class="plus-toggle" title="Plus"><img src="/static/version8a/img/article-icon.png" alt="Select" style="width:27px; height:33px;"></a></div><div style="height:88vh;overflow-y:auto;display:none;">'
                                         + contents +
                                     '</div>';
             } else {
@@ -565,12 +565,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         $('.hasTooltip').each(function() { // Notice the .each() loop, discussed below
             $(this).qtip({
 
-                //show: 'click',
-                //show: {
-                //    effect: function() {
-                //        $(this).delay(100).slideDown("slow");
-                //    }
-                //},
                 show: {
                     event: 'click',
                     effect: function() {
@@ -592,7 +586,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                         $(this).hide('fold',500
                         //);
                             ,function(){
-                                 {  
+                                 {
                                     $(".plus-toggle").html('<img src="/static/version8a/img/article-icon.png" alt="Select" style="width:26px; height:33px;">');
                                      $(".plus-toggle").data('clicked', false);
                                      $(".plus-toggle").attr('clicked', "0");
@@ -611,14 +605,14 @@ Annotator.Plugin.Viewer = (function(_super) {
                     target: $('.menu-container'), // my target
                     adjust: {
                         x: 330,
-                        y: 10
-                    }
+                        y: 10,
+                        resize: false // prevent qtip from repositioning itself when size changes
+                    },
                 },
                 style: {
-                    //def: false,
-                    font: 11,
-                    width:500,
-                    //height: 200
+                    // check main.css for detail
+                    font:12,
+                    width:500
                 }
             });
         });
@@ -782,7 +776,6 @@ Annotator.Plugin.Viewer = (function(_super) {
      */
     Viewer.prototype.bringAnnotationIntoView = function(e){
         var highlight = $(e.currentTarget).data("annotation");
-
         //if a highlight <span> is inside a link, fire off the link rather than
         //bringing the annotation into view
         if($(e.target).parents("a").length > 0){
@@ -813,7 +806,6 @@ Annotator.Plugin.Viewer = (function(_super) {
 
         var shortestIds = [];
         var shortestLenSoFar = Infinity;
-        
         _.each(highlights, function(len, id){
             if (len < shortestLenSoFar) {
                 shortestLenSoFar = len;
@@ -842,31 +834,23 @@ Annotator.Plugin.Viewer = (function(_super) {
         var annotationId = $(annotationHighlight).data("annotation-id");
 
         //the corresponding annotation for this highlight
-        var annotation = $('#annotation-panel [data-annotation-id="' + annotationId + '"]');
+        //var annotation = $('#annotation-panel [data-annotation-id="' + annotationId + '"]');
+        var annotation = $('.qtip-content [data-annotation-id="' + annotationId + '"]');
         //what to bring into view
         var highlightTop = $(annotationHighlight).offset().top;
         //current position of annotation in annotation panel
         var annotationTop = annotation.offset().top;
         var annotationPositionTop = annotation.position().top;
         //get top for panel
-        var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
- 
+        //var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
+        var annotationPanelTop = parseInt($(".qtip-focus").css("top"));
         var newAnnotationPanelTop = (highlightTop - annotationTop) + annotationPanelTop;
 
-        $("#annotation-panel").velocity({ 
-                top: newAnnotationPanelTop
-            }, 
-            { 
-                duration: 400, 
-                easing: [500, 50],
-                complete: function(element){
-                    if(newAnnotationPanelTop < 0){
-                        //get rid of excess white space left behind by moving the annotations up
-                        $(element).css("margin-bottom", newAnnotationPanelTop);    
-                    }                                           
-                } 
-            }
-        );  
+        annotation.velocity("scroll", {
+            container: $(".qtip-focus").find(".qtip-content").children(),
+            duration: 500,
+            delay: 250
+        });
     }
     
     /**
@@ -878,9 +862,9 @@ Annotator.Plugin.Viewer = (function(_super) {
      * @param {object} e - click event
      * @returns void
      */
-    function bringHighlightIntoView(e){  
+    function bringHighlightIntoView(e){
         allowKeepAnnotationsInView = false;
-         
+        console.log(e);
         $(document).off("scroll", keepAnnotationsInView);
 
         var annotation = this;
@@ -1176,7 +1160,6 @@ Annotator.Plugin.Viewer = (function(_super) {
      */
     Viewer.prototype.toggleHighlights = function(e){
         e.preventDefault();
-        
         var link = $(e.target).parent();
         var action = link.attr("href");
 

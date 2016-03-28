@@ -178,11 +178,11 @@ Annotator = (function(_super) {
   };
 
   Annotator.prototype.getSelectedRanges = function() {
-    $('.hasTooltip').qtip({
-        show: {
-
-          show: 'click',
-          hide: 'click'}});
+    //$('.hasTooltip').qtip({
+    //    show: {
+    //
+    //      show: 'click',
+    //      hide: 'click'}});
 
     var browserRange, i, normedRange, r, ranges, rangesToIgnore, selection, _i, _len;
     selection = Util.getGlobal().getSelection();

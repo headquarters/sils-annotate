@@ -38,9 +38,13 @@ Annotator.Editor = (function(_super) {
   Editor.prototype.show = function(event) {
     Annotator.Util.preventEventDefault(event);
     this.element.removeClass(this.classes.hide);
+
     this.element.find('.annotator-save').addClass(this.classes.focus);
+
     this.checkOrientation();
     this.element.find(":input:first").focus();
+    //flash the content to notify users.
+    this.element.find('.annotator-listing').fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
     this.setupDraggables();
     return this.publish('show');
   };
@@ -72,7 +76,14 @@ Annotator.Editor = (function(_super) {
       field.submit(field.element, this.annotation);
     }
     this.publish('save', [this.annotation]);
-    return this.hide();
+
+    // flash the save button to notify user that their input has been saved.
+    this.element.find('.annotator-save').addClass(this.classes.focus,200);
+    this.element.find('.annotator-save').removeClass(this.classes.focus,200);
+    var callee=this;
+    this.element.find('.annotator-save').promise().done(function(){
+      return callee.hide();});
+
   };
 
   Editor.prototype.addField = function(options) {

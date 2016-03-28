@@ -369,7 +369,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     /**
      * Create the HTML contents of an annotation.
      */
-    function buildAnnotationContents(annotation){        
+    function buildAnnotationContents(annotation){
         if (annotation.highlights.length < 1 || annotation.ranges.length < 1) {
             //In the "pilot" article, there are 2 annotations with .highlights and .ranges
             //equal to Array[0] (i.e. empty values). They were not shown originally, so don't include them here.
@@ -381,7 +381,7 @@ Annotator.Plugin.Viewer = (function(_super) {
         if(AnnotationView.userId === annotation.userId){
             annotationClass += " my-annotation";
         }
-        
+
         var annotationContents = '<div class="annotation-contents" >\
                                     <div class="' + annotationClass + '" data-annotation-id="' + annotation.id + '">\
                                         <img src="/static/' + interfaceName + '/img/users/' + annotation.userId.toLowerCase() + '.png" alt="" />\
@@ -618,7 +618,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                 style: {
                     // check main.css for detail
                     font:12,
-                    width:550*qtipRatio
+                    width:600*qtipRatio
                 }
             });
         });
@@ -704,10 +704,14 @@ Annotator.Plugin.Viewer = (function(_super) {
         //add annotation id to highlighted element
         setAnnotationHighlightClassNames(highlightTextDivision.find(".annotator-hl"));
 
-        var annotationPaneClass = highlightTextDivision[0].className;
-        
-        var annotationPane = annotationPanel.children("." + annotationPaneClass);
-
+        //var annotationPaneClass = "qtip-focus.annotation-pane."+highlightTextDivision[0].className;
+        var annotationPane =$(".qtip-focus").children(".qtip-content").children();
+        if (annotationPane.length <1) {
+            this.showAnnotations();
+        }
+        //var annotationPane = annotationPanel.children("." + annotationPaneClass);
+        //var annotationPane = $(".qtip-focus");
+        //var annotationPane = annotationPanes;
         var numberOfPreviousHighlights = 0;
     
         var highlightsInTextDivision = getAnnotationsFromHighlights(highlightTextDivision);
@@ -723,9 +727,9 @@ Annotator.Plugin.Viewer = (function(_super) {
             }
         }          
 
-        var contents = $(buildAnnotationContents(annotation)); 
+        var contents = $(buildAnnotationContents(annotation));
         if(numberOfPreviousHighlights === 0){
-            annotationPane.prepend(contents);    
+            annotationPane.prepend(contents);
         } else {
             annotationPane
                 .children(".annotation-contents:nth-child(" + numberOfPreviousHighlights + ")" )
@@ -841,16 +845,16 @@ Annotator.Plugin.Viewer = (function(_super) {
 
         //the corresponding annotation for this highlight
         //var annotation = $('#annotation-panel [data-annotation-id="' + annotationId + '"]');
-        var annotation = $('.qtip-content [data-annotation-id="' + annotationId + '"]');
+        var annotation = $('.qtip-focus [data-annotation-id="' + annotationId + '"]');
         //what to bring into view
-        var highlightTop = $(annotationHighlight).offset().top;
+        //var highlightTop = $(annotationHighlight).offset().top;
         //current position of annotation in annotation panel
-        var annotationTop = annotation.offset().top;
-        var annotationPositionTop = annotation.position().top;
+        //var annotationTop = annotation.offset().top;
+        //var annotationPositionTop = annotation.position().top;
         //get top for panel
         //var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
-        var annotationPanelTop = parseInt($(".qtip-focus").css("top"));
-        var newAnnotationPanelTop = (highlightTop - annotationTop) + annotationPanelTop;
+        //var annotationPanelTop = parseInt($(".qtip-focus").css("top"));
+        //var newAnnotationPanelTop = (highlightTop - annotationTop) + annotationPanelTop;
 
         annotation.velocity("scroll", {
             container: $(".qtip-focus").find(".qtip-content").children(),

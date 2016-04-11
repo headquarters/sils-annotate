@@ -574,7 +574,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                     effect: function() {
                         // close info panel when q-tip is displayed
                         // $(".annotation-info").removeClass("visible");
-                        $(this).show('slide',500
+                        $(this).show('slide',200
                         //);
                             ,function(){
                                     $(".qtip").not($(this)).slideUp("fast");
@@ -587,7 +587,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                 hide: {
                     event: 'click',
                     effect: function() {
-                        $(this).hide('fold',500
+                        $(this).hide('fold',200
                         //);
                             ,function(){
                                  {

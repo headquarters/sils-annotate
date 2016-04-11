@@ -520,11 +520,13 @@ Annotator = (function(_super) {
       var parent = $(annotation.highlights[0]).parents('span').parent().length;
       if (parent) {
         var toggleDiv = $(annotation.highlights[0]).parents('span').parent().attr('class').split(' ')[0];
-        //console.log(toggleDiv);
-        //console.log($('.' + toggleDiv).find('.annotator-hl').length);
+        // display the info for debugging purpose Zhenwei
+        // console.log(toggleDiv);
+        // console.log($('.' + toggleDiv).find('.annotator-hl').length);
         if ($('.' + toggleDiv).find('.annotator-hl').length) {
           if (!$('.' + toggleDiv).find('.plus-toggle').data("clicked")) {
-            $('.' + toggleDiv).find('.plus-toggle').trigger("click");}
+            $('.' + toggleDiv).find('.plus-toggle').trigger("click");
+            $('.' + toggleDiv).find('.plus-toggle').attr('clicked', "1");}
         }
     }
     if (!parent) {

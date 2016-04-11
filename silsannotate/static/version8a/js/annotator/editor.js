@@ -44,7 +44,7 @@ Annotator.Editor = (function(_super) {
     this.checkOrientation();
     this.element.find(":input:first").focus();
     //flash the content to notify users.
-    this.element.find('.annotator-listing').fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+    this.element.find('.annotator-listing').fadeIn(600).fadeOut(600).fadeIn(600);
     this.setupDraggables();
     return this.publish('show');
   };

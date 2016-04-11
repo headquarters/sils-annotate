@@ -152,7 +152,7 @@ p,h1,h2,h3,h4,h5,h6,
   right:-400px;
   background: #ccc;
   padding:10px 20px 10px;  
-  z-index:5000;
+  z-index:10000;
 }
 
 .annotation-info.visible {
@@ -299,6 +299,9 @@ p,h1,h2,h3,h4,h5,h6,
   display:none;
 }
 
+.qtip-zindex{
+  z-index: 1000 !important;
+}
 /*
  .hidden for a highlight in tooltip
 */

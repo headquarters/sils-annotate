@@ -25,7 +25,7 @@ Annotator.Plugin.Viewer = (function(_super) {
     //the annotation panel where annotations will be rendered
     var annotationPanel;
     //the information panel that is hidden off screen until a user clicks the upper "info" button
-    var infoPanel = '<div class="annotation-info">\
+    var infoPanel = '<div class="annotation-info" style="z-index:16000" >\
                         <div class="panel-section clearfix">\
                             <div class="panel-title">Display annotations as</div>\
                             <div class="panel-details display-controls"> \
@@ -217,10 +217,10 @@ Annotator.Plugin.Viewer = (function(_super) {
         $(document).on("click", ".annotation-menubar .highlight-controls a", this.toggleHighlights);
         $(document).on("click", ".annotation-menubar .info-control a", showAnnotationsInfoPanel);
         $(document).on("click", "#container", hideAnnotationsInfoPanel);
-        $(document).on("click", "#annotation-panel .annotation .edit-annotation", this.editAnnotation);
+        $(document).on("click", ".qtip-focus .annotation .edit-annotation", this.editAnnotation);
         $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
         $(document).on("click", "#annotation-panel .annotation", bringHighlightIntoView);
-        //$(document).on("scroll", keepAnnotationsInView);
+        // $(document).on("scroll", keepAnnotationsInView);
 
 
 
@@ -513,7 +513,6 @@ Annotator.Plugin.Viewer = (function(_super) {
      */
     Viewer.prototype.showAnnotations = function(annotations) {
         this.annotations = annotations;
-
         getCounts(annotations);
         
         $("#current-user-annotations-count").text(numberOfAnnotationsByCurrentUser);
@@ -570,12 +569,11 @@ Annotator.Plugin.Viewer = (function(_super) {
 
 
             $(this).qtip({
-
                 show: {
                     event: 'click',
                     effect: function() {
                         // close info panel when q-tip is displayed
-                        $(".annotation-info").removeClass("visible");
+                        // $(".annotation-info").removeClass("visible");
                         $(this).show('slide',500
                         //);
                             ,function(){
@@ -786,6 +784,22 @@ Annotator.Plugin.Viewer = (function(_super) {
      */
     Viewer.prototype.bringAnnotationIntoView = function(e){
         var highlight = $(e.currentTarget).data("annotation");
+
+        // open the qTip box when user press the corresponding paragraph.
+        // simple but workable approach. may require further debugging.
+        // need to consider multiple parent pissibilities: p/h2/h1
+        var parentP = $(e.currentTarget).parents('p').prop('className')
+            || $(e.currentTarget).parents('h2').prop('className')
+            ||$(e.currentTarget).parents('h1').prop('className');
+
+        // console.log(parentP);
+        if (!$('.' + parentP).find('.plus-toggle').data("clicked"))
+        {
+            $('.' + parentP).find('.plus-toggle').trigger("click");
+            $('.' + parentP).find('.plus-toggle').attr('clicked', "1");
+        };
+
+
         //if a highlight <span> is inside a link, fire off the link rather than
         //bringing the annotation into view
         if($(e.target).parents("a").length > 0){
@@ -799,10 +813,10 @@ Annotator.Plugin.Viewer = (function(_super) {
         //and having value of its length, then we can activate the shortest one on click
         //when all the bubbling is done
         highlights[highlight.id] = $('.annotator-hl[data-annotation-id="' + highlight.id + '"]').text().length;
-        
         if($(e.currentTarget).parents(".annotator-hl").length === 0){
             //bubbled as far as we need to go
-            bringShortestIdIntoView();
+            // set a timeout function so it will wait until q-tip is rendered.
+            setTimeout(bringShortestIdIntoView,200);
             return false;
         }
     }
@@ -842,7 +856,6 @@ Annotator.Plugin.Viewer = (function(_super) {
         //only bring into view the first annotation that was found (should be the top one this way)
         var annotationHighlight = $(activeIdsSelector)[0]
         var annotationId = $(annotationHighlight).data("annotation-id");
-
         //the corresponding annotation for this highlight
         //var annotation = $('#annotation-panel [data-annotation-id="' + annotationId + '"]');
         var annotation = $('.qtip-focus [data-annotation-id="' + annotationId + '"]');
@@ -855,11 +868,10 @@ Annotator.Plugin.Viewer = (function(_super) {
         //var annotationPanelTop = parseInt($("#annotation-panel").css("top"));
         //var annotationPanelTop = parseInt($(".qtip-focus").css("top"));
         //var newAnnotationPanelTop = (highlightTop - annotationTop) + annotationPanelTop;
-
         annotation.velocity("scroll", {
             container: $(".qtip-focus").find(".qtip-content").children(),
             duration: 500,
-            delay: 250
+            delay: 50
         });
     }
     
@@ -874,7 +886,6 @@ Annotator.Plugin.Viewer = (function(_super) {
      */
     function bringHighlightIntoView(e){
         allowKeepAnnotationsInView = false;
-        console.log(e);
         $(document).off("scroll", keepAnnotationsInView);
 
         var annotation = this;
@@ -911,7 +922,7 @@ Annotator.Plugin.Viewer = (function(_super) {
                             top: topOfHighlight 
                         }, 
                         { 
-                            duration: 300 
+                            duration: 300
                         }
                     );
                 },
@@ -1021,8 +1032,10 @@ Annotator.Plugin.Viewer = (function(_super) {
      */
     Viewer.prototype.editAnnotation = function(e){
         var _this = this;
+        console.log(e);
         var id = $(e.target).parent().data("annotation-id");
         var annotation = $(".annotator-hl[data-annotation-id='" + id + "']").data("annotation");
+        console.log(annotation);
         var annotationText = $(e.target).prev(".text");
         var userId = annotation.userId;
         var text = annotation.text;
@@ -1200,8 +1213,10 @@ Annotator.Plugin.Viewer = (function(_super) {
      */    
     function showAnnotationsInfoPanel(e) {
         e.preventDefault();
-        $('div.qtip:visible').qtip('hide');
+        // relative hide
+        // $('div.qtip:visible').qtip('hide');
         $(".annotation-info").toggleClass("visible");
+
     }
     
     /**

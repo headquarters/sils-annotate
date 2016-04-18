@@ -58,20 +58,24 @@ to fix the "flicker" of different yellows that shows up as CSS files load
 	  /*background: rgba(108, 255, 255, 0.1); */
 	  /*background: rgba(189, 238, 255, 1);*/
 	  background: rgba(214, 244, 255, 1);
+		text-decoration: none;
 }
 
 .annotator-wrapper .annotator-hl.my-annotation {
   	background: rgba(214, 244, 255, 1);
+	text-decoration: none;
 }
 
 .annotation.active,
 .annotator-wrapper .annotator-hl.active {
-  	background: rgba(255, 222, 222, 0.8);
+  	background: rgba(255, 222, 222, 0.8) !important;
+	text-decoration: underline;
 }
 
 .annotator-wrapper .annotator-hl.my-annotation.active,
 .annotation.my-annotation.active {
   	background: rgba(171, 208, 252, 1);
+	text-decoration: underline;
 }
 
 /* my annotation's take precedence over others' annotations

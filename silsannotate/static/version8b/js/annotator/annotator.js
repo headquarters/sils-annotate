@@ -515,7 +515,7 @@ Annotator = (function(_super) {
 
     // get annotate height zhenwei
     var inlineOffset = $(annotation.highlights[0]).inlineOffset();
-
+    
     // display q-tip when user annotates
       var parent = $(annotation.highlights[0]).parents('span').parent().length;
       if (parent) {

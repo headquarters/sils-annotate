@@ -25,13 +25,14 @@ Annotator.Plugin.Viewer = (function(_super) {
     //the annotation panel where annotations will be rendered
     var annotationPanel;
     //the information panel that is hidden off screen until a user clicks the upper "info" button
+    // Function to display annotation in different ways is temporarily disabled. Check below for detail.
     var infoPanel = '<div class="annotation-info" style="z-index:16000" >\
                         <div class="panel-section clearfix">\
                             <div class="panel-title">Display annotations as</div>\
                             <div class="panel-details display-controls"> \
-                                <label><input type="radio" name="display_annotations" value="icons" /> Icons </label><br />\
-                                <label><input type="radio" name="display_annotations" value="snippets" checked="checked" /> Snippets </label><br />\
-                                <label><input type="radio" name="display_annotations" value="full" /> Full text </label>\
+                                <label><input type="radio" disabled name="display_annotations" value="icons" /> Icons </label><br />\
+                                <label><input type="radio" disabled name="display_annotations" value="snippets" checked="checked" /> Snippets </label><br />\
+                                <label><input type="radio" disabled name="display_annotations" value="full" /> Full text </label>\
                             </div> \
                         </div>\
                         <hr />\
@@ -518,11 +519,11 @@ Annotator.Plugin.Viewer = (function(_super) {
         {   var parent=$(annotations[i].highlights[0]);
             var parentClass= parent.parents('p')[0] ||parent.parents('h2')[0]||parent.parents('h1')[0];
 
-            if (typeof(parentClass) != 'undefined'){
-                var pClass=parentClass.className;
-                console.log(parentClass);
-                console.log(pClass);
-                console.log(parent.length);}
+            // if (typeof(parentClass) != 'undefined'){
+            //     var pClass=parentClass.className;
+            //     // console.log(parentClass);
+            //     // console.log(pClass);
+            //     // console.log(parent.length);}
             // var parent=$(annotations[i].highlights[0]).parents('span').parent()[0];
             // console.log(parent);
 
@@ -808,7 +809,7 @@ Annotator.Plugin.Viewer = (function(_super) {
 
         // open the qTip box when user press the corresponding paragraph.
         // simple but workable approach. may require further debugging.
-        // need to consider multiple parent pissibilities: p/h2/h1
+        // need to consider multiple parent possibilities: p/h2/h1
         var parentP = $(e.currentTarget).parents('p').prop('className')
             || $(e.currentTarget).parents('h2').prop('className')
             ||$(e.currentTarget).parents('h1').prop('className');
@@ -1100,22 +1101,25 @@ Annotator.Plugin.Viewer = (function(_super) {
 //console.time("changeInteractiveMode");    
         var link = $(e.target).parent();
         var newInteractiveMode = link.data("mode");
-        
+
         
         if (newInteractiveMode === "select") {
+            // close opened annotation
+            $('div.qtip:visible').qtip('hide');
+            
             //disable annotating
             $(document).unbind({
                 "mouseup": this.annotator.checkForEndSelection,
                 "mousedown": this.annotator.checkForStartSelection
             });
+
         } else {
             //allow highlighting and annotating
             $(document).bind({
                 "mouseup": this.annotator.checkForEndSelection,
                 "mousedown": this.annotator.checkForStartSelection
             });
-        } 
-        
+        }
         $(document.body).removeClass(interactiveMode).addClass(newInteractiveMode);
         
         $(".mode-controls .active").removeClass("active");

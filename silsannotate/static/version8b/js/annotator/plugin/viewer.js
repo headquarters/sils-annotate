@@ -1106,11 +1106,14 @@ Annotator.Plugin.Viewer = (function(_super) {
         if (newInteractiveMode === "select") {
             // close opened annotation
             $('div.qtip:visible').qtip('hide');
-            
+
             //disable annotating
             $(document).unbind({
                 "mouseup": this.annotator.checkForEndSelection,
                 "mousedown": this.annotator.checkForStartSelection
+            });
+            $('article .annotator-hl').unbind({
+                "click": this.bringAnnotationIntoView
             });
 
         } else {
@@ -1118,6 +1121,9 @@ Annotator.Plugin.Viewer = (function(_super) {
             $(document).bind({
                 "mouseup": this.annotator.checkForEndSelection,
                 "mousedown": this.annotator.checkForStartSelection
+            });
+            $('article .annotator-hl').bind({
+                "click": this.bringAnnotationIntoView
             });
         }
         $(document.body).removeClass(interactiveMode).addClass(newInteractiveMode);

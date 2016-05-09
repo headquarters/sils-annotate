@@ -514,26 +514,6 @@ Annotator.Plugin.Viewer = (function(_super) {
      */
     Viewer.prototype.showAnnotations = function(annotations) {
         this.annotations = annotations;
-        var annotationMap={};
-        for (i=0; i<annotations.length;i++)
-        {   var parent=$(annotations[i].highlights[0]);
-            var parentClass= parent.parents('p')[0] ||parent.parents('h2')[0]||parent.parents('h1')[0];
-
-            // if (typeof(parentClass) != 'undefined'){
-            //     var pClass=parentClass.className;
-            //     // console.log(parentClass);
-            //     // console.log(pClass);
-            //     // console.log(parent.length);}
-            // var parent=$(annotations[i].highlights[0]).parents('span').parent()[0];
-            // console.log(parent);
-
-
-
-            // annotationMap[annotations[i].highlights.className]+=annotations.highlights.length;
-        }
-
-        // console.log(annotationMap);
-        // console.log(annotations[0]);
         getCounts(annotations);
         
         $("#current-user-annotations-count").text(numberOfAnnotationsByCurrentUser);
@@ -812,7 +792,9 @@ Annotator.Plugin.Viewer = (function(_super) {
         // need to consider multiple parent possibilities: p/h2/h1
         var parentP = $(e.currentTarget).parents('p').prop('className')
             || $(e.currentTarget).parents('h2').prop('className')
-            ||$(e.currentTarget).parents('h1').prop('className');
+            ||$(e.currentTarget).parents('h1').prop('className')
+            ||$(e.currentTarget).parents('h3').prop('className')
+            ||$(e.currentTarget).parents('h4').prop('className');
 
         // console.log(parentP);
         if (!$('.' + parentP).find('.plus-toggle').data("clicked"))
@@ -1098,7 +1080,7 @@ Annotator.Plugin.Viewer = (function(_super) {
      * @returns void
      */
     Viewer.prototype.changeInteractiveMode = function(e){
-//console.time("changeInteractiveMode");    
+//console.time("changeInteractiveMode");
         var link = $(e.target).parent();
         var newInteractiveMode = link.data("mode");
 
@@ -1112,9 +1094,11 @@ Annotator.Plugin.Viewer = (function(_super) {
                 "mouseup": this.annotator.checkForEndSelection,
                 "mousedown": this.annotator.checkForStartSelection
             });
-            $('article .annotator-hl').unbind({
-                "click": this.bringAnnotationIntoView
-            });
+            $(document).off("click", "article .annotator-hl", this.bringAnnotationIntoView);
+
+            // $(document).unbind({
+            //     "click": this.bringAnnotationIntoView
+            // });
 
         } else {
             //allow highlighting and annotating
@@ -1122,9 +1106,10 @@ Annotator.Plugin.Viewer = (function(_super) {
                 "mouseup": this.annotator.checkForEndSelection,
                 "mousedown": this.annotator.checkForStartSelection
             });
-            $('article .annotator-hl').bind({
-                "click": this.bringAnnotationIntoView
-            });
+            $(document).on("click", "article .annotator-hl", this.bringAnnotationIntoView);
+            // $('.article .annotator-hl').bind({
+            //     "click": this.bringAnnotationIntoView
+            // });
         }
         $(document.body).removeClass(interactiveMode).addClass(newInteractiveMode);
         
